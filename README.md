@@ -29,7 +29,8 @@ Language Models (LLMs) on your local machine.
    yarn dev
    ```
 
-3. Or use the web version, by allowing the origin [docs](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
+3. Or use the web version, by allowing the
+   origin [docs](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
 
    ```shell
    OLLAMA_ORIGINS=https://ollama-15y7qft4h-helgesverre.vercel.app ollama serve
@@ -39,6 +40,7 @@ Language Models (LLMs) on your local machine.
 
 ## 📋 To-Do List
 
+- [ ] Properly format newlines in the chat message (PHP-land has `nl2br` basically want the same thing)
 - [ ] Browse and download available models
 - [ ] Store chat history using IndexedDB
 - [ ] Ensure mobile responsiveness
