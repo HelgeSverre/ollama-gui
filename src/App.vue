@@ -3,6 +3,7 @@ import Sidebar from "./components/Sidebar.vue";
 import ChatInput from "./components/ChatInput.vue";
 import ChatMessages from "./components/ChatMessages.vue";
 import { isDarkMode } from "./services/store.ts";
+import Settings from "./Settings.vue";
 </script>
 
 <template>
@@ -19,6 +20,8 @@ import { isDarkMode } from "./services/store.ts";
           <ChatInput />
         </div>
       </div>
+
+      <Settings />
     </main>
   </div>
 </template>

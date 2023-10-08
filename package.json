@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "format": "npx prettier --write src",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "format": "npx prettier --write src"
   },
   "dependencies": {
     "@tabler/icons-vue": "^2.38.0",
@@ -23,9 +22,11 @@
     "prettier-plugin-tailwindcss": "^0.5.5",
     "rxjs": "^7.8.1",
     "tailwindcss": "^3.3.3",
+    "uuid": "^9.0.1",
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.5",
     "@vitejs/plugin-vue": "^4.2.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",

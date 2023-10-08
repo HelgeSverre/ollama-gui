@@ -3,10 +3,12 @@ import { useAppState } from "../services/store.ts";
 import { storeToRefs } from "pinia";
 import { useTextareaAutosize } from "@vueuse/core";
 
-const { textarea, input } = useTextareaAutosize();
-
 const { userInput } = storeToRefs(useAppState());
 const { addUserMessage } = useAppState();
+
+const { textarea, input } = useTextareaAutosize({
+  input: userInput,
+});
 
 const onSubmit = () => {
   addUserMessage(userInput.value);
@@ -21,15 +23,12 @@ const onKeydown = (event: KeyboardEvent) => {
 </script>
 <template>
   <form class="mt-2" @submit.prevent="onSubmit">
-    <label for="chat-input" class="sr-only">Enter your prompt</label>
     <div class="relative">
       <textarea
-        id="chat-input"
         ref="textarea"
-        v-model="[input, userInput]"
-        class="block w-full resize-none rounded-xl border-none bg-zinc-100 p-4 pl-4 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
+        v-model="input"
+        class="max-h-[500px] block w-full resize-none rounded-xl border-none bg-zinc-100 p-4 pl-4 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
         placeholder="Enter your prompt"
-        rows="1"
         @keydown="onKeydown"
       ></textarea>
       <button
