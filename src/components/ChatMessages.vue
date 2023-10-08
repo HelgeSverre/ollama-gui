@@ -7,7 +7,7 @@ import ToggleInput from './Inputs/ToggleInput.vue'
 
 const { currentChat } = storeToRefs(useAppState())
 
-const chatElement = ref(null)
+const chatElement = ref<HTMLElement>()
 
 const scrollToBottom = () => {
   nextTick(() => {

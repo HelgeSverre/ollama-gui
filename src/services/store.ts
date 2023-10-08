@@ -1,7 +1,12 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import { GenerateCompletionResponse, useApi } from './api.ts'
+import {
+  GenerateCompletionCompletedResponse,
+  GenerateCompletionPartResponse,
+  GenerateCompletionResponse,
+  useApi,
+} from './api.ts'
 import { v4 as uuidv4 } from 'uuid'
 import gravatarUrl from 'gravatar-url'
 
@@ -82,9 +87,9 @@ export const useAppState = defineStore('app-state', () => {
         (data: GenerateCompletionResponse) => {
           appendAiMessage(data.response)
 
-          if (data.done) {
+          if (data.done && 'context' in data) {
             addMessage('system', JSON.stringify(data, null, 2))
-            currentChat.value.lastContext = data.context
+            currentChat.value.lastContext = data?.context
           }
         },
       )
@@ -139,7 +144,6 @@ export const useAppState = defineStore('app-state', () => {
       // Have not chats
       if (!currentChat.value) {
         startNewChat('New chat', currentModel?.value)
-        addMessage('ai', 'I am the default message')
       }
     })
   }
