@@ -1,12 +1,11 @@
-# Ollama GUI: Local Web Interface for interacting with your Ollama API.
-
 <p align="center">
   <img src=".github/header.png" alt="Ollama GUI logo">
 </p>
 
-Ollama GUI serves as a web interface for [ollama.ai](https://ollama.ai/download), a tool that enables running Large
-Language Models (LLMs) on your local machine while offering API interaction. This web application connects to your local
-Ollama API and features a basic chat UI, primarily constructed using [LangUI](https://www.langui.dev/) components.
+# Ollama GUI: Web Interface for chatting with your local LLMs.
+
+Ollama GUI is a web interface for [ollama.ai](https://ollama.ai/download), a tool that enables running Large
+Language Models (LLMs) on your local machine.
 
 ## 🛠 Installation
 
