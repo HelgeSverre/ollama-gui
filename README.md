@@ -33,7 +33,7 @@ Language Models (LLMs) on your local machine.
    origin [docs](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
 
    ```shell
-   OLLAMA_ORIGINS=https://ollama-15y7qft4h-helgesverre.vercel.app ollama serve
+   OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
    ```
 
 ---
