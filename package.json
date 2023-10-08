@@ -15,6 +15,7 @@
     "@vueuse/rxjs": "^10.5.0",
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",
+    "date-fns": "^2.30.0",
     "dexie": "^3.2.4",
     "pinia": "^2.1.6",
     "postcss": "^8.4.31",
