@@ -29,7 +29,7 @@ Language Models (LLMs) on your local machine.
    yarn dev
    ```
 
-3. Or use the web version, by allowing the remote origin [docs](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
+3. Or use the web version, by allowing the origin [docs](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
 
    ```shell
    OLLAMA_ORIGINS=https://ollama-15y7qft4h-helgesverre.vercel.app ollama serve
