@@ -11,8 +11,6 @@ const chatElement = ref(null)
 
 const scrollToBottom = () => {
   nextTick(() => {
-    console.log('nextTick executed', chatElement.value) // Debug log
-
     const container = chatElement.value
     if (container) {
       container.scrollTop = container.scrollHeight
@@ -21,12 +19,10 @@ const scrollToBottom = () => {
 }
 
 onMounted(() => {
-  console.log('onMounted') // Debug log
   scrollToBottom()
 })
 
 onUpdated(() => {
-  console.log('onUpdated') // Debug log
   scrollToBottom()
 })
 

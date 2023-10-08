@@ -1,9 +1,12 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 import { GenerateCompletionResponse, useApi } from './api.ts'
 import { v4 as uuidv4 } from 'uuid'
+import gravatarUrl from 'gravatar-url'
 
+export const gravatarEmail = useLocalStorage('gravatarEmail', 'helge.sverre@gmail.com')
+export const avatarUrl = computed(() => gravatarUrl(gravatarEmail.value, { size: 200 }))
 export const debugMode = useLocalStorage('debug', false)
 export const isDarkMode = useLocalStorage('darkMode', true)
 export const isSettingsPanelOpen = useLocalStorage('settingsPanelOpen', true)
@@ -77,7 +80,6 @@ export const useAppState = defineStore('app-state', () => {
           context: currentChat.value?.lastContext,
         },
         (data: GenerateCompletionResponse) => {
-          console.log(data)
           appendAiMessage(data.response)
 
           if (data.done) {

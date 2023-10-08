@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   debugMode,
+  gravatarEmail,
   isSettingsPanelOpen,
   toggleSettingsPanel,
   useAppState,
@@ -51,6 +52,20 @@ const { baseUrl, availableModels, currentModel } = storeToRefs(useAppState())
               placeholder="https://api.openai.com"
             />
           </div>
+
+          <div>
+            <label for="gravatar" class="mb-2 mt-4 block px-2 text-sm font-medium">
+              Gravatar Email
+            </label>
+            <input
+              v-model="gravatarEmail"
+              id="gravatar"
+              type="email"
+              class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+              placeholder="your@email.com"
+            />
+          </div>
+
           <div v-if="false">
             <div>
               <label for="max-tokens" class="mb-2 mt-4 block px-2 text-sm font-medium">
