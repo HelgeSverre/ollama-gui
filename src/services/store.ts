@@ -4,6 +4,7 @@ import { useLocalStorage } from '@vueuse/core'
 import { GenerateCompletionResponse, useApi } from './api.ts'
 import { v4 as uuidv4 } from 'uuid'
 
+export const debugMode = useLocalStorage('debug', false)
 export const isDarkMode = useLocalStorage('darkMode', true)
 export const isSettingsPanelOpen = useLocalStorage('settingsPanelOpen', true)
 export const toggleSettingsPanel = () => {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUpdated, ref } from 'vue'
+import { computed, nextTick, onMounted, onUpdated, ref } from 'vue'
 import ChatMessage from './ChatMessage.vue'
-import { useAppState } from '../services/store.ts'
+import { debugMode, useAppState } from '../services/store.ts'
 import { storeToRefs } from 'pinia'
+import ToggleInput from './Inputs/ToggleInput.vue'
 
 const { currentChat } = storeToRefs(useAppState())
 
@@ -28,6 +29,12 @@ onUpdated(() => {
   console.log('onUpdated') // Debug log
   scrollToBottom()
 })
+
+const messages = computed(() =>
+  debugMode.value
+    ? currentChat?.value?.messages
+    : currentChat?.value?.messages.filter((m) => m.role != 'system'),
+)
 </script>
 
 <template>
@@ -35,6 +42,6 @@ onUpdated(() => {
     ref="chatElement"
     class="flex-1 overflow-y-auto rounded-xl bg-zinc-100 p-4 text-sm leading-6 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-300 sm:text-base sm:leading-7 scroll-smooth"
   >
-    <ChatMessage v-for="message in currentChat?.messages" :message="message" />
+    <ChatMessage v-for="message in messages" :message="message" />
   </div>
 </template>
