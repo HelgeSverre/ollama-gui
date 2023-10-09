@@ -100,7 +100,7 @@ export const useAppState = defineStore('app-state', () => {
   const addAiMessage = (content: string) => addMessage('user', content)
 
   const appendAiMessage = (content: string) => {
-    if (!currentChat.value || !content?.trim()) return
+    if (!currentChat.value) return
 
     let lastMessage = currentChat.value.messages[currentChat.value.messages.length - 1]
 
