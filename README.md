@@ -69,6 +69,7 @@ to [ollama.ai/library](https://ollama.ai/library "ollama model library").
 - [ ] Ensure mobile responsiveness (non-prioritized use-case atm.)
 - [ ] Add file uploads with OCR and stuff.
 - [ ] Cleanup the code, I made a mess of it for the sake of speed and getting something out the door.
+- [ ] Add markdown parsing [lib](https://dev.to/matijanovosel/rendering-markdown-in-vue-3-3maj) 
 
 ---
 

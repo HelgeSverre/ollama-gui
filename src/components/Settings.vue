@@ -9,8 +9,9 @@ import {
 import { storeToRefs } from 'pinia'
 import { IconLayoutSidebarRightCollapse } from '@tabler/icons-vue'
 import ToggleInput from './Inputs/ToggleInput.vue'
+import TextInput from './Inputs/TextInput.vue'
 
-const { baseUrl, availableModels, currentModel } = storeToRefs(useAppState())
+const { baseUrl } = storeToRefs(useAppState())
 </script>
 
 <template>
@@ -36,35 +37,12 @@ const { baseUrl, availableModels, currentModel } = storeToRefs(useAppState())
           class="my-4 border-t border-zinc-300 px-2 py-4 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200"
         >
           <div>
-            <label class="mb-2 mt-4 block px-2 text-sm font-medium">Debug mode?</label>
-            <ToggleInput v-model="debugMode" />
+            <ToggleInput label="Enable debug mode" v-model="debugMode" />
           </div>
 
-          <div>
-            <label for="base-url" class="mb-2 mt-4 block px-2 text-sm font-medium">
-              Base URL
-            </label>
-            <input
-              v-model="baseUrl"
-              type="url"
-              id="base-url"
-              class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
-              placeholder="https://api.openai.com"
-            />
-          </div>
+          <TextInput label="Base URL" v-model="baseUrl" />
 
-          <div>
-            <label for="gravatar" class="mb-2 mt-4 block px-2 text-sm font-medium">
-              Gravatar Email
-            </label>
-            <input
-              v-model="gravatarEmail"
-              id="gravatar"
-              type="email"
-              class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
-              placeholder="your@email.com"
-            />
-          </div>
+          <TextInput label="Gravatar Email" v-model="gravatarEmail" />
 
           <div v-if="false">
             <div>

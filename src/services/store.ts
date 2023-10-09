@@ -1,12 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
-import {
-  GenerateCompletionCompletedResponse,
-  GenerateCompletionPartResponse,
-  GenerateCompletionResponse,
-  useApi,
-} from './api.ts'
+import { GenerateCompletionResponse, useApi } from './api.ts'
 import { v4 as uuidv4 } from 'uuid'
 import gravatarUrl from 'gravatar-url'
 
@@ -85,11 +80,11 @@ export const useAppState = defineStore('app-state', () => {
           context: currentChat.value?.lastContext,
         },
         (data: GenerateCompletionResponse) => {
-          appendAiMessage(data.response)
-
-          if (data.done && 'context' in data) {
+          if (data.done == false) {
+            appendAiMessage(data.response)
+          } else if (data.done && 'context' in data) {
             addMessage('system', JSON.stringify(data, null, 2))
-            currentChat.value.lastContext = data?.context
+            currentChat.value.lastContext = data.context
           }
         },
       )
@@ -122,15 +117,13 @@ export const useAppState = defineStore('app-state', () => {
     availableModels.value = models
   }
 
-  // Clear the user input
   const clearUserInput = () => {
     userInput.value = ''
   }
-  // Function to change the model of the current chat
+
   const changeCurrentModel = (newModel: string) => {
     if (currentChat.value && currentChat.value.messages.length === 0) {
       currentChat.value.model = newModel
-      // Optionally, update the `currentModel` ref
       currentModel.value = newModel
     }
   }
@@ -141,14 +134,12 @@ export const useAppState = defineStore('app-state', () => {
         currentModel.value = availableModels?.value?.[0]?.name
       }
 
-      // Have not chats
       if (!currentChat.value) {
         startNewChat('New chat', currentModel?.value)
       }
     })
   }
 
-  // Call the function to populate availableModels
   initialize()
 
   return {
@@ -166,5 +157,6 @@ export const useAppState = defineStore('app-state', () => {
     clearUserInput,
     addUserMessage,
     addAiMessage,
+    initialize,
   }
 })
