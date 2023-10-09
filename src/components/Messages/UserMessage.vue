@@ -13,7 +13,7 @@ const { message } = defineProps<Props>()
     <img class="mr-2 flex h-10 w-10 rounded-full sm:mr-4" :src="avatarUrl" />
 
     <div class="flex max-w-3xl items-center">
-      <p>{{ message.content }}</p>
+      <p class="whitespace-pre-line">{{ message.content }}</p>
     </div>
   </div>
 </template>

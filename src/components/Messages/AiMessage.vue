@@ -16,7 +16,7 @@ const { message } = defineProps<Props>()
     />
 
     <div class="flex max-w-3xl items-center rounded-xl">
-      <p>{{ message.content }}</p>
+      <p class="whitespace-pre-line">{{ message.content }}</p>
     </div>
   </div>
 </template>

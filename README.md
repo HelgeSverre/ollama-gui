@@ -38,12 +38,37 @@ Language Models (LLMs) on your local machine.
 
 ---
 
+## Models
+
+For convenience and `copy-pastability`, here is a table of interesting models you might want to try out.
+
+For a complete list of models Ollama supports, go
+to [ollama.ai/library](https://ollama.ai/library "ollama model library").
+
+| Model                | Parameters | Size  | Download                           |
+|----------------------|------------|-------|------------------------------------|
+| Mistral              | 7B         | 4.1GB | `ollama pull mistral`              |
+| Mistral (instruct)   | 7B         | 4.1GB | `ollama pull mistral:7b-instruct`  |
+| Llama 2              | 7B         | 3.8GB | `ollama pull llama2`               |
+| Code Llama           | 7B         | 3.8GB | `ollama pull codellama`            |
+| Llama 2 Uncensored   | 7B         | 3.8GB | `ollama pull llama2-uncensored`    |
+| Orca Mini            | 3B         | 1.9GB | `ollama pull orca-mini`            |
+| Vicuna               | 7B         | 3.8GB | `ollama pull falcon`               |
+| Vicuna               | 7B         | 3.8GB | `ollama pull vicuna`               |
+| Vicuna (16K context) | 7B         | 3.8GB | `ollama pull vicuna:7b-16k`        |
+| Vicuna (16K context) | 13B        | 7.4GB | `ollama pull vicuna:13b-16k`       |
+| nexusraven           | 13B        | 7.4gB | `ollama pull nexusraven`           |
+| starcoder            | 7B         | 4.3GB | `ollama pull starcoder:7b`         |
+| wizardlm-uncensored  | 13B        | 7.4GB | `ollama pull  wizardlm-uncensored` |
+
 ## 📋 To-Do List
 
-- [ ] Properly format newlines in the chat message (PHP-land has `nl2br` basically want the same thing)
-- [ ] Browse and download available models
-- [ ] Store chat history using IndexedDB
-- [ ] Ensure mobile responsiveness
+- [x] Properly format newlines in the chat message (PHP-land has `nl2br` basically want the same thing)
+- [ ] Allow browsing and installation of available models (library)
+- [ ] Store chat history using IndexedDB locally
+- [ ] Ensure mobile responsiveness (non-prioritized use-case atm.)
+- [ ] Add file uploads with OCR and stuff.
+- [ ] Cleanup the code, I made a mess of it for the sake of speed and getting something out the door.
 
 ---
 
