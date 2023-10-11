@@ -2,21 +2,23 @@
 import Sidebar from './components/Sidebar.vue'
 import ChatInput from './components/ChatInput.vue'
 import ChatMessages from './components/ChatMessages.vue'
-import { isDarkMode, useAppState } from './services/store.ts'
 import Settings from './components/Settings.vue'
-
-import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
 import ModelSelector from './components/ModelSelector.vue'
+import { isDarkMode } from './services/appConfig.ts'
+import { onMounted } from 'vue'
+import { useAI } from './services/useAI.ts'
+import { useChats } from './services/chat.ts'
 
-const { currentChat, availableModels, currentModel } = storeToRefs(useAppState())
-const { changeCurrentModel } = useAppState()
+const { refreshModels, availableModels } = useAI()
+const { activeChat, switchModel, initialize } = useChats()
 
-// Watch for changes to currentModel
-watch(currentModel, (newModel) => {
-  if (newModel && currentChat.value && currentChat.value.messages.length === 0) {
-    changeCurrentModel(newModel)
-  }
+onMounted(() => {
+  refreshModels().then(async () => {
+    if (!activeChat.value?.model) {
+      await initialize()
+      await switchModel(availableModels?.value[0]?.name)
+    }
+  })
 })
 </script>
 

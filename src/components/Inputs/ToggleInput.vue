@@ -23,6 +23,7 @@ watchEffect(() => {
   toggleState.value = props.modelValue
 })
 </script>
+
 <template>
   <div>
     <label class="mb-2 mt-4 block px-2 text-sm font-medium" v-if="label">
