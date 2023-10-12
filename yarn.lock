@@ -357,6 +357,14 @@
   resolved "https://registry.yarnpkg.com/@vueuse/metadata/-/metadata-10.5.0.tgz#7501a88cf5cbf7a515a03f0b8bbe3cecf30cad11"
   integrity sha512-fEbElR+MaIYyCkeM0SzWkdoMtOpIwO72x8WsZHRE7IggiOlILttqttM69AS13nrDxosnDBYdyy3C5mR1LCxHsw==
 
+"@vueuse/rxjs@^10.5.0":
+  version "10.5.0"
+  resolved "https://registry.yarnpkg.com/@vueuse/rxjs/-/rxjs-10.5.0.tgz#2fbec6fc11e4e04f7453a296adfdb3c6f55967d7"
+  integrity sha512-OrYzN+JsYlVkAYZFGI13vv0hTf8P6QfgFUUlIWeNoAysNZgkTndNsBOx75fg8WYRaVrWj69h+lV+Zhhev/r1HA==
+  dependencies:
+    "@vueuse/shared" "10.5.0"
+    vue-demi ">=0.14.6"
+
 "@vueuse/shared@10.5.0":
   version "10.5.0"
   resolved "https://registry.yarnpkg.com/@vueuse/shared/-/shared-10.5.0.tgz#b3ac8c190a5dae41db5e1b60fe304a9b4247393c"

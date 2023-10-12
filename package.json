@@ -12,6 +12,7 @@
   "dependencies": {
     "@tabler/icons-vue": "^2.38.0",
     "@vueuse/core": "^10.5.0",
+    "@vueuse/rxjs": "^10.5.0",
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",
     "date-fns": "^2.30.0",
