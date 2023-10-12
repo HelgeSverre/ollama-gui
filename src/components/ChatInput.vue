@@ -40,7 +40,7 @@ const onKeydown = (event: KeyboardEvent) => {
       <button
         type="submit"
         :disabled="!isInputValid || isAssistantResponding"
-        class="absolute bottom-2 right-2.5 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base"
+        class="absolute bottom-2 right-2.5 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base disabled:opacity-50"
       >
         Send
         <span class="sr-only">Send message</span>
