@@ -12,7 +12,6 @@
   "dependencies": {
     "@tabler/icons-vue": "^2.38.0",
     "@vueuse/core": "^10.5.0",
-    "@vueuse/rxjs": "^10.5.0",
     "autoprefixer": "^10.4.16",
     "axios": "^1.5.1",
     "date-fns": "^2.30.0",
@@ -21,7 +20,6 @@
     "postcss": "^8.4.31",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.5",
-    "rxjs": "^7.8.1",
     "tailwindcss": "^3.3.3",
     "uuid": "^9.0.1",
     "vue": "^3.3.4"
