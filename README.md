@@ -23,7 +23,7 @@ Language Models (LLMs) on your local machine.
 2. Clone the repository and start the development server.
 
    ```bash
-   git clone git@github.com:HelgeSverre/ollama-gui.git
+   git clone https://github.com/HelgeSverre/ollama-gui.git
    cd ollama-gui
    yarn install
    yarn dev
