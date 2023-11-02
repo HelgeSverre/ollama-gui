@@ -7,12 +7,13 @@ import {
   IconTrashX,
   IconUserCircle,
 } from '@tabler/icons-vue'
-import { debugMode, isDarkMode, toggleSettingsPanel } from '../services/appConfig.ts'
+import { isDarkMode, toggleSettingsPanel } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
 import { useAI } from '../services/useAI.ts'
 
 const { availableModels } = useAI()
-const { sortedChats, activeChat, switchChat,deleteChat, startNewChat, wipeDatabase } = useChats()
+const { sortedChats, activeChat, switchChat, deleteChat, startNewChat, wipeDatabase } =
+  useChats()
 
 const onNewChat = () => startNewChat('New chat', availableModels.value[0].name)
 </script>
@@ -32,23 +33,25 @@ const onNewChat = () => startNewChat('New chat', availableModels.value[0].name)
         </button>
       </div>
 
-      <!-- Previous sorted container -->
       <div
         class="h-full space-y-4 overflow-y-auto border-b border-zinc-300 px-2 py-4 dark:border-zinc-700"
       >
         <button
           v-for="chat in sortedChats"
           @click="switchChat(chat.id!)"
-          @keyup.delete='deleteChat(chat.id!)'
+          @keyup.delete="deleteChat(chat.id!)"
           :class="{
             'dark:bg-zinc-800 bg-zinc-200': activeChat?.id == chat.id,
           }"
-          class="flex w-full flex-col gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500"
+          class="flex w-full flex-col gap-y-1 rounded-lg px-3 py-2 text-left transition-colors duration-200 hover:bg-zinc-200 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500"
         >
-          <span class="text-sm font-medium capitalize text-zinc-700 dark:text-zinc-200">
-            {{ chat.id }} -{{ chat.name }} - {{ chat.model }}
+          <span class="leading-none text-sm font-medium text-zinc-700 dark:text-zinc-200">
+            {{ chat.name }}
           </span>
-          <p class="text-xs text-zinc-500 dark:text-zinc-400">
+          <span class="leading-none text-xs text-zinc-500 dark:text-zinc-400">
+            {{ chat.model }}
+          </span>
+          <span class="leading-none text-xs text-zinc-500 dark:text-zinc-400">
             {{
               chat.createdAt.toLocaleDateString('no', {
                 day: '2-digit',
@@ -59,7 +62,7 @@ const onNewChat = () => startNewChat('New chat', availableModels.value[0].name)
                 second: '2-digit',
               })
             }}
-          </p>
+          </span>
         </button>
       </div>
 
@@ -74,7 +77,6 @@ const onNewChat = () => startNewChat('New chat', availableModels.value[0].name)
           Toggle dark mode
         </button>
         <button
-          v-if="debugMode"
           @click="wipeDatabase"
           class="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-200 focus:outline-none dark:hover:bg-zinc-800 focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500"
         >

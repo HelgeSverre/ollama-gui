@@ -1,7 +1,10 @@
 import { computed, ref } from 'vue'
 import { Chat, db, Message } from './database'
 import { useAI } from './useAI.ts'
-import { GenerateCompletionCompletedResponse, GenerateCompletionPartResponse } from './api.ts' // Database Layer
+import {
+  GenerateCompletionCompletedResponse,
+  GenerateCompletionPartResponse,
+} from './api.ts' // Database Layer
 
 // Database Layer
 const dbLayer = {
@@ -209,7 +212,7 @@ export function useChats() {
       try {
         await dbLayer.updateMessage(aiMessage.id!, { context: data.context })
         ongoingAiMessages.value.delete(chatId)
-        console.error('finalized message', data)
+        console.log('finalized message', data)
       } catch (error) {
         console.error('Failed to finalize AI message:', error)
       }
