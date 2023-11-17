@@ -27,3 +27,4 @@ dist-ssr
 # As long as you live under my roof, you will use yarn and enjoy it.
 package-lock.json
 .vercel
+.aider*

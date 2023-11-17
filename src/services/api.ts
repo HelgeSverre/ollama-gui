@@ -45,12 +45,13 @@ export type CreateModelResponse = {
   status: string
 }
 
+export type Model = {
+  name: string
+  modified_at: string
+  size: number
+}
 export type ListLocalModelsResponse = {
-  models: {
-    name: string
-    modified_at: string
-    size: number
-  }[]
+  models: Model[]
 }
 
 export type ShowModelInformationRequest = {

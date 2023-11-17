@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ChatMessage } from '../../services/store.ts'
+import { Message } from '../../services/database.ts'
 
 type Props = {
-  message: ChatMessage
+  message: Message
 }
-
 const { message } = defineProps<Props>()
 </script>
 
