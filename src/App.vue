@@ -4,19 +4,39 @@ import ChatInput from './components/ChatInput.vue'
 import ChatMessages from './components/ChatMessages.vue'
 import Settings from './components/Settings.vue'
 import ModelSelector from './components/ModelSelector.vue'
-import { isDarkMode } from './services/appConfig.ts'
-import { onMounted } from 'vue'
+import { isDarkMode, isSettingsOpen } from './services/appConfig.ts'
+import { onMounted, ref } from 'vue'
 import { useAI } from './services/useAI.ts'
 import { useChats } from './services/chat.ts'
+import TextInput from './components/Inputs/TextInput.vue'
 
 const { refreshModels, availableModels } = useAI()
-const { activeChat, switchModel, initialize } = useChats()
+const { activeChat, renameChat, switchModel, initialize } = useChats()
+const isEditingChatName = ref(false)
+const editedChatName = ref('')
+
+const startEditing = () => {
+  isEditingChatName.value = true
+  editedChatName.value = activeChat.value?.name || ''
+}
+
+const cancelEditing = () => {
+  isEditingChatName.value = false
+  editedChatName.value = ''
+}
+
+const confirmRename = () => {
+  if (activeChat.value && editedChatName.value) {
+    renameChat(editedChatName.value)
+    isEditingChatName.value = false
+  }
+}
 
 onMounted(() => {
   refreshModels().then(async () => {
     if (!activeChat.value?.model) {
       await initialize()
-      await switchModel(availableModels?.value[0]?.name)
+      await switchModel(availableModels.value[0].name)
     }
   })
 })
@@ -25,19 +45,47 @@ onMounted(() => {
 <template>
   <div :class="{ dark: isDarkMode }">
     <main
-      class="flex flex-row items-stretch flex-1 w-full h-full bg-zinc-50 dark:bg-zinc-800"
+      class="flex h-full w-full flex-1 flex-row items-stretch bg-zinc-50 dark:bg-zinc-800"
     >
       <Sidebar />
 
-      <div class="flex h-[100vh] max-w-6xl mx-auto w-full flex-col">
-        <div class="flex h-[100vh] gap-4 px-4 py-4 w-full flex-col">
+      <!-- Main Content -->
+      <div class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col">
+        <!-- Header strip -->
+        <div class="flex w-full flex-row items-center justify-center gap-4 p-4">
+          <div class="mr-auto flex h-full items-center" v-if="activeChat">
+            <div class='h-full'>
+              <div v-if="isEditingChatName">
+                <TextInput
+                  autofocus
+                  v-model="editedChatName"
+                  @keyup.enter="confirmRename"
+                  @keyup.esc="cancelEditing"
+                  @blur="cancelEditing"
+                />
+              </div>
+              <button
+                type="button"
+                class=" h-full block rounded text-zinc-700 decoration-gray-400 decoration-dashed hover:underline focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:focus:ring-blue-600"
+                v-else
+                @click.prevent="startEditing"
+              >
+                {{ activeChat.name }}
+              </button>
+            </div>
+          </div>
           <ModelSelector />
+        </div>
+        <!-- Chat Area -->
+        <div class="flex h-[100vh] w-full flex-col gap-4 px-4 pb-4">
           <ChatMessages />
           <ChatInput />
         </div>
       </div>
 
-      <Settings />
+      <transition name="slide">
+        <Settings v-if="isSettingsOpen" />
+      </transition>
     </main>
   </div>
 </template>

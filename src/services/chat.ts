@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, UnwrapRef } from 'vue'
 import { Chat, db, Message } from './database'
 import { useAI } from './useAI.ts'
 import {
@@ -63,20 +63,15 @@ export function useChats() {
   const { generate } = useAI()
 
   // Computed
-  const sortedChats = computed(() =>
+  const sortedChats = computed<Chat[]>(() =>
     [...chats.value].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
   )
   const hasActiveChat = computed(() => activeChat.value !== null)
   const hasMessages = computed(() => messages.value.length > 0)
 
   // Methods for state mutations
-  const setActiveChat = (chat: Chat) => {
-    activeChat.value = chat
-  }
-
-  const setMessages = (msgs: Message[]) => {
-    messages.value = msgs
-  }
+  const setActiveChat = (chat: Chat) => (activeChat.value = chat)
+  const setMessages = (newMessages: Message[]) => (messages.value = newMessages)
 
   const initialize = async () => {
     try {
@@ -109,13 +104,24 @@ export function useChats() {
 
     try {
       await dbLayer.updateChat(activeChat.value.id!, { model })
-      activeChat.value.model = model // Update the local state
+      activeChat.value.model = model
+
+      // TODO: unnecessary to reload all chats
+      chats.value = await dbLayer.getAllChats()
     } catch (error) {
       console.error(
         `Failed to switch model to ${model} for chat with ID ${activeChat.value.id!}:`,
         error,
       )
     }
+  }
+
+  const renameChat = async (newName: string) => {
+    if (!activeChat.value) return
+
+    activeChat.value.name = newName
+    await dbLayer.updateChat(activeChat.value.id!, { name: newName })
+    chats.value = await dbLayer.getAllChats()
   }
 
   const startNewChat = async (name: string, model: string) => {
@@ -162,7 +168,7 @@ export function useChats() {
 
     try {
       const currentChatId = activeChat.value.id!
-      setMessages(await dbLayer.getMessages(currentChatId))
+      // setMessages(await dbLayer.getMessages(currentChatId))
 
       const message: Message = {
         chatId: activeChat.value.id!,
@@ -253,8 +259,7 @@ export function useChats() {
         if (sortedChats.value.length) {
           await switchChat(sortedChats.value[0].id!)
         } else {
-          const fallbackModel = activeChat.value.model ?? 'none'
-          await startNewChat('new chat', fallbackModel)
+          await startNewChat('new chat', activeChat?.value.model)
         }
       }
     } catch (error) {
@@ -305,6 +310,7 @@ export function useChats() {
     messages,
     hasMessages,
     hasActiveChat,
+    renameChat,
     switchModel,
     startNewChat,
     switchChat,
