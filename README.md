@@ -65,10 +65,10 @@ to [ollama.ai/library](https://ollama.ai/library 'ollama model library').
 - [x] Properly format newlines in the chat message (PHP-land has `nl2br` basically want the same thing)
 - [x] Store chat history using IndexedDB locally
 - [x] Cleanup the code, I made a mess of it for the sake of speed and getting something out the door.
+- [x] Add markdown parsing [lib](https://dev.to/matijanovosel/rendering-markdown-in-vue-3-3maj)
 - [ ] Allow browsing and installation of available models (library)
 - [ ] Ensure mobile responsiveness (non-prioritized use-case atm.)
 - [ ] Add file uploads with OCR and stuff.
-- [ ] Add markdown parsing [lib](https://dev.to/matijanovosel/rendering-markdown-in-vue-3-3maj)
 
 ---
 
