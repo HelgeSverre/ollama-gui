@@ -185,9 +185,6 @@ export function useChats() {
         .reverse()
         .find((msg) => msg.context)
 
-      console.log('context', lastMessageWithContext?.context)
-      console.log(lastMessageWithContext)
-
       await generate(
         activeChat.value.model,
         content,
@@ -218,7 +215,6 @@ export function useChats() {
       try {
         await dbLayer.updateMessage(aiMessage.id!, { context: data.context })
         ongoingAiMessages.value.delete(chatId)
-        console.log('finalized message', data)
       } catch (error) {
         console.error('Failed to finalize AI message:', error)
       }

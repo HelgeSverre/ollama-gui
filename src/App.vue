@@ -49,35 +49,37 @@ onMounted(() => {
     >
       <Sidebar />
 
-      <!-- Main Content -->
-      <div class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col">
-        <!-- Header strip -->
-        <div class="flex w-full flex-row items-center justify-center gap-4 p-4">
-          <div class="mr-auto flex h-full items-center" v-if="activeChat">
-            <div class='h-full'>
-              <div v-if="isEditingChatName">
-                <TextInput
-                  autofocus
-                  v-model="editedChatName"
-                  @keyup.enter="confirmRename"
-                  @keyup.esc="cancelEditing"
-                  @blur="cancelEditing"
-                />
+      <div class="mx-auto flex h-[100vh] w-full flex-col">
+        <div class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col gap-4 px-4 pb-4">
+          <div
+            class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-zinc-200 px-4 py-2 dark:bg-zinc-700"
+          >
+            <div class="mr-auto flex h-full items-center" v-if="activeChat">
+              <div>
+                <div v-if="isEditingChatName">
+                  <TextInput
+                    autofocus
+                    v-model="editedChatName"
+                    @keyup.enter="confirmRename"
+                    @keyup.esc="cancelEditing"
+                    @blur="cancelEditing"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  class="block h-full rounded border-none p-2 text-zinc-700 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-zinc-100 dark:focus:ring-blue-600"
+                  v-else
+                  @click.prevent="startEditing"
+                >
+                  {{ activeChat.name }}
+                </button>
               </div>
-              <button
-                type="button"
-                class=" h-full block rounded text-zinc-700 decoration-gray-400 decoration-dashed hover:underline focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:focus:ring-blue-600"
-                v-else
-                @click.prevent="startEditing"
-              >
-                {{ activeChat.name }}
-              </button>
             </div>
+
+            <ModelSelector />
           </div>
-          <ModelSelector />
-        </div>
-        <!-- Chat Area -->
-        <div class="flex h-[100vh] w-full flex-col gap-4 px-4 pb-4">
+
           <ChatMessages />
           <ChatInput />
         </div>

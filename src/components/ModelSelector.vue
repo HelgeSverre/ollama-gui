@@ -28,12 +28,12 @@ const handleModelChange = (event: Event) => {
 
 <template>
   <div class="flex flex-row text-zinc-800 dark:text-zinc-200">
-    <div class="inline-flex h-10 items-center gap-2">
+    <div class="inline-flex items-center gap-2">
       <select
         :disabled="hasMessages"
         :value="activeChat?.model"
         @change="handleModelChange"
-        class="h-full w-full cursor-pointer rounded-lg border-blue-700 bg-zinc-200 py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-zinc-700"
+        class="w-full cursor-pointer rounded-lg bg-white py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-zinc-400 dark:text-zinc-900"
       >
         <option :value="undefined" disabled selected>Select a model</option>
         <option v-for="model in availableModels" :value="model.name">
@@ -45,10 +45,10 @@ const handleModelChange = (event: Event) => {
         :disabled="hasMessages"
         title="Refresh available models"
         @click="performRefreshModel"
-        class="inline-flex h-full items-center justify-center rounded-lg border-none bg-zinc-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-zinc-700"
+        class="inline-flex items-center justify-center rounded-lg border-none bg-zinc-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-zinc-400 dark:text-zinc-900"
       >
         <IconRefresh
-          class="h-5 w-5 -scale-100 text-zinc-500"
+          class="h-4 w-4 -scale-100 text-zinc-500"
           :class="{ 'animate-spin': refreshingModel }"
         />
       </button>
