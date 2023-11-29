@@ -13,28 +13,27 @@ Language Models (LLMs) on your local machine.
 
 1. Download and install [ollama CLI](https://ollama.ai/download).
 
-   ```bash
-   ollama pull <model-name>
-   ollama serve
-   ```
+```bash
+ollama pull <model-name>
+ollama serve
+```
 
 ### Getting Started
 
 2. Clone the repository and start the development server.
 
-   ```bash
-   git clone https://github.com/HelgeSverre/ollama-gui.git
-   cd ollama-gui
-   yarn install
-   yarn dev
-   ```
+```bash
+git clone https://github.com/HelgeSverre/ollama-gui.git
+cd ollama-gui
+yarn install
+yarn dev
+```
 
-3. Or use the web version, by allowing the
-   origin [docs](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
+**Or use the hosted web version**, by running ollama with the following origin command [(docs)](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
 
-   ```shell
-   OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
-   ```
+```shell
+OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
+```
 
 ---
 
@@ -43,10 +42,10 @@ Language Models (LLMs) on your local machine.
 For convenience and `copy-pastability`, here is a table of interesting models you might want to try out.
 
 For a complete list of models Ollama supports, go
-to [ollama.ai/library](https://ollama.ai/library "ollama model library").
+to [ollama.ai/library](https://ollama.ai/library 'ollama model library').
 
 | Model                | Parameters | Size  | Download                           |
-|----------------------|------------|-------|------------------------------------|
+| -------------------- | ---------- | ----- | ---------------------------------- |
 | Mistral              | 7B         | 4.1GB | `ollama pull mistral`              |
 | Mistral (instruct)   | 7B         | 4.1GB | `ollama pull mistral:7b-instruct`  |
 | Llama 2              | 7B         | 3.8GB | `ollama pull llama2`               |
@@ -64,12 +63,12 @@ to [ollama.ai/library](https://ollama.ai/library "ollama model library").
 ## 📋 To-Do List
 
 - [x] Properly format newlines in the chat message (PHP-land has `nl2br` basically want the same thing)
+- [x] Store chat history using IndexedDB locally
+- [x] Cleanup the code, I made a mess of it for the sake of speed and getting something out the door.
 - [ ] Allow browsing and installation of available models (library)
-- [ ] Store chat history using IndexedDB locally
 - [ ] Ensure mobile responsiveness (non-prioritized use-case atm.)
 - [ ] Add file uploads with OCR and stuff.
-- [ ] Cleanup the code, I made a mess of it for the sake of speed and getting something out the door.
-- [ ] Add markdown parsing [lib](https://dev.to/matijanovosel/rendering-markdown-in-vue-3-3maj) 
+- [ ] Add markdown parsing [lib](https://dev.to/matijanovosel/rendering-markdown-in-vue-3-3maj)
 
 ---
 
@@ -79,7 +78,6 @@ to [ollama.ai/library](https://ollama.ai/library "ollama model library").
 - [LangUI](https://www.langui.dev/)
 - [Vue.js](https://vuejs.org/)
 - [Vite](https://vitejs.dev/)
-- [Pinia](https://pinia.esm.dev/)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [VueUse](https://vueuse.org/)
 - [@tabler/icons-vue](https://github.com/tabler/icons-vue)
