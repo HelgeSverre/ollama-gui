@@ -285,7 +285,11 @@ export function useChats() {
       aiMessage.content += content
       try {
         await dbLayer.updateMessage(aiMessage.id!, { content: aiMessage.content })
-        setMessages(await dbLayer.getMessages(chatId))
+
+        // Only "load the messages" if we are on this chat atm.
+        if (chatId == activeChat.value?.id) {
+          setMessages(await dbLayer.getMessages(chatId))
+        }
       } catch (error) {
         console.error('Failed to append to AI message:', error)
       }
