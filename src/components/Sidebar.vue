@@ -15,7 +15,12 @@ const { availableModels } = useAI()
 const { sortedChats, activeChat, switchChat, deleteChat, startNewChat, wipeDatabase } =
   useChats()
 
-const onNewChat = () => startNewChat('New chat', availableModels.value[0].name)
+const onNewChat = () => {
+  return startNewChat(
+    'New chat',
+    activeChat.value?.model ?? availableModels.value[0].name,
+  )
+}
 </script>
 
 <template>
