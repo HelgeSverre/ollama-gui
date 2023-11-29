@@ -3,7 +3,7 @@ import { defineProps, ref, watchEffect, withDefaults } from 'vue'
 
 type Props = {
   label?: string
-  modelValue: bool
+  modelValue: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {})

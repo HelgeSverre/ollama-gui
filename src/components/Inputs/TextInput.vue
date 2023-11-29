@@ -25,7 +25,7 @@ const emit = defineEmits<{
     </label>
     <input
       :value="modelValue"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       @blur="$emit('blur')"
       :type="type"
       :autofocus="autofocus"
