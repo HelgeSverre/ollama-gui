@@ -4,7 +4,7 @@ import { useTextareaAutosize } from '@vueuse/core'
 import { useChats } from '../services/chat.ts'
 
 const { textarea, input: userInput } = useTextareaAutosize({ input: '' })
-const { addUserMessage, isAssistantResponding } = useChats()
+const { addUserMessage } = useChats()
 
 const isInputValid = computed<boolean>(() => !!userInput.value.trim())
 
@@ -39,7 +39,7 @@ const onKeydown = (event: KeyboardEvent) => {
       ></textarea>
       <button
         type="submit"
-        :disabled="!isInputValid || isAssistantResponding"
+        :disabled="!isInputValid"
         class="absolute bottom-2 right-2.5 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base"
       >
         Send

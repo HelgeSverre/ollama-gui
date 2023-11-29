@@ -21,8 +21,6 @@ const Markdown: Component = defineComponent({
 
     const content = computed(() => md.value.render(props.source))
 
-    console.log(content.value)
-
     return () => h('div', { innerHTML: content.value })
   },
 })

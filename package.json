@@ -20,6 +20,7 @@
     "dexie": "^3.2.4",
     "gravatar-url": "^4.0.1",
     "highlight.js": "^11.9.0",
+    "markdown-it": "^13.0.2",
     "markdown-it-anchor": "^8.6.7",
     "markdown-it-highlightjs": "^4.0.1",
     "postcss": "^8.4.31",
