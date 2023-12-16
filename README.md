@@ -12,7 +12,7 @@ Language Models (LLMs) on your local machine.
 ### Prerequisites
 
 1. Download and install [ollama CLI](https://ollama.ai/download).
-2. Download and install [yarn] (https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) and [node] (https://nodejs.org/en/download)
+2. Download and install [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) and [node](https://nodejs.org/en/download)
 
 ```bash
 ollama pull <model-name>
