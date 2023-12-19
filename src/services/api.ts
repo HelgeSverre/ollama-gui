@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import { ref } from 'vue'
+import { baseUrl } from './appConfig.ts'
 
 export type GenerateCompletionRequest = {
   model: string
@@ -117,7 +118,7 @@ const API_BASE_URL = 'http://localhost:11434/api'
 
 // Create an Axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: baseUrl.value ?? API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
