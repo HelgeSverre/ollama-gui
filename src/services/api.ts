@@ -176,76 +176,98 @@ export const useApi = () => {
       body: JSON.stringify(request),
     })
     const data: CreateModelResponse = await response.json()
-      '/create',
-      request,
-    )
-    return response.data
+    return data
   }
 
   // List local models
   const listLocalModels = async (): Promise<ListLocalModelsResponse> => {
-    const response: AxiosResponse<ListLocalModelsResponse> = await apiClient.get('/tags')
-    return response.data
+    const response = await fetch(getApiUrl('/tags'))
+    const data: ListLocalModelsResponse = await response.json()
+    return data
   }
 
   // Show model information
   const showModelInformation = async (
     request: ShowModelInformationRequest,
   ): Promise<ShowModelInformationResponse> => {
-    const response: AxiosResponse<ShowModelInformationResponse> = await apiClient.post(
-      '/show',
-      request,
-    )
-    return response.data
+    const response = await fetch(getApiUrl('/show'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: ShowModelInformationResponse = await response.json()
+    return data
   }
 
   // Copy a model
   const copyModel = async (request: CopyModelRequest): Promise<CopyModelResponse> => {
-    const response: AxiosResponse<CopyModelResponse> = await apiClient.post(
-      '/copy',
-      request,
-    )
-    return response.data
+    const response = await fetch(getApiUrl('/copy'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: CopyModelResponse = await response.json()
+    return data
   }
 
   // Delete a model
   const deleteModel = async (
     request: DeleteModelRequest,
   ): Promise<DeleteModelResponse> => {
-    const response: AxiosResponse<DeleteModelResponse> = await apiClient.delete(
-      '/delete',
-      { data: request },
-    )
-    return response.data
+    const response = await fetch(getApiUrl('/delete'), {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: DeleteModelResponse = await response.json()
+    return data
   }
 
   // Pull a model
   const pullModel = async (request: PullModelRequest): Promise<PullModelResponse> => {
-    const response: AxiosResponse<PullModelResponse> = await apiClient.post(
-      '/pull',
-      request,
-    )
-    return response.data
+    const response = await fetch(getApiUrl('/pull'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: PullModelResponse = await response.json()
+    return data
   }
 
   // Push a model
   const pushModel = async (request: PushModelRequest): Promise<PushModelResponse> => {
-    const response: AxiosResponse<PushModelResponse> = await apiClient.post(
-      '/push',
-      request,
-    )
-    return response.data
+    const response = await fetch(getApiUrl('/push'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: PushModelResponse = await response.json()
+    return data
   }
 
   // Generate embeddings
   const generateEmbeddings = async (
     request: GenerateEmbeddingsRequest,
   ): Promise<GenerateEmbeddingsResponse> => {
-    const response: AxiosResponse<GenerateEmbeddingsResponse> = await apiClient.post(
-      '/embeddings',
-      request,
-    )
-    return response.data
+    const response = await fetch(getApiUrl('/embeddings'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: GenerateEmbeddingsResponse = await response.json()
+    return data
   }
 
   return {
