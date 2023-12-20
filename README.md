@@ -12,7 +12,8 @@ Language Models (LLMs) on your local machine.
 ### Prerequisites
 
 1. Download and install [ollama CLI](https://ollama.ai/download).
-2. Download and install [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) and [node](https://nodejs.org/en/download)
+2. Download and install [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
+   and [node](https://nodejs.org/en/download)
 
 ```bash
 ollama pull <model-name>
@@ -30,7 +31,8 @@ yarn install
 yarn dev
 ```
 
-**Or use the hosted web version**, by running ollama with the following origin command [(docs)](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
+**Or use the hosted web version**, by running ollama with the following origin
+command [(docs)](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
 
 ```shell
 OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
@@ -45,21 +47,25 @@ For convenience and `copy-pastability`, here is a table of interesting models yo
 For a complete list of models Ollama supports, go
 to [ollama.ai/library](https://ollama.ai/library 'ollama model library').
 
-| Model                | Parameters | Size  | Download                           |
-| -------------------- | ---------- | ----- | ---------------------------------- |
-| Mistral              | 7B         | 4.1GB | `ollama pull mistral`              |
-| Mistral (instruct)   | 7B         | 4.1GB | `ollama pull mistral:7b-instruct`  |
-| Llama 2              | 7B         | 3.8GB | `ollama pull llama2`               |
-| Code Llama           | 7B         | 3.8GB | `ollama pull codellama`            |
-| Llama 2 Uncensored   | 7B         | 3.8GB | `ollama pull llama2-uncensored`    |
-| Orca Mini            | 3B         | 1.9GB | `ollama pull orca-mini`            |
-| Vicuna               | 7B         | 3.8GB | `ollama pull falcon`               |
-| Vicuna               | 7B         | 3.8GB | `ollama pull vicuna`               |
-| Vicuna (16K context) | 7B         | 3.8GB | `ollama pull vicuna:7b-16k`        |
-| Vicuna (16K context) | 13B        | 7.4GB | `ollama pull vicuna:13b-16k`       |
-| nexusraven           | 13B        | 7.4gB | `ollama pull nexusraven`           |
-| starcoder            | 7B         | 4.3GB | `ollama pull starcoder:7b`         |
-| wizardlm-uncensored  | 13B        | 7.4GB | `ollama pull  wizardlm-uncensored` |
+| Model                                                                                                                           | Parameters | Size  | Download                          |
+|---------------------------------------------------------------------------------------------------------------------------------|------------|-------|-----------------------------------|
+| <a href="https://ollama.ai/library/mixtral"><img src="https://img.shields.io/badge/New-black.svg"/></a> Mixtral-8x7B Large      | 7B         | 26GB  | `ollama pull mixtral`             |
+| <a href="https://ollama.ai/library/phi"><img src="https://img.shields.io/badge/New-black.svg"/></a> Phi                         | 2.7B       | 1.6GB | `ollama pull phi`                 |
+| <a href="https://ollama.ai/library/solar"><img src="https://img.shields.io/badge/New-black.svg"/></a> Solar                     | 10.7B      | 6.1GB | `ollama pull solar`               |
+| <a href="https://ollama.ai/library/dolphin-mixtral"><img src="https://img.shields.io/badge/New-black.svg"/></a> Dolphin Mixtral | 7B         | 4.1GB | `ollama pull dolphin-mixtral`     |
+| Mistral                                                                                                                         | 7B         | 4.1GB | `ollama pull mistral`             |
+| Mistral (instruct)                                                                                                              | 7B         | 4.1GB | `ollama pull mistral:7b-instruct` |
+| Llama 2                                                                                                                         | 7B         | 3.8GB | `ollama pull llama2`              |
+| Code Llama                                                                                                                      | 7B         | 3.8GB | `ollama pull codellama`           |
+| Llama 2 Uncensored                                                                                                              | 7B         | 3.8GB | `ollama pull llama2-uncensored`   |
+| Orca Mini                                                                                                                       | 3B         | 1.9GB | `ollama pull orca-mini`           |
+| Vicuna                                                                                                                          | 7B         | 3.8GB | `ollama pull falcon`              |
+| Vicuna                                                                                                                          | 7B         | 3.8GB | `ollama pull vicuna`              |
+| Vicuna (16K context)                                                                                                            | 7B         | 3.8GB | `ollama pull vicuna:7b-16k`       |
+| Vicuna (16K context)                                                                                                            | 13B        | 7.4GB | `ollama pull vicuna:13b-16k`      |
+| nexusraven                                                                                                                      | 13B        | 7.4gB | `ollama pull nexusraven`          |
+| starcoder                                                                                                                       | 7B         | 4.3GB | `ollama pull starcoder:7b`        |
+| wizardlm-uncensored                                                                                                             | 13B        | 7.4GB | `ollama pull wizardlm-uncensored` |
 
 ## 📋 To-Do List
 
