@@ -4,8 +4,6 @@ import ChatMessage from './ChatMessage.vue'
 import { useChats } from '../services/chat.ts'
 import { debugMode } from '../services/appConfig.ts'
 
-import { IconMessageChatbot, IconRobotFace } from '@tabler/icons-vue'
-
 const { messages } = useChats()
 const chatElement = ref<HTMLElement>()
 
