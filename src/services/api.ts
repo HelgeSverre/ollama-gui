@@ -127,7 +127,7 @@ export const useApi = () => {
   ): Promise<GenerateCompletionResponse[]> => {
     return new Promise(async (resolve, reject) => {
       try {
-        const res = await fetch(`${API_BASE_URL}/generate`, {
+        const res = await fetch(getApiUrl('/generate'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
