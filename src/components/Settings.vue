@@ -14,7 +14,7 @@ import {
 <template>
   <aside>
     <div
-      class="relative h-screen w-60 overflow-y-auto border-l border-zinc-300 bg-zinc-50 py-4 dark:border-zinc-700 dark:bg-zinc-900 sm:w-64"
+      class="relative h-screen w-60 overflow-y-auto border-l border-zinc-300 bg-zinc-50 py-4 sm:w-64 dark:border-zinc-700 dark:bg-zinc-900"
     >
       <div class="mb-4 flex items-center gap-x-2 px-2 text-zinc-800 dark:text-zinc-200">
         <button

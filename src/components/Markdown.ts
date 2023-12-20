@@ -1,6 +1,6 @@
-import MarkdownIt from 'markdown-it'
 import { Component, computed, defineComponent, h, ref } from 'vue'
-import markdownItHighlightjs from 'markdown-it-highlightjs'
+import highlightjs from 'markdown-it-highlightjs'
+import markdownit from 'markdown-it'
 
 const Markdown: Component = defineComponent({
   props: {
@@ -10,11 +10,10 @@ const Markdown: Component = defineComponent({
     },
   },
   setup(props) {
-    const md = ref<MarkdownIt>(new MarkdownIt())
+    const md = ref<markdownit>(markdownit())
 
-    md.value.use(markdownItHighlightjs, {
+    md.value.use(highlightjs, {
       inline: true,
-      code: true,
       auto: true,
       ignoreIllegals: true,
     })
