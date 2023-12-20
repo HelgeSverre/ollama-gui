@@ -1,4 +1,3 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios'
 import { ref } from 'vue'
 import { baseUrl } from './appConfig.ts'
 
@@ -114,15 +113,7 @@ export type GenerateEmbeddingsResponse = {
 }
 
 // Define the base URL for the API
-const API_BASE_URL = baseUrl.value || 'http://localhost:11434/api'
-
-// Create an Axios instance
-const apiClient: AxiosInstance = axios.create({
-  baseURL: baseUrl.value ?? API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
+const API_BASE_URL = () => baseUrl.value || 'http://localhost:11434/api'
 
 // Define the API client functions
 
@@ -177,7 +168,14 @@ export const useApi = () => {
   const createModel = async (
     request: CreateModelRequest,
   ): Promise<CreateModelResponse> => {
-    const response: AxiosResponse<CreateModelResponse> = await apiClient.post(
+    const response = await fetch(`${API_BASE_URL()}/create`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+    const data: CreateModelResponse = await response.json()
       '/create',
       request,
     )

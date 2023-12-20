@@ -15,7 +15,6 @@
     "@types/markdown-it": "^13.0.7",
     "@vueuse/core": "^10.5.0",
     "autoprefixer": "^10.4.16",
-    "axios": "^1.5.1",
     "date-fns": "^2.30.0",
     "dexie": "^3.2.4",
     "gravatar-url": "^4.0.1",
