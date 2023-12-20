@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref, watchEffect, withDefaults } from 'vue'
+import { ref, watchEffect, withDefaults } from 'vue'
 
 type Props = {
   label?: string
