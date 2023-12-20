@@ -113,7 +113,8 @@ export type GenerateEmbeddingsResponse = {
 }
 
 // Define a method to get the full API URL for a given path
-const getApiUrl = (path: string) => `${baseUrl.value || 'http://localhost:11434/api'}${path}`
+const getApiUrl = (path: string) =>
+  `${baseUrl.value || 'http://localhost:11434/api'}${path}`
 
 // Define the API client functions
 
