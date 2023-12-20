@@ -114,7 +114,7 @@ export type GenerateEmbeddingsResponse = {
 }
 
 // Define the base URL for the API
-const API_BASE_URL = 'http://localhost:11434/api'
+const API_BASE_URL = baseUrl.value || 'http://localhost:11434/api'
 
 // Create an Axios instance
 const apiClient: AxiosInstance = axios.create({
