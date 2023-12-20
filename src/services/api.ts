@@ -112,8 +112,8 @@ export type GenerateEmbeddingsResponse = {
   embeddings: number[]
 }
 
-// Define the base URL for the API
-const API_BASE_URL = () => baseUrl.value || 'http://localhost:11434/api'
+// Define a method to get the full API URL for a given path
+const getApiUrl = (path: string) => `${baseUrl.value || 'http://localhost:11434/api'}${path}`
 
 // Define the API client functions
 
@@ -168,7 +168,7 @@ export const useApi = () => {
   const createModel = async (
     request: CreateModelRequest,
   ): Promise<CreateModelResponse> => {
-    const response = await fetch(`${API_BASE_URL()}/create`, {
+    const response = await fetch(getApiUrl('/create'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
