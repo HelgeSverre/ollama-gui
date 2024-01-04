@@ -61,15 +61,15 @@ const onKeydown = (event: KeyboardEvent) => {
         <IconPlayerStopFilled
           v-if="isAiResponding"
           class="absolute opacity-0 transition duration-200 ease-in-out group-hover:opacity-100"
-          size="20"
+          :size="20"
         />
         <IconWhirl
           class="absolute animate-spin opacity-50 transition duration-200 ease-in-out group-hover:opacity-0"
           v-if="isAiResponding"
-          size="20"
+          :size="20"
         />
 
-        <IconSend v-else size="20" />
+        <IconSend v-else :size="20" />
       </button>
     </div>
   </form>
