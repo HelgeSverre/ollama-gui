@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { baseUrl } from './appConfig.ts'
+import { Message } from './database.ts'
 
 export type GenerateCompletionRequest = {
   model: string
@@ -116,56 +117,48 @@ export type GenerateEmbeddingsResponse = {
 const getApiUrl = (path: string) =>
   `${baseUrl.value || 'http://localhost:11434/api'}${path}`
 
+const abortController = ref<AbortController>(new AbortController())
+const signal = ref<AbortSignal>(abortController.value.signal)
 // Define the API client functions
-
 export const useApi = () => {
   const error = ref(null)
-  const abortController = ref<AbortController | null>(null)
 
   const generateCompletion = async (
     request: GenerateCompletionRequest,
     onDataReceived: (data: GenerateCompletionResponse) => void,
   ): Promise<GenerateCompletionResponse[]> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        abortController.value = new AbortController()
-        const res = await fetch(getApiUrl('/generate'), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(request),
-          signal: abortController.value.signal
-        })
-
-        if (!res.ok) {
-          reject('Network response was not ok')
-          return
-        }
-
-        const reader = res.body?.getReader()
-        let results: GenerateCompletionResponse[] = []
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) {
-              break
-            }
-
-            const chunk = new TextDecoder().decode(value)
-            const parsedChunk: GenerateCompletionPartResponse = JSON.parse(chunk)
-
-            onDataReceived(parsedChunk)
-            results.push(parsedChunk)
-          }
-        }
-
-        resolve(results)
-      } catch (err) {
-        reject(err)
-      }
+    const res = await fetch(getApiUrl('/generate'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+      signal: signal.value,
     })
+
+    if (!res.ok) {
+      throw new Error('Network response was not ok')
+    }
+
+    const reader = res.body?.getReader()
+    let results: GenerateCompletionResponse[] = []
+
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) {
+          break
+        }
+
+        const chunk = new TextDecoder().decode(value)
+        const parsedChunk: GenerateCompletionPartResponse = JSON.parse(chunk)
+
+        onDataReceived(parsedChunk)
+        results.push(parsedChunk)
+      }
+    }
+
+    return results
   }
 
   // Create a model
@@ -179,15 +172,19 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: CreateModelResponse = await response.json()
-    return data
+
+    return await response.json()
   }
 
   // List local models
   const listLocalModels = async (): Promise<ListLocalModelsResponse> => {
-    const response = await fetch(getApiUrl('/tags'))
-    const data: ListLocalModelsResponse = await response.json()
-    return data
+    const response = await fetch(getApiUrl('/tags'), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    return await response.json()
   }
 
   // Show model information
@@ -201,8 +198,8 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: ShowModelInformationResponse = await response.json()
-    return data
+
+    return await response.json()
   }
 
   // Copy a model
@@ -214,8 +211,8 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: CopyModelResponse = await response.json()
-    return data
+
+    return await response.json()
   }
 
   // Delete a model
@@ -229,8 +226,8 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: DeleteModelResponse = await response.json()
-    return data
+
+    return await response.json()
   }
 
   // Pull a model
@@ -242,8 +239,7 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: PullModelResponse = await response.json()
-    return data
+    return await response.json()
   }
 
   // Push a model
@@ -255,8 +251,8 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: PushModelResponse = await response.json()
-    return data
+
+    return await response.json()
   }
 
   // Generate embeddings
@@ -270,22 +266,15 @@ export const useApi = () => {
       },
       body: JSON.stringify(request),
     })
-    const data: GenerateEmbeddingsResponse = await response.json()
-    return data
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          console.log('Fetch aborted')
-        } else {
-          reject(err)
-        }
-      }
-    })
-  }
 
+    return await response.json()
+  }
   const abort = () => {
     if (abortController.value) {
       abortController.value.abort()
-      abortController.value = null
+      abortController.value = new AbortController()
+      signal.value = abortController.value.signal
+      console.log('Fetch request aborted and controller reset')
     }
   }
 

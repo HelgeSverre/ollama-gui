@@ -1,9 +1,10 @@
-import { computed, ref, UnwrapRef } from 'vue'
+import { computed, ref } from 'vue'
 import { Chat, db, Message } from './database'
 import { useAI } from './useAI.ts'
 import {
   GenerateCompletionCompletedResponse,
   GenerateCompletionPartResponse,
+  useApi,
 } from './api.ts' // Database Layer
 
 // Database Layer
@@ -167,17 +168,16 @@ export function useChats() {
       return
     }
 
+    const currentChatId = activeChat.value.id!
+
+    const message: Message = {
+      chatId: activeChat.value.id!,
+      role: 'user',
+      content,
+      createdAt: new Date(),
+    }
+
     try {
-      const currentChatId = activeChat.value.id!
-      // setMessages(await dbLayer.getMessages(currentChatId))
-
-      const message: Message = {
-        chatId: activeChat.value.id!,
-        role: 'user',
-        content,
-        createdAt: new Date(),
-      }
-
       message.id = await dbLayer.addMessage(message)
       messages.value.push(message)
 
@@ -194,6 +194,11 @@ export function useChats() {
         (data) => handleAiCompletion(data, currentChatId),
       )
     } catch (error) {
+      if (error.name === 'AbortError') {
+        ongoingAiMessages.value.delete(currentChatId)
+        return
+      }
+
       console.error('Failed to add user message:', error)
     }
   }
