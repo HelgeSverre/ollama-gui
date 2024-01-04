@@ -194,9 +194,11 @@ export function useChats() {
         (data) => handleAiCompletion(data, currentChatId),
       )
     } catch (error) {
-      if (error.name === 'AbortError') {
-        ongoingAiMessages.value.delete(currentChatId)
-        return
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          ongoingAiMessages.value.delete(currentChatId)
+          return
+        }
       }
 
       console.error('Failed to add user message:', error)
