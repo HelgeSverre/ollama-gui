@@ -1,18 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useTextareaAutosize } from '@vueuse/core'
 import { useChats } from '../services/chat.ts'
 
 const { textarea, input: userInput } = useTextareaAutosize({ input: '' })
-const { addUserMessage } = useChats()
+const { addUserMessage, abort, hasActiveChat } = useChats()
 
 const isInputValid = computed<boolean>(() => !!userInput.value.trim())
+const isAiResponding = ref(false) // This will be set to true when AI starts responding and false when it stops or is aborted
 
 const sendUserMessage = () => {
   if (isInputValid.value) {
     addUserMessage(userInput.value.trim())
     userInput.value = ''
+    isAiResponding.value = true
   }
+}
+
+const stopAiResponse = () => {
+  abort()
+  isAiResponding.value = false
 }
 
 const shouldSubmit = ({ key, shiftKey }: KeyboardEvent): boolean => {
@@ -39,10 +47,11 @@ const onKeydown = (event: KeyboardEvent) => {
       ></textarea>
       <button
         type="submit"
-        :disabled="!isInputValid"
+        :disabled="!isInputValid && !isAiResponding"
         class="absolute bottom-2 right-2.5 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-zinc-200 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 sm:text-base dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
-        Send
+        {{ isAiResponding ? 'STOP' : 'Send' }}
+        <span class="sr-only">{{ isAiResponding ? 'Abort AI response' : 'Send message' }}</span>
         <span class="sr-only">Send message</span>
       </button>
     </div>

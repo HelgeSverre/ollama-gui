@@ -61,6 +61,7 @@ const ongoingAiMessages = ref<Map<number, Message>>(new Map())
 
 export function useChats() {
   const { generate } = useAI()
+  const { abort } = useApi()
 
   // Computed
   const sortedChats = computed<Chat[]>(() =>
@@ -315,5 +316,6 @@ export function useChats() {
     addSystemMessage,
     initialize,
     wipeDatabase,
+    abort,
   }
 }

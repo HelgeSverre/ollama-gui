@@ -120,6 +120,7 @@ const getApiUrl = (path: string) =>
 
 export const useApi = () => {
   const error = ref(null)
+  const abortController = ref<AbortController | null>(null)
 
   const generateCompletion = async (
     request: GenerateCompletionRequest,
@@ -127,12 +128,14 @@ export const useApi = () => {
   ): Promise<GenerateCompletionResponse[]> => {
     return new Promise(async (resolve, reject) => {
       try {
+        abortController.value = new AbortController()
         const res = await fetch(getApiUrl('/generate'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(request),
+          signal: abortController.value.signal
         })
 
         if (!res.ok) {
@@ -269,6 +272,21 @@ export const useApi = () => {
     })
     const data: GenerateEmbeddingsResponse = await response.json()
     return data
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          console.log('Fetch aborted')
+        } else {
+          reject(err)
+        }
+      }
+    })
+  }
+
+  const abort = () => {
+    if (abortController.value) {
+      abortController.value.abort()
+      abortController.value = null
+    }
   }
 
   return {
@@ -282,5 +300,6 @@ export const useApi = () => {
     pullModel,
     pushModel,
     generateEmbeddings,
+    abort,
   }
 }
