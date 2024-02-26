@@ -142,7 +142,7 @@ export const useApi = () => {
 
     const reader = res.body?.getReader()
     let results: GenerateCompletionResponse[] = []
-
+    let context: GenerateCompletionCompletedResponse | null = null
     if (reader) {
       while (true) {
         const { done, value } = await reader.read()
@@ -150,14 +150,64 @@ export const useApi = () => {
           break
         }
 
-        const chunk = new TextDecoder().decode(value)
-        const parsedChunk: GenerateCompletionPartResponse = JSON.parse(chunk)
+        let chunk = new TextDecoder().decode(value)
 
-        onDataReceived(parsedChunk)
-        results.push(parsedChunk)
+        // Hacks galore!
+        // If a square bracket is found in the chunk, read the stream to the end
+        // since this signifies the end and we dont want to deal with partial JSON
+        if (chunk.includes('[')) {
+          let restValue;
+          while (!done) {
+            const { done: restDone, value: restValue } = await reader.read();
+            if (restDone) {
+              break;
+            }
+            chunk += new TextDecoder().decode(restValue);
+          }
+        }
+
+        // console.log(chunk)
+        // More hacks!
+        // Split the chunk between trailing and starting curly braces
+        const jsonStrings = chunk.split(/(?<=})\s*(?={)/)
+        // console.log(jsonStrings)
+        let combinedResponse: GenerateCompletionResponse | null = null
+        
+        for (const jsonString of jsonStrings) {
+          // Skip empty strings
+          if (jsonString.trim() === '') continue
+
+          //console.log("before- " + jsonString)
+          const parsedChunk: GenerateCompletionPartResponse = JSON.parse(jsonString)
+
+          if (!parsedChunk.context) {
+            if (!combinedResponse) {
+              combinedResponse = {
+                model: parsedChunk.model,
+                created_at: parsedChunk.created_at,
+                response: parsedChunk.response,
+                done: parsedChunk.done,
+              }
+            } else {
+              combinedResponse.created_at = parsedChunk.created_at
+              combinedResponse.response += parsedChunk.response
+            }
+          } else {
+            context = parsedChunk as GenerateCompletionCompletedResponse
+          }
+        }
+        
+        if (combinedResponse) {          
+          onDataReceived(combinedResponse)
+          results.push(combinedResponse)
+        }
       }
     }
-
+    if (context) {
+      onDataReceived(context)
+      results.push(context)
+    }    
+    //console.log(results)
     return results
   }
 
