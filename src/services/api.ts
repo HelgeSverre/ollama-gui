@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { baseUrl } from './appConfig.ts'
-import { Message } from './database.ts'
+import ndjsonStream from "can-ndjson-stream"
 
 export type GenerateCompletionRequest = {
   model: string
@@ -127,6 +127,8 @@ export const useApi = () => {
     request: GenerateCompletionRequest,
     onDataReceived: (data: GenerateCompletionResponse) => void,
   ): Promise<GenerateCompletionResponse[]> => {
+    request.options ??= {}
+    request.options["num_thread"] ??= 2
     const res = await fetch(getApiUrl('/generate'), {
       method: 'POST',
       headers: {
@@ -140,74 +142,28 @@ export const useApi = () => {
       throw new Error('Network response was not ok')
     }
 
-    const reader = res.body?.getReader()
+    const reader = ndjsonStream(res.body).getReader()
     let results: GenerateCompletionResponse[] = []
-    let context: GenerateCompletionCompletedResponse | null = null
+
     if (reader) {
       while (true) {
+        const start = Date.now();
         const { done, value } = await reader.read()
+        const end = Date.now();
+        const elapsed = end - start;
         if (done) {
           break
         }
-
-        let chunk = new TextDecoder().decode(value)
-
-        // Hacks galore!
-        // If a square bracket is found in the chunk, read the stream to the end
-        // since this signifies the end and we dont want to deal with partial JSON
-        if (chunk.includes('[')) {
-          let restValue;
-          while (!done) {
-            const { done: restDone, value: restValue } = await reader.read();
-            if (restDone) {
-              break;
-            }
-            chunk += new TextDecoder().decode(restValue);
-          }
+        if (elapsed < 100) {
+          // rate limit to ~10 requests per second otherwise the chat gets fragmented in the chat window
+          await new Promise(resolve => setTimeout(resolve, 100 - elapsed));
         }
-
-        // console.log(chunk)
-        // More hacks!
-        // Split the chunk between trailing and starting curly braces
-        const jsonStrings = chunk.split(/(?<=})\s*(?={)/)
-        // console.log(jsonStrings)
-        let combinedResponse: GenerateCompletionResponse | null = null
-        
-        for (const jsonString of jsonStrings) {
-          // Skip empty strings
-          if (jsonString.trim() === '') continue
-
-          //console.log("before- " + jsonString)
-          const parsedChunk: GenerateCompletionPartResponse = JSON.parse(jsonString)
-
-          if (!parsedChunk.context) {
-            if (!combinedResponse) {
-              combinedResponse = {
-                model: parsedChunk.model,
-                created_at: parsedChunk.created_at,
-                response: parsedChunk.response,
-                done: parsedChunk.done,
-              }
-            } else {
-              combinedResponse.created_at = parsedChunk.created_at
-              combinedResponse.response += parsedChunk.response
-            }
-          } else {
-            context = parsedChunk as GenerateCompletionCompletedResponse
-          }
-        }
-        
-        if (combinedResponse) {          
-          onDataReceived(combinedResponse)
-          results.push(combinedResponse)
-        }
+        const parsedChunk: GenerateCompletionPartResponse = value
+        onDataReceived(parsedChunk)
+        results.push(parsedChunk)
       }
     }
-    if (context) {
-      onDataReceived(context)
-      results.push(context)
-    }    
-    //console.log(results)
+
     return results
   }
 
