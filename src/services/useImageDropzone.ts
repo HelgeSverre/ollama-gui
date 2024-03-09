@@ -17,7 +17,10 @@ export const useImageDropzone = (dropZoneElementRef: Ref<HTMLDivElement | undefi
   })
   
   const onDrop = (files: File[] | null) => {
-    if(!activeModelSupportsClip.value) return;
+    if(!activeModelSupportsClip.value) {
+      alert(`The current model [${activeChat.value?.model}] does not support image input.`);
+      return;
+    };
     imageFile.value = files ? files[0] : null;
   }
   const { isOverDropZone } = useDropZone(dropZoneElementRef, {
@@ -25,7 +28,8 @@ export const useImageDropzone = (dropZoneElementRef: Ref<HTMLDivElement | undefi
     dataTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/bmp']
   })
 
+  const dropZoneIsActive = computed(() => activeModelSupportsClip.value && isOverDropZone.value)
   return {
-    dropZoneIsActive: activeModelSupportsClip && isOverDropZone
+    dropZoneIsActive
   }
 };
