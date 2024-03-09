@@ -2,7 +2,8 @@
 import { IconRefresh } from '@tabler/icons-vue'
 import { useChats } from '../services/chat.ts'
 import { useAI } from '../services/useAI.ts'
-import { ref } from 'vue'
+import { ref, vModelDynamic } from 'vue'
+import { Model } from '../services/api.ts';
 
 const { activeChat, switchModel, hasMessages } = useChats()
 const { refreshModels, availableModels } = useAI()
@@ -24,11 +25,15 @@ const handleModelChange = (event: Event) => {
   console.log('switch', wip.value)
   switchModel(wip.value)
 }
+const modelAllowsVisionText = (model: Model) => {
+  const modelAllowsVision = model.details?.families?.includes('clip')
+  return modelAllowsVision ? '- w/vision' : ''
+}
 </script>
 
 <template>
-  <div class="flex flex-row text-zinc-800 dark:text-zinc-200">
-    <div class="inline-flex items-center gap-2">
+  <div class="flex flex-row w-full text-zinc-800 dark:text-zinc-200">
+    <div class="inline-flex w-full items-center gap-2">
       <select
         :disabled="hasMessages"
         :value="activeChat?.model"
@@ -37,7 +42,7 @@ const handleModelChange = (event: Event) => {
       >
         <option :value="undefined" disabled selected>Select a model</option>
         <option v-for="model in availableModels" :value="model.name">
-          {{ model.name }}
+          {{ model.name }} {{ modelAllowsVisionText(model) }}
         </option>
       </select>
 
