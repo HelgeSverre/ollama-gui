@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useTextareaAutosize } from '@vueuse/core'
 import { useChats } from '../services/chat.ts'
 import { IconPlayerStopFilled, IconSend, IconWhirl } from '@tabler/icons-vue'
+import ChatImageModal from './ChatImageModal.vue';
 
 const { textarea, input: userInput } = useTextareaAutosize({ input: '' })
 const { addUserMessage, abort, hasActiveChat } = useChats()
@@ -53,6 +54,7 @@ const onKeydown = (event: KeyboardEvent) => {
         placeholder="Enter your prompt"
         @keydown="onKeydown"
       ></textarea>
+      <ChatImageModal />
       <button
         type="submit"
         :disabled="isInputValid == false && isAiResponding == false"

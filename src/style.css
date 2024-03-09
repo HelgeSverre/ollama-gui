@@ -16,3 +16,10 @@
 .slide-leave-from {
   transform: translateX(0);
 }
+
+::backdrop {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  opacity: 1;
+}
