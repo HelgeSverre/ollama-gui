@@ -1,4 +1,3 @@
-import { INJECT_IMAGE_KEY } from '../constants.ts';
 import {
   GenerateCompletionCompletedResponse,
   GenerateCompletionPartResponse,

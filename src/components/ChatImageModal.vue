@@ -14,7 +14,7 @@ const imageAsBase64 = computed(() => {
   return URL.createObjectURL(chatImageFileInjected.value)
 })
 
-function fileSizeToHumanReadable(size) {
+function fileSizeToHumanReadable(size: number) {
   if (size === 0) return '0 Bytes';
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -22,6 +22,9 @@ function fileSizeToHumanReadable(size) {
   return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 const imageSize = computed(() => {
+  if (!chatImageFileInjected?.value) {
+    return ''
+  }
   return fileSizeToHumanReadable(chatImageFileInjected?.value?.size)
 })
 
