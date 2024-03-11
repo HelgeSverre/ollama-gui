@@ -2,16 +2,22 @@
 import Sidebar from './components/Sidebar.vue'
 import ChatInput from './components/ChatInput.vue'
 import ChatMessages from './components/ChatMessages.vue'
-import Settings from './components/Settings.vue'
+import SystemPrompt from './components/SystemPrompt.vue'
 import ModelSelector from './components/ModelSelector.vue'
-import { isDarkMode, isSettingsOpen } from './services/appConfig.ts'
+import {
+  currentModel,
+  isDarkMode,
+  isSettingsOpen,
+  isSystemPromptOpen,
+} from './services/appConfig.ts'
 import { onMounted, ref } from 'vue'
 import { useAI } from './services/useAI.ts'
 import { useChats } from './services/chat.ts'
 import TextInput from './components/Inputs/TextInput.vue'
+import Settings from './components/Settings.vue'
 
 const { refreshModels, availableModels } = useAI()
-const { activeChat, renameChat, switchModel, initialize } = useChats()
+const { activeChat, renameChat, switchModel, initialize, hasMessages } = useChats()
 const isEditingChatName = ref(false)
 const editedChatName = ref('')
 
@@ -34,10 +40,8 @@ const confirmRename = () => {
 
 onMounted(() => {
   refreshModels().then(async () => {
-    if (!activeChat.value?.model) {
-      await initialize()
-      await switchModel(availableModels.value[0].name)
-    }
+    await initialize()
+    await switchModel(currentModel.value ?? availableModels.value[0].name)
   })
 })
 </script>
@@ -50,7 +54,17 @@ onMounted(() => {
       <Sidebar />
 
       <div class="mx-auto flex h-[100vh] w-full flex-col">
-        <div class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col gap-4 px-4 pb-4">
+        <div
+          v-if="isSystemPromptOpen"
+          class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col gap-4 px-4 pb-4"
+        >
+          <SystemPrompt />
+        </div>
+
+        <div
+          v-if="!isSystemPromptOpen"
+          class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col gap-4 px-4 pb-4"
+        >
           <div
             class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-zinc-200 px-4 py-2 dark:bg-zinc-700"
           >
@@ -77,7 +91,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <ModelSelector />
+            <ModelSelector :disabled="hasMessages" />
           </div>
 
           <ChatMessages />

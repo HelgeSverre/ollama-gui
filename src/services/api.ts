@@ -2,40 +2,37 @@ import { ref } from 'vue'
 import { baseUrl } from './appConfig.ts'
 import { Message } from './database.ts'
 
-export type GenerateCompletionRequest = {
+export type ChatRequest = {
   model: string
-  prompt?: string
-  options?: Record<string, any>
-  system?: string
-  template?: string
-  context?: number[]
+  messages?: Message[]
 }
 
-export type GenerateCompletionCompletedResponse = {
+export type ChatMessage = {
+  role: string
+  content: string
+}
+
+export type ChatCompletedResponse = {
   model: string
   created_at: string
-  response: string
+  message: ChatMessage
   done: boolean
   total_duration: number
   load_duration: number
-  sample_count: number
-  sample_duration: number
   prompt_eval_count: number
   prompt_eval_duration: number
   eval_count: number
   eval_duration: number
-  context: number[]
 }
-export type GenerateCompletionPartResponse = {
+
+export type ChatPartResponse = {
   model: string
   created_at: string
-  response: string
+  message: ChatMessage
   done: boolean
 }
 
-export type GenerateCompletionResponse =
-  | GenerateCompletionCompletedResponse
-  | GenerateCompletionPartResponse
+export type ChatResponse = ChatCompletedResponse | ChatPartResponse
 
 export type CreateModelRequest = {
   name: string
@@ -123,11 +120,11 @@ const signal = ref<AbortSignal>(abortController.value.signal)
 export const useApi = () => {
   const error = ref(null)
 
-  const generateCompletion = async (
-    request: GenerateCompletionRequest,
-    onDataReceived: (data: GenerateCompletionResponse) => void,
-  ): Promise<GenerateCompletionResponse[]> => {
-    const res = await fetch(getApiUrl('/generate'), {
+  const generateChat = async (
+    request: ChatRequest,
+    onDataReceived: (data: any) => void,
+  ): Promise<any[]> => {
+    const res = await fetch(getApiUrl('/chat'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -141,7 +138,7 @@ export const useApi = () => {
     }
 
     const reader = res.body?.getReader()
-    let results: GenerateCompletionResponse[] = []
+    let results: ChatResponse[] = []
 
     if (reader) {
       while (true) {
@@ -151,7 +148,7 @@ export const useApi = () => {
         }
 
         const chunk = new TextDecoder().decode(value)
-        const parsedChunk: GenerateCompletionPartResponse = JSON.parse(chunk)
+        const parsedChunk: ChatPartResponse = JSON.parse(chunk)
 
         onDataReceived(parsedChunk)
         results.push(parsedChunk)
@@ -280,7 +277,7 @@ export const useApi = () => {
 
   return {
     error,
-    generateCompletion,
+    generateChat,
     createModel,
     listLocalModels,
     showModelInformation,

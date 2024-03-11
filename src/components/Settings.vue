@@ -4,9 +4,9 @@ import ToggleInput from './Inputs/ToggleInput.vue'
 import TextInput from './Inputs/TextInput.vue'
 import {
   baseUrl,
+  historyMessageLength,
   debugMode,
   gravatarEmail,
-  isSettingsOpen,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
 </script>
@@ -39,6 +39,21 @@ import {
         <TextInput label="Base URL" v-model="baseUrl" />
 
         <TextInput label="Gravatar Email" v-model="gravatarEmail" />
+
+        <div>
+          <label for="max-tokens" class="mb-2 mt-4 block px-2 text-sm font-medium">
+            Conversation History Size
+          </label>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            id="chat-history-length"
+            v-model="historyMessageLength"
+            class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+            placeholder="2048"
+          />
+        </div>
 
         <div v-if="false">
           <div>
