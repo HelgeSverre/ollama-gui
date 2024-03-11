@@ -16,8 +16,3 @@
 .slide-leave-from {
   transform: translateX(0);
 }
-
-.prose :where(strong):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
-  color: #d2d2d2;
-  font-weight: 600;
-}
