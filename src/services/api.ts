@@ -5,6 +5,7 @@ import { Message } from './database.ts'
 export type GenerateCompletionRequest = {
   model: string
   prompt?: string
+  images?: string[]
   options?: Record<string, any>
   system?: string
   template?: string
@@ -46,10 +47,22 @@ export type CreateModelResponse = {
   status: string
 }
 
+export interface ModelDetails {
+  parent_model: string
+  format: string
+  family: string
+  families: string[]
+  parameter_size: string
+  quantization_level: string
+}
+
 export type Model = {
   name: string
+  model: string
   modified_at: string
   size: number
+  digest: string
+  details: ModelDetails
 }
 export type ListLocalModelsResponse = {
   models: Model[]

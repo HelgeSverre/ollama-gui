@@ -1,11 +1,12 @@
-import { computed, ref } from 'vue'
+import { Ref, computed, inject, ref } from 'vue'
 import { Chat, db, Message } from './database'
-import { useAI } from './useAI.ts'
+import { fileToBase64, useAI } from './useAI.ts'
 import {
   GenerateCompletionCompletedResponse,
   GenerateCompletionPartResponse,
   useApi,
 } from './api.ts' // Database Layer
+import { INJECT_IMAGE_KEY } from './useImageDropzone.ts'
 
 // Database Layer
 const dbLayer = {
@@ -70,6 +71,7 @@ export function useChats() {
   )
   const hasActiveChat = computed(() => activeChat.value !== null)
   const hasMessages = computed(() => messages.value.length > 0)
+  const chatImageFileInjected = inject<Ref<File | null>>(INJECT_IMAGE_KEY);
 
   // Methods for state mutations
   const setActiveChat = (chat: Chat) => (activeChat.value = chat)
@@ -95,6 +97,8 @@ export function useChats() {
         setActiveChat(chat)
         const chatMessages = await dbLayer.getMessages(chatId)
         setMessages(chatMessages)
+        if (!chatImageFileInjected?.value) return;
+        chatImageFileInjected.value = null
       }
     } catch (error) {
       console.error(`Failed to switch to chat with ID ${chatId}:`, error)
@@ -169,12 +173,14 @@ export function useChats() {
     }
 
     const currentChatId = activeChat.value.id!
+    const image = chatImageFileInjected?.value ? await fileToBase64(chatImageFileInjected.value) : undefined
 
     const message: Message = {
       chatId: activeChat.value.id!,
       role: 'user',
       content,
       createdAt: new Date(),
+      image,
     }
 
     try {
@@ -189,6 +195,7 @@ export function useChats() {
       await generate(
         activeChat.value.model,
         content,
+        image,
         lastMessageWithContext?.context,
         (data) => handleAiPartialResponse(data, currentChatId),
         (data) => handleAiCompletion(data, currentChatId),
@@ -223,6 +230,8 @@ export function useChats() {
       try {
         await dbLayer.updateMessage(aiMessage.id!, { context: data.context })
         ongoingAiMessages.value.delete(chatId)
+        if (!chatImageFileInjected?.value) return;
+        chatImageFileInjected.value = null
       } catch (error) {
         console.error('Failed to finalize AI message:', error)
       }

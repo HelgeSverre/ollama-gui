@@ -15,6 +15,7 @@ export interface Message {
   chatId: number
   role: ChatRole
   content: string
+  image?: string
   meta?: any
   context?: number[]
   createdAt: Date
@@ -26,9 +27,9 @@ class ChatDatabase extends Dexie {
 
   constructor() {
     super('ChatDatabase')
-    this.version(1).stores({
+    this.version(2).stores({
       chats: '++id,name,model,createdAt',
-      messages: '++id,chatId,role,content,meta,context,createdAt',
+      messages: '++id,chatId,role,content,image,meta,context,createdAt',
     })
 
     this.chats = this.table('chats')

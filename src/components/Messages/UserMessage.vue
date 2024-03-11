@@ -21,6 +21,12 @@ const { message } = defineProps<Props>()
         class="prose prose-base prose-zinc max-w-full dark:prose-invert prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-p:first:mt-0 prose-a:text-blue-600 prose-code:text-sm prose-code:text-white prose-pre:p-2"
       >
         <Markdown :source="message.content" />
+         <img
+          v-if="message.image"
+          class="max-h-[70dvh]"
+          :src="'data:image/jpeg;base64,' + message.image"
+          alt="Uploaded image"
+        />
       </div>
     </div>
   </div>

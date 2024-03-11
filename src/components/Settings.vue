@@ -2,6 +2,7 @@
 import { IconLayoutSidebarRightCollapse } from '@tabler/icons-vue'
 import ToggleInput from './Inputs/ToggleInput.vue'
 import TextInput from './Inputs/TextInput.vue'
+import ModelSelector from './ModelSelector.vue'
 import {
   baseUrl,
   debugMode,
@@ -80,6 +81,13 @@ import {
             />
           </div>
         </div>
+        <div class="mt-4 mb-2">
+          <label class="mb-2 mt-4 block px-2 text-sm font-medium">
+            Model
+          </label>
+          <ModelSelector />
+        </div>
+
       </div>
     </div>
   </aside>
