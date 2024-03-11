@@ -15,6 +15,7 @@
     "@types/markdown-it": "^13.0.7",
     "@vueuse/core": "^10.5.0",
     "autoprefixer": "^10.4.16",
+    "can-ndjson-stream": "^1.0.2",
     "date-fns": "^3.0.1",
     "dexie": "^3.2.4",
     "gravatar-url": "^4.0.1",
