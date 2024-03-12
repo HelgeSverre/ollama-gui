@@ -3,6 +3,13 @@ import Dexie from 'dexie'
 
 export type ChatRole = 'user' | 'assistant' | 'system'
 
+export interface Config {
+  id?: number
+  model: string
+  systemPrompt: string
+  createdAt: Date
+}
+
 export interface Chat {
   id?: number
   name: string
@@ -23,16 +30,19 @@ export interface Message {
 class ChatDatabase extends Dexie {
   chats: Dexie.Table<Chat, number>
   messages: Dexie.Table<Message, number>
+  config: Dexie.Table<Config, number>
 
   constructor() {
     super('ChatDatabase')
-    this.version(1).stores({
+    this.version(10).stores({
       chats: '++id,name,model,createdAt',
       messages: '++id,chatId,role,content,meta,context,createdAt',
+      config: '++id,model,systemPrompt,createdAt',
     })
 
     this.chats = this.table('chats')
     this.messages = this.table('messages')
+    this.config = this.table('config')
   }
 }
 

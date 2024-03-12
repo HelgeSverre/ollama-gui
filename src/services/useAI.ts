@@ -1,35 +1,38 @@
 import {
-  GenerateCompletionCompletedResponse,
-  GenerateCompletionPartResponse,
-  GenerateCompletionResponse,
+  ChatCompletedResponse,
+  ChatPartResponse,
+  ChatResponse,
   Model,
   useApi,
 } from './api.ts'
-import { ref } from 'vue' // Define availableModels outside the function to ensure a shared state.
+
+import { ref } from 'vue'
+import { Message } from './database'
 
 // Define availableModels outside the function to ensure a shared state.
 const availableModels = ref<Model[]>([])
 
 export const useAI = () => {
-  const { generateCompletion, listLocalModels } = useApi()
-
+  const { generateChat, listLocalModels } = useApi()
   const generate = async (
     model: string,
-    prompt: string,
-    context?: number[],
-    onMessage?: (data: GenerateCompletionResponse) => void,
-    onDone?: (data: GenerateCompletionCompletedResponse) => void,
+    messages: Message[],
+    system?: Message,
+    historyMessageLength?: number,
+    onMessage?: (data: ChatResponse | ChatPartResponse | ChatCompletedResponse) => void,
+    onDone?: (data: ChatCompletedResponse) => void,
   ) => {
-    await generateCompletion(
-      { model, prompt, context },
-      (data: GenerateCompletionResponse) => {
-        if (!data.done && onMessage) {
-          onMessage(data as GenerateCompletionPartResponse)
-        } else if (data.done && 'context' in data && onDone) {
-          onDone(data as GenerateCompletionCompletedResponse)
-        }
-      },
-    )
+    let chatHistory = messages.slice(-(historyMessageLength ?? 0))
+    if (system) {
+      chatHistory.unshift(system)
+    }
+    await generateChat({ model, messages: chatHistory }, (data: ChatResponse) => {
+      if (!data.done && onMessage) {
+        onMessage(data as ChatPartResponse)
+      } else if (data.done && onDone) {
+        onDone(data as ChatCompletedResponse)
+      }
+    })
   }
 
   const refreshModels = async () => {

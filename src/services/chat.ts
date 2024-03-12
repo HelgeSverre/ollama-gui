@@ -1,11 +1,15 @@
 import { computed, ref } from 'vue'
 import { Chat, db, Message } from './database'
+import { historyMessageLength, currentModel, useConfig } from './appConfig'
 import { useAI } from './useAI.ts'
-import {
-  GenerateCompletionCompletedResponse,
-  GenerateCompletionPartResponse,
-  useApi,
-} from './api.ts' // Database Layer
+import { ChatCompletedResponse, ChatPartResponse, useApi } from './api.ts'
+
+// State
+const chats = ref<Chat[]>([])
+const activeChat = ref<Chat | null>(null)
+const messages = ref<Message[]>([])
+const systemPrompt = ref<Message>()
+const ongoingAiMessages = ref<Map<number, Message>>(new Map())
 
 // Database Layer
 const dbLayer = {
@@ -54,12 +58,6 @@ const dbLayer = {
   },
 }
 
-// State
-const chats = ref<Chat[]>([])
-const activeChat = ref<Chat | null>(null)
-const messages = ref<Message[]>([])
-const ongoingAiMessages = ref<Map<number, Message>>(new Map())
-
 export function useChats() {
   const { generate } = useAI()
   const { abort } = useApi()
@@ -81,7 +79,7 @@ export function useChats() {
       if (chats.value.length > 0) {
         await switchChat(sortedChats.value[0].id!)
       } else {
-        await startNewChat('New chat', 'n/a')
+        await startNewChat('New chat')
       }
     } catch (error) {
       console.error('Failed to initialize chats:', error)
@@ -95,6 +93,9 @@ export function useChats() {
         setActiveChat(chat)
         const chatMessages = await dbLayer.getMessages(chatId)
         setMessages(chatMessages)
+        if (activeChat.value) {
+          await switchModel(activeChat.value.model)
+        }
       }
     } catch (error) {
       console.error(`Failed to switch to chat with ID ${chatId}:`, error)
@@ -102,19 +103,14 @@ export function useChats() {
   }
 
   const switchModel = async (model: string) => {
+    currentModel.value = model
     if (!activeChat.value || hasMessages.value) return
 
     try {
       await dbLayer.updateChat(activeChat.value.id!, { model })
       activeChat.value.model = model
-
-      // TODO: unnecessary to reload all chats
-      chats.value = await dbLayer.getAllChats()
     } catch (error) {
-      console.error(
-        `Failed to switch model to ${model} for chat with ID ${activeChat.value.id!}:`,
-        error,
-      )
+      console.error(`Failed to switch model to ${model}:`, error)
     }
   }
 
@@ -126,10 +122,10 @@ export function useChats() {
     chats.value = await dbLayer.getAllChats()
   }
 
-  const startNewChat = async (name: string, model: string) => {
+  const startNewChat = async (name: string) => {
     const newChat: Chat = {
       name,
-      model,
+      model: currentModel.value,
       createdAt: new Date(),
     }
 
@@ -138,27 +134,22 @@ export function useChats() {
       chats.value.push(newChat)
       setActiveChat(newChat)
       setMessages([])
+      await addSystemMessage(await useConfig().getCurrentSystemMessage())
     } catch (error) {
       console.error('Failed to start a new chat:', error)
     }
   }
 
-  const addSystemMessage = async (content: string, meta?: any) => {
+  const addSystemMessage = async (content: string | null, meta?: any) => {
     if (!activeChat.value) return
+    if (!content) return
 
-    const message: Message = {
+    systemPrompt.value = {
       chatId: activeChat.value.id!,
       role: 'system',
       content,
       meta,
       createdAt: new Date(),
-    }
-
-    try {
-      await dbLayer.addMessage(message)
-      messages.value.push(message)
-    } catch (error) {
-      console.error('Failed to add system message:', error)
     }
   }
 
@@ -169,7 +160,6 @@ export function useChats() {
     }
 
     const currentChatId = activeChat.value.id!
-
     const message: Message = {
       chatId: activeChat.value.id!,
       role: 'user',
@@ -181,15 +171,11 @@ export function useChats() {
       message.id = await dbLayer.addMessage(message)
       messages.value.push(message)
 
-      const lastMessageWithContext = messages.value
-        .slice()
-        .reverse()
-        .find((msg) => msg.context)
-
       await generate(
-        activeChat.value.model,
-        content,
-        lastMessageWithContext?.context,
+        currentModel.value,
+        messages.value,
+        systemPrompt.value,
+        historyMessageLength.value,
         (data) => handleAiPartialResponse(data, currentChatId),
         (data) => handleAiCompletion(data, currentChatId),
       )
@@ -205,30 +191,22 @@ export function useChats() {
     }
   }
 
-  const handleAiPartialResponse = (
-    data: GenerateCompletionPartResponse,
-    chatId: number,
-  ) => {
+  const handleAiPartialResponse = (data: ChatPartResponse, chatId: number) => {
     ongoingAiMessages.value.has(chatId)
-      ? appendToAiMessage(data.response, chatId)
-      : startAiMessage(data.response, chatId)
+      ? appendToAiMessage(data.message.content, chatId)
+      : startAiMessage(data.message.content, chatId)
   }
 
-  const handleAiCompletion = async (
-    data: GenerateCompletionCompletedResponse,
-    chatId: number,
-  ) => {
+  const handleAiCompletion = async (data: ChatCompletedResponse, chatId: number) => {
     const aiMessage = ongoingAiMessages.value.get(chatId)
     if (aiMessage) {
       try {
-        await dbLayer.updateMessage(aiMessage.id!, { context: data.context })
         ongoingAiMessages.value.delete(chatId)
       } catch (error) {
         console.error('Failed to finalize AI message:', error)
       }
     } else {
       console.error('no ongoing message to finalize:')
-
       debugger
     }
   }
@@ -238,15 +216,13 @@ export function useChats() {
       await dbLayer.clearChats()
       await dbLayer.clearMessages()
 
-      const model = activeChat.value?.model
-
       // Reset local state
       chats.value = []
       activeChat.value = null
       messages.value = []
       ongoingAiMessages.value.clear()
 
-      await startNewChat('new chat', model ?? 'none')
+      await startNewChat('New chat')
     } catch (error) {
       console.error('Failed to wipe the database:', error)
     }
@@ -263,7 +239,7 @@ export function useChats() {
         if (sortedChats.value.length) {
           await switchChat(sortedChats.value[0].id!)
         } else {
-          await startNewChat('new chat', activeChat?.value.model)
+          await startNewChat('New chat')
         }
       }
     } catch (error) {
