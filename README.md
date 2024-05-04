@@ -59,7 +59,7 @@ to [ollama.ai/library](https://ollama.ai/library 'ollama model library').
 | Code Llama                                                                                                                      | 7B         | 3.8GB | `ollama pull codellama`           |
 | Llama 2 Uncensored                                                                                                              | 7B         | 3.8GB | `ollama pull llama2-uncensored`   |
 | Orca Mini                                                                                                                       | 3B         | 1.9GB | `ollama pull orca-mini`           |
-| Vicuna                                                                                                                          | 7B         | 3.8GB | `ollama pull falcon`              |
+| Falcon                                                                                                                          | 7B         | 3.8GB | `ollama pull falcon`              |
 | Vicuna                                                                                                                          | 7B         | 3.8GB | `ollama pull vicuna`              |
 | Vicuna (16K context)                                                                                                            | 7B         | 3.8GB | `ollama pull vicuna:7b-16k`       |
 | Vicuna (16K context)                                                                                                            | 13B        | 7.4GB | `ollama pull vicuna:13b-16k`      |
