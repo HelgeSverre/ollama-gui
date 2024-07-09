@@ -3,6 +3,7 @@ import { IconRefresh } from '@tabler/icons-vue'
 import { useChats } from '../services/chat.ts'
 import { useAI } from '../services/useAI.ts'
 import { ref } from 'vue'
+import { currentModel } from '../services/appConfig'
 
 const { activeChat, switchModel, hasMessages } = useChats()
 const { refreshModels, availableModels } = useAI()
@@ -24,14 +25,19 @@ const handleModelChange = (event: Event) => {
   console.log('switch', wip.value)
   switchModel(wip.value)
 }
+
+type Props = {
+  disabled: boolean
+}
+const { disabled } = defineProps<Props>()
 </script>
 
 <template>
   <div class="flex flex-row text-zinc-800 dark:text-zinc-200">
     <div class="inline-flex items-center gap-2">
       <select
-        :disabled="hasMessages"
-        :value="activeChat?.model"
+        :disabled="disabled"
+        :value="activeChat?.model ?? currentModel"
         @change="handleModelChange"
         class="w-full cursor-pointer rounded-lg bg-white py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-zinc-400 dark:text-zinc-900"
       >
@@ -42,7 +48,7 @@ const handleModelChange = (event: Event) => {
       </select>
 
       <button
-        :disabled="hasMessages"
+        :disabled="disabled"
         title="Refresh available models"
         @click="performRefreshModel"
         class="inline-flex items-center justify-center rounded-lg border-none bg-zinc-200 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-zinc-400 dark:text-zinc-900"

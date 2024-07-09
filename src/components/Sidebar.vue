@@ -6,20 +6,32 @@ import {
   IconSun,
   IconTrashX,
   IconUserCircle,
+  IconMessageCode,
 } from '@tabler/icons-vue'
-import { isDarkMode, toggleSettingsPanel } from '../services/appConfig.ts'
-import { useChats } from '../services/chat.ts'
-import { useAI } from '../services/useAI.ts'
 
-const { availableModels } = useAI()
+import {
+  isDarkMode,
+  isSystemPromptOpen,
+  toggleSettingsPanel,
+  toggleSystemPromptPanel,
+} from '../services/appConfig.ts'
+import { useChats } from '../services/chat.ts'
+
 const { sortedChats, activeChat, switchChat, deleteChat, startNewChat, wipeDatabase } =
   useChats()
 
 const onNewChat = () => {
-  return startNewChat(
-    'New chat',
-    activeChat.value?.model ?? availableModels.value[0].name,
-  )
+  checkSystemPromptPanel()
+  return startNewChat('New chat')
+}
+
+const onSwitchChat = (chatId: number) => {
+  checkSystemPromptPanel()
+  return switchChat(chatId)
+}
+
+const checkSystemPromptPanel = () => {
+  isSystemPromptOpen.value = false
 }
 </script>
 
@@ -43,7 +55,7 @@ const onNewChat = () => {
       >
         <button
           v-for="chat in sortedChats"
-          @click="switchChat(chat.id!)"
+          @click="onSwitchChat(chat.id!)"
           @keyup.delete="deleteChat(chat.id!)"
           :class="{
             'bg-zinc-200 dark:bg-zinc-800': activeChat?.id == chat.id,
@@ -95,6 +107,14 @@ const onNewChat = () => {
         >
           <IconUserCircle class="h-6 w-6" />
           User
+        </button>
+        <button
+          @click="toggleSystemPromptPanel"
+          class="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:hover:bg-zinc-800 dark:focus:ring-blue-500"
+        >
+          <IconMessageCode class="h-6 w-6" />
+
+          System prompt
         </button>
         <button
           @click="toggleSettingsPanel"
