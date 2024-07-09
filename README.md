@@ -38,6 +38,35 @@ command [(docs)](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-c
 OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 ```
 
+### Running with Docker
+
+To run Ollama GUI using Docker, follow these steps:
+
+1. Make sure you have [Docker](https://docker.com/products/docker-desktop/) (or [OrbStack](https://orbstack.dev/))
+   installed on your system.
+
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/HelgeSverre/ollama-gui.git
+   cd ollama-gui
+   ```
+
+3. Build the Docker image:
+   ```bash
+   docker build -t ollama-gui .
+   ```
+
+4. Run the Docker container:
+   ```bash
+   docker run -p 8080:8080 ollama-gui
+   ```
+
+5. Access the application by opening a web browser and navigating to `http://localhost:8080`.
+
+Note: Make sure that the Ollama CLI is running on your host machine, as the Docker container for Ollama GUI needs to
+communicate with it.
+
+
 ---
 
 ## Models
