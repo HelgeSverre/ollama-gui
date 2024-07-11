@@ -28,3 +28,6 @@ dist-ssr
 package-lock.json
 .vercel
 .aider*
+
+# environment variables
+.env
