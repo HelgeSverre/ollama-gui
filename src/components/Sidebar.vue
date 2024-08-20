@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import {
   IconMoon,
   IconPlus,
@@ -16,9 +17,12 @@ import {
   toggleSystemPromptPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
+import Confirm from './Dialogs/Confirm.vue';
 
 const { sortedChats, activeChat, switchChat, deleteChat, startNewChat, wipeDatabase } =
   useChats()
+
+const showConfirmDeleteAllChats = ref(false)
 
 const onNewChat = () => {
   checkSystemPromptPanel()
@@ -33,9 +37,21 @@ const onSwitchChat = (chatId: number) => {
 const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
+
+const onConfirmDeleteAllChats = () => {
+  wipeDatabase()
+  showConfirmDeleteAllChats.value = false
+}
 </script>
 
 <template>
+  <Confirm 
+    v-model="showConfirmDeleteAllChats"
+    title="Delete all chats" 
+    message="Are you sure you want to proceed with this action? This cannot be undone."
+    @confirm="onConfirmDeleteAllChats"
+    @cancel="showConfirmDeleteAllChats = false"
+  />
   <aside class="flex">
     <div
       class="flex h-[100svh] w-60 flex-col overflow-y-auto border-r border-zinc-200 bg-zinc-50 pt-2 sm:h-[100vh] sm:w-64 dark:border-zinc-700 dark:bg-zinc-900"
@@ -94,7 +110,7 @@ const checkSystemPromptPanel = () => {
           Toggle dark mode
         </button>
         <button
-          @click="wipeDatabase"
+          @click="showConfirmDeleteAllChats = true"
           class="flex w-full gap-x-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:hover:bg-zinc-800 dark:focus:ring-blue-500"
         >
           <IconTrashX class="h-6 w-6" />
