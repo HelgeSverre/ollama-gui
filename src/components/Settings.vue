@@ -14,12 +14,12 @@ import {
 <template>
   <aside>
     <div
-      class="relative h-screen w-60 overflow-y-auto border-l border-zinc-300 bg-zinc-50 py-4 dark:border-zinc-700 dark:bg-zinc-900 sm:w-64"
+      class="relative h-screen w-60 overflow-y-auto border-l border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900 sm:w-64"
     >
-      <div class="mb-4 flex items-center gap-x-2 px-2 text-zinc-800 dark:text-zinc-200">
+      <div class="mb-4 flex items-center gap-x-2 px-2 text-gray-900 dark:text-gray-100">
         <button
           @click="toggleSettingsPanel()"
-          class="inline-flex rounded-lg p-1 hover:bg-zinc-200 hover:dark:bg-zinc-700"
+          class="inline-flex rounded-lg p-1 hover:bg-gray-100 hover:dark:bg-gray-700"
         >
           <IconLayoutSidebarRightCollapse class="h-6 w-6" />
 
@@ -30,7 +30,7 @@ import {
 
       <!-- More Settings -->
       <div
-        class="my-4 border-t border-zinc-300 px-2 py-4 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200"
+        class="my-4 border-t border-gray-200 px-2 py-4 text-gray-900 dark:border-gray-700 dark:text-gray-100"
       >
         <div>
           <ToggleInput label="Enable debug mode" v-model="debugMode" />
@@ -50,7 +50,7 @@ import {
             max="100"
             id="chat-history-length"
             v-model="historyMessageLength"
-            class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+            class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
             placeholder="2048"
           />
         </div>
@@ -64,7 +64,7 @@ import {
               type="number"
               disabled
               id="max-tokens"
-              class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+              class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
               placeholder="2048"
             />
           </div>
@@ -77,7 +77,7 @@ import {
               type="number"
               disabled
               id="temperature"
-              class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+              class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
               placeholder="0.7"
             />
           </div>
@@ -90,7 +90,7 @@ import {
               type="number"
               disabled
               id="top-p"
-              class="block w-full rounded-lg bg-zinc-200 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+              class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
               placeholder="1"
             />
           </div>

@@ -29,7 +29,7 @@ const emit = defineEmits<{
       @blur="$emit('blur')"
       :type="type"
       :autofocus="autofocus"
-      class="block w-full rounded-lg bg-zinc-200 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-zinc-800 dark:placeholder-zinc-400 dark:focus:ring-blue-600"
+      class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
       :placeholder="placeholder"
     />
   </div>

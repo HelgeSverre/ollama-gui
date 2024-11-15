@@ -49,14 +49,14 @@ const onKeydown = (event: KeyboardEvent) => {
       <textarea
         ref="textarea"
         v-model="userInput"
-        class="block max-h-[500px] w-full resize-none rounded-xl border-none bg-zinc-100 p-4 pl-4 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
+        class="block max-h-[500px] w-full resize-none rounded-xl border-none bg-gray-50 p-4 pl-4 pr-20 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-50 dark:placeholder-gray-300 dark:focus:ring-blue-600 sm:text-base"
         placeholder="Enter your prompt"
         @keydown="onKeydown"
       ></textarea>
       <button
         type="submit"
         :disabled="isInputValid == false && isAiResponding == false"
-        class="group absolute bottom-2 right-2.5 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-700 text-sm font-medium text-zinc-200 transition duration-200 ease-in-out hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:text-base"
+        class="group absolute bottom-2 right-2.5 flex size-10 items-center justify-center rounded-lg bg-blue-700 text-sm font-medium text-white transition duration-200 ease-in-out hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:bg-gray-400 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 dark:disabled:bg-gray-600 sm:text-base"
       >
         <IconPlayerStopFilled
           v-if="isAiResponding"

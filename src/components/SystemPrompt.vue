@@ -51,85 +51,71 @@ const onKeydown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <aside>
+  <aside class="flex flex-col gap-6">
     <div
-      class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-zinc-200 px-4 py-2 dark:bg-zinc-700"
+      class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-gray-100 px-4 py-2 dark:bg-gray-800"
     >
       <div class="mr-auto flex h-full items-center">
         <div>
           <span
-            class="block h-full rounded border-none p-2 text-zinc-700 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-zinc-100 dark:focus:ring-blue-600"
+            class="block h-full rounded border-none p-2 text-lg font-medium text-gray-900 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-gray-100 dark:focus:ring-blue-600"
           >
-            System prompt
+            System Prompts
           </span>
         </div>
       </div>
       <ModelSelector :disabled="false" @change="initialize" />
     </div>
 
-    <div
-      class="text-md mb-[20px] mt-[30px] gap-4 rounded-xl px-1 py-2 font-medium leading-none text-zinc-900 dark:text-zinc-200"
-    >
-      <p class="mb-[20px]">
-        <b>Custom Instructions</b>
-      </p>
-      <p>
-        What would you like the current model to know about you to provide better
-        responses?
-      </p>
-    </div>
-    <form class="mt-2" @submit.prevent="onSubmit">
-      <div
-        class="flex-row items-center justify-center gap-4 rounded-xl bg-zinc-200 px-2 py-2 dark:bg-zinc-700"
-      >
-        <div class="h-full items-center">
-          <div>
-            <textarea
-              ref="textarea"
-              v-model="configInput"
-              class="p-t-4 p-b-4 block max-h-[200px] min-h-[150px] w-full resize-none rounded-xl border-none bg-zinc-100 px-2 py-2 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
-              @keydown="onKeydown"
-            ></textarea>
-          </div>
-        </div>
-      </div>
-    </form>
-
-    <div
-      class="text-md mb-[20px] mt-[30px] gap-4 rounded-xl px-1 py-2 font-medium leading-none text-zinc-900 dark:text-zinc-200"
-    >
-      <p class="mb-[20px]">
-        <b>Default Instructions</b>
-      </p>
-      <p>
-        What would you like all models to know about you to provide better responses? This
-        prompt will be applied for all models by default even if you configure custom
-        prompt for a model
-      </p>
-    </div>
-    <form class="mt-2" @submit.prevent="onSubmit">
-      <div
-        class="flex-row items-center justify-center gap-4 rounded-xl bg-zinc-200 px-2 py-2 dark:bg-zinc-700"
-      >
-        <div class="h-full items-center">
-          <div>
-            <textarea
-              ref="textarea"
-              v-model="defaultConfigInput"
-              class="p-t-4 p-b-4 block max-h-[200px] min-h-[150px] w-full resize-none rounded-xl border-none bg-zinc-100 px-1 py-2 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
-              @keydown="onKeydown"
-            ></textarea>
-          </div>
-        </div>
+    <div class="flex flex-col space-y-6 px-4">
+      <!-- Custom Instructions Section -->
+      <div class="rounded-xl bg-gray-100 p-6 shadow-sm dark:bg-gray-800">
+        <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Custom Instructions
+        </h2>
+        <p class="mb-4 text-sm text-gray-700 dark:text-gray-300">
+          What would you like the current model to know about you to provide better
+          responses?
+        </p>
+        <form @submit.prevent="onSubmit">
+          <textarea
+            ref="textarea"
+            v-model="configInput"
+            class="block min-h-[150px] w-full resize-none rounded-lg border-none bg-white p-4 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:ring-blue-500 sm:text-base"
+            @keydown="onKeydown"
+          ></textarea>
+        </form>
       </div>
 
-      <button
-        type="submit"
-        class="right mt-[20px] flex gap-x-2 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition-colors duration-200 hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:hover:bg-zinc-800 dark:focus:ring-blue-500"
-      >
-        <IconWritingSign class="h-6 w-6" />
-        Save
-      </button>
-    </form>
+      <!-- Default Instructions Section -->
+      <div class="rounded-xl bg-gray-100 p-6 shadow-sm dark:bg-gray-800">
+        <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Default Instructions
+        </h2>
+        <p class="mb-4 text-sm text-gray-700 dark:text-gray-300">
+          What would you like all models to know about you to provide better responses?
+          This prompt will be applied for all models by default even if you configure
+          custom prompt for a model.
+        </p>
+        <form @submit.prevent="onSubmit">
+          <textarea
+            ref="textarea"
+            v-model="defaultConfigInput"
+            class="block min-h-[150px] w-full resize-none rounded-lg border-none bg-white p-4 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:ring-blue-500 sm:text-base"
+          ></textarea>
+        </form>
+      </div>
+
+      <div>
+        <button
+          type="button"
+          @click="onSubmit"
+          class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-offset-gray-900"
+        >
+          <IconWritingSign class="h-5 w-5" />
+          Save Changes
+        </button>
+      </div>
+    </div>
   </aside>
 </template>

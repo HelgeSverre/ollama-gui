@@ -26,12 +26,15 @@ watchEffect(() => {
 
 <template>
   <div>
-    <label class="mb-2 mt-4 block px-2 text-sm font-medium" v-if="label">
+    <label
+      class="mb-2 mt-4 block px-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+      v-if="label"
+    >
       {{ label }}
     </label>
     <button
-      :class="toggleState ? 'bg-indigo-600' : 'bg-gray-200'"
-      class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+      :class="toggleState ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'"
+      class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50"
       @click="toggle"
       role="switch"
       :aria-checked="toggleState"

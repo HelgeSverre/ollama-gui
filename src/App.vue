@@ -49,24 +49,24 @@ onMounted(() => {
 <template>
   <div :class="{ dark: isDarkMode }">
     <main
-      class="flex h-full w-full flex-1 flex-row items-stretch bg-zinc-50 dark:bg-zinc-800"
+      class="flex h-full w-full flex-1 flex-row items-stretch bg-white dark:bg-gray-900"
     >
       <Sidebar />
 
-      <div class="mx-auto flex h-[100vh] w-full flex-col">
+      <div class="mx-auto flex h-screen w-full flex-col">
         <div
           v-if="isSystemPromptOpen"
-          class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col gap-4 px-4 pb-4"
+          class="mx-auto flex h-screen w-full max-w-7xl flex-col gap-4 px-4 pb-4"
         >
           <SystemPrompt />
         </div>
 
         <div
           v-if="!isSystemPromptOpen"
-          class="mx-auto flex h-[100vh] w-full max-w-7xl flex-col gap-4 px-4 pb-4"
+          class="mx-auto flex h-screen w-full max-w-7xl flex-col gap-4 px-4 pb-4"
         >
           <div
-            class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-zinc-200 px-4 py-2 dark:bg-zinc-700"
+            class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-gray-100 px-4 py-2 dark:bg-gray-800"
           >
             <div class="mr-auto flex h-full items-center" v-if="activeChat">
               <div>
@@ -82,7 +82,7 @@ onMounted(() => {
 
                 <button
                   type="button"
-                  class="block h-full rounded border-none p-2 text-zinc-700 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-zinc-100 dark:focus:ring-blue-600"
+                  class="block h-full rounded border-none p-2 text-gray-900 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-gray-100 dark:focus:ring-blue-600"
                   v-else
                   @click.prevent="startEditing"
                 >
