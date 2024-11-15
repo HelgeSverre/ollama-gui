@@ -2,124 +2,90 @@
   <img src=".github/header.png" alt="Ollama GUI logo">
 </p>
 
-# Ollama GUI: Web Interface for chatting with your local LLMs.
+<h1 align="center">Ollama GUI</h1>
+<p align="center">A modern web interface for chatting with your local LLMs through Ollama</p>
 
-Ollama GUI is a web interface for [ollama.ai](https://ollama.ai/download), a tool that enables running Large
-Language Models (LLMs) on your local machine.
+<p align="center">
+  <a href="https://ollama.ai">
+    <img src="https://img.shields.io/badge/Powered%20by-Ollama-blue?style=flat-square" alt="Powered by Ollama">
+  </a>
+  <a href="https://github.com/HelgeSverre/ollama-gui/blob/main/LICENSE.md">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
+  </a>
+  <a href="https://ollama-gui.vercel.app">
+    <img src="https://img.shields.io/badge/Demo-Live-success?style=flat-square" alt="Live Demo">
+  </a>
+</p>
 
-## 🛠 Installation
+## ✨ Features
+
+- 🖥️ Clean, modern interface for interacting with Ollama models
+- 💾 Local chat history using IndexedDB
+- 📝 Full Markdown support in messages
+- 🌙 Dark mode support
+- 🚀 Fast and responsive
+- 🔒 Privacy-focused: All processing happens locally
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-1. Download and install [ollama CLI](https://ollama.ai/download).
-2. Download and install [yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable)
-   and [node](https://nodejs.org/en/download)
+1. Install [Ollama](https://ollama.ai/download)
+2. Install [Node.js](https://nodejs.org/) (v16+) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
+
+### Local Development
 
 ```bash
-ollama pull <model-name>
+# Start Ollama server with your preferred model
+ollama pull mistral  # or any other model
 ollama serve
-```
 
-### Getting Started
-
-2. Clone the repository and start the development server.
-
-```bash
+# Clone and run the GUI
 git clone https://github.com/HelgeSverre/ollama-gui.git
 cd ollama-gui
 yarn install
 yarn dev
 ```
 
-**Or use the hosted web version**, by running ollama with the following origin
-command [(docs)](https://github.com/jmorganca/ollama/blob/main/docs/faq.md#how-can-i-expose-the-ollama-server)
+### Using the Hosted Version
 
-```shell
+To use the [hosted version](https://ollama-gui.vercel.app), run Ollama with:
+
+```bash
 OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 ```
 
-### Running with Docker
+### Docker Deployment
 
-To run Ollama GUI using Docker, follow these steps:
+```bash
+# Build the image
+docker build -t ollama-gui .
 
-1. Make sure you have [Docker](https://docker.com/products/docker-desktop/) (or [OrbStack](https://orbstack.dev/))
-   installed on your system.
+# Run the container
+docker run -p 8080:8080 ollama-gui
 
-2. Clone the repository:
-   ```bash
-   git clone https://github.com/HelgeSverre/ollama-gui.git
-   cd ollama-gui
-   ```
+# Access at http://localhost:8080
+```
 
-3. Build the Docker image:
-   ```bash
-   docker build -t ollama-gui .
-   ```
+## 🛣️ Roadmap
 
-4. Run the Docker container:
-   ```bash
-   docker run -p 8080:8080 ollama-gui
-   ```
+- [x] Chat history with IndexedDB
+- [x] Markdown message formatting
+- [x] Code cleanup and organization
+- [ ] Model library browser and installer
+- [ ] Mobile-responsive design
+- [ ] File uploads with OCR support
 
-5. Access the application by opening a web browser and navigating to `http://localhost:8080`.
+## 🛠️ Tech Stack
 
-Note: Make sure that the Ollama CLI is running on your host machine, as the Docker container for Ollama GUI needs to
-communicate with it.
+- [Vue.js](https://vuejs.org/) - Frontend framework
+- [Vite](https://vitejs.dev/) - Build tool
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [VueUse](https://vueuse.org/) - Vue Composition Utilities
+- [@tabler/icons-vue](https://github.com/tabler/icons-vue) - Icons
+- Design inspired by [LangUI](https://www.langui.dev/)
+- Hosted on [Vercel](https://vercel.com/)
 
+## 📄 License
 
----
-
-## Models
-
-For convenience and `copy-pastability`, here is a table of interesting models you might want to try out.
-
-For a complete list of models Ollama supports, go
-to [ollama.ai/library](https://ollama.ai/library 'ollama model library').
-
-| Model                                                                                                                           | Parameters | Size  | Download                          |
-|---------------------------------------------------------------------------------------------------------------------------------|------------|-------|-----------------------------------|
-| <a href="https://ollama.ai/library/mixtral"><img src="https://img.shields.io/badge/New-black.svg"/></a> Mixtral-8x7B Large      | 7B         | 26GB  | `ollama pull mixtral`             |
-| <a href="https://ollama.ai/library/phi"><img src="https://img.shields.io/badge/New-black.svg"/></a> Phi                         | 2.7B       | 1.6GB | `ollama pull phi`                 |
-| <a href="https://ollama.ai/library/solar"><img src="https://img.shields.io/badge/New-black.svg"/></a> Solar                     | 10.7B      | 6.1GB | `ollama pull solar`               |
-| <a href="https://ollama.ai/library/dolphin-mixtral"><img src="https://img.shields.io/badge/New-black.svg"/></a> Dolphin Mixtral | 7B         | 4.1GB | `ollama pull dolphin-mixtral`     |
-| Mistral                                                                                                                         | 7B         | 4.1GB | `ollama pull mistral`             |
-| Mistral (instruct)                                                                                                              | 7B         | 4.1GB | `ollama pull mistral:7b-instruct` |
-| Llama 2                                                                                                                         | 7B         | 3.8GB | `ollama pull llama2`              |
-| Code Llama                                                                                                                      | 7B         | 3.8GB | `ollama pull codellama`           |
-| Llama 2 Uncensored                                                                                                              | 7B         | 3.8GB | `ollama pull llama2-uncensored`   |
-| Orca Mini                                                                                                                       | 3B         | 1.9GB | `ollama pull orca-mini`           |
-| Falcon                                                                                                                          | 7B         | 3.8GB | `ollama pull falcon`              |
-| Vicuna                                                                                                                          | 7B         | 3.8GB | `ollama pull vicuna`              |
-| Vicuna (16K context)                                                                                                            | 7B         | 3.8GB | `ollama pull vicuna:7b-16k`       |
-| Vicuna (16K context)                                                                                                            | 13B        | 7.4GB | `ollama pull vicuna:13b-16k`      |
-| nexusraven                                                                                                                      | 13B        | 7.4gB | `ollama pull nexusraven`          |
-| starcoder                                                                                                                       | 7B         | 4.3GB | `ollama pull starcoder:7b`        |
-| wizardlm-uncensored                                                                                                             | 13B        | 7.4GB | `ollama pull wizardlm-uncensored` |
-
-## 📋 To-Do List
-
-- [x] Properly format newlines in the chat message (PHP-land has `nl2br` basically want the same thing)
-- [x] Store chat history using IndexedDB locally
-- [x] Cleanup the code, I made a mess of it for the sake of speed and getting something out the door.
-- [x] Add markdown parsing [lib](https://dev.to/matijanovosel/rendering-markdown-in-vue-3-3maj)
-- [ ] Allow browsing and installation of available models (library)
-- [ ] Ensure mobile responsiveness (non-prioritized use-case atm.)
-- [ ] Add file uploads with OCR and stuff.
-
----
-
-## 🛠 Built With
-
-- [Ollama.ai](https://ollama.ai/) - CLI tool for models.
-- [LangUI](https://www.langui.dev/)
-- [Vue.js](https://vuejs.org/)
-- [Vite](https://vitejs.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [VueUse](https://vueuse.org/)
-- [@tabler/icons-vue](https://github.com/tabler/icons-vue)
-
----
-
-## 📝 License
-
-Licensed under the MIT License. See the [LICENSE.md](LICENSE.md) file for details.
+Released under the [MIT License](LICENSE.md).
