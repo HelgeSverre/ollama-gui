@@ -8,9 +8,9 @@ const { message } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="mb-4 flex rounded-xl bg-pink-100 px-2 py-6 sm:px-4 dark:bg-pink-800">
+  <div class="mb-4 flex rounded-xl bg-pink-100 px-2 py-6 dark:bg-pink-800 sm:px-4">
     <div
-      class="mr-2 flex h-10 w-10 items-center justify-center rounded-full bg-pink-100 text-center text-2xl sm:mr-4 dark:bg-pink-700"
+      class="mr-2 flex h-10 w-10 items-center justify-center rounded-full bg-pink-100 text-center text-2xl dark:bg-pink-700 sm:mr-4"
     >
       🧠
     </div>

@@ -11,7 +11,7 @@ const { message } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="flex rounded-xl bg-zinc-50 px-2 py-6 sm:px-4 dark:bg-zinc-900">
+  <div class="flex rounded-xl bg-zinc-50 px-2 py-6 dark:bg-zinc-900 sm:px-4">
     <img
       class="mr-2 flex h-10 w-10 rounded-full border border-gray-200 bg-white object-contain sm:mr-4"
       src="../../assets/logo.png"

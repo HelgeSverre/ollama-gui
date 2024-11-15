@@ -38,7 +38,7 @@ const checkSystemPromptPanel = () => {
 <template>
   <aside class="flex">
     <div
-      class="flex h-[100svh] w-60 flex-col overflow-y-auto border-r border-zinc-200 bg-zinc-50 pt-2 sm:h-[100vh] sm:w-64 dark:border-zinc-700 dark:bg-zinc-900"
+      class="flex h-[100svh] w-60 flex-col overflow-y-auto border-r border-zinc-200 bg-zinc-50 pt-2 dark:border-zinc-700 dark:bg-zinc-900 sm:h-[100vh] sm:w-64"
     >
       <div class="mx-2">
         <button

@@ -87,7 +87,7 @@ const onKeydown = (event: KeyboardEvent) => {
             <textarea
               ref="textarea"
               v-model="configInput"
-              class="p-t-4 p-b-4 block max-h-[200px] min-h-[150px] w-full resize-none rounded-xl border-none bg-zinc-100 px-2 py-2 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-base dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500"
+              class="p-t-4 p-b-4 block max-h-[200px] min-h-[150px] w-full resize-none rounded-xl border-none bg-zinc-100 px-2 py-2 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
               @keydown="onKeydown"
             ></textarea>
           </div>
@@ -109,14 +109,14 @@ const onKeydown = (event: KeyboardEvent) => {
     </div>
     <form class="mt-2" @submit.prevent="onSubmit">
       <div
-        class="flex-row items-center justify-center gap-4 rounded-xl bg-zinc-200 px-2 px-2 py-2 py-2 dark:bg-zinc-700"
+        class="flex-row items-center justify-center gap-4 rounded-xl bg-zinc-200 px-2 py-2 dark:bg-zinc-700"
       >
         <div class="h-full items-center">
           <div>
             <textarea
               ref="textarea"
               v-model="defaultConfigInput"
-              class="p-t-4 p-b-4 block max-h-[200px] min-h-[150px] w-full resize-none rounded-xl border-none bg-zinc-100 px-1 py-2 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-base dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500"
+              class="p-t-4 p-b-4 block max-h-[200px] min-h-[150px] w-full resize-none rounded-xl border-none bg-zinc-100 px-1 py-2 pr-20 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:text-zinc-200 dark:placeholder-zinc-400 dark:focus:ring-blue-500 sm:text-base"
               @keydown="onKeydown"
             ></textarea>
           </div>
