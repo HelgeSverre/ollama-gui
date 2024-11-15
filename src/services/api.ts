@@ -147,11 +147,15 @@ export const useApi = () => {
           break
         }
 
-        const chunk = new TextDecoder().decode(value)
-        const parsedChunk: ChatPartResponse = JSON.parse(chunk)
+        try {
+          const chunk = new TextDecoder().decode(value)
+          const parsedChunk: ChatPartResponse = JSON.parse(chunk)
 
-        onDataReceived(parsedChunk)
-        results.push(parsedChunk)
+          onDataReceived(parsedChunk)
+          results.push(parsedChunk)
+        } catch (e) {
+          // Carry on...
+        }
       }
     }
 
