@@ -9,6 +9,7 @@ const { addUserMessage, abort, hasActiveChat } = useChats()
 
 const isInputValid = computed<boolean>(() => !!userInput.value.trim())
 const isAiResponding = ref(false)
+const flag = ref(true)
 
 const onSubmit = () => {
   if (isAiResponding.value) {
@@ -31,7 +32,7 @@ const shouldSubmit = ({ key, shiftKey }: KeyboardEvent): boolean => {
 }
 
 const onKeydown = (event: KeyboardEvent) => {
-  if (shouldSubmit(event)) {
+  if (shouldSubmit(event) && flag.value) {
     // Pressing enter while the ai is responding should not abort the request
     if (isAiResponding.value) {
       return
@@ -40,6 +41,14 @@ const onKeydown = (event: KeyboardEvent) => {
     event.preventDefault()
     onSubmit()
   }
+}
+
+const handleCompositionStart = () => {
+  flag.value = false
+}
+
+const handleCompositionEnd = () => {
+  flag.value = true
 }
 </script>
 
@@ -52,6 +61,8 @@ const onKeydown = (event: KeyboardEvent) => {
         class="block max-h-[500px] w-full resize-none rounded-xl border-none bg-gray-50 p-4 pl-4 pr-20 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-50 dark:placeholder-gray-300 dark:focus:ring-blue-600 sm:text-base"
         placeholder="Enter your prompt"
         @keydown="onKeydown"
+        @compositionstart="handleCompositionStart"
+        @compositionend="handleCompositionEnd"
       ></textarea>
       <button
         type="submit"
