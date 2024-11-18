@@ -62,7 +62,7 @@ OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 docker build -t ollama-gui .
 
 # Run the container
-docker run -p 8080:8080 ollama-gui
+docker run -p 8080:80 ollama-gui
 
 # Access at http://localhost:8080
 ```
