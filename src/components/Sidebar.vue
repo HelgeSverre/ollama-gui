@@ -70,7 +70,7 @@ const checkSystemPromptPanel = () => {
           </span>
           <span class="text-xs leading-none text-gray-700 dark:text-gray-300">
             {{
-              chat.createdAt.toLocaleDateString('no', {
+              chat.createdAt.toLocaleDateString(undefined, {
                 day: '2-digit',
                 month: 'short',
                 weekday: 'long',
