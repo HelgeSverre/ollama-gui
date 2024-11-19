@@ -10,7 +10,7 @@ export const avatarUrl = computed(() =>
   gravatarUrl(gravatarEmail.value, { size: 200, default: '/avatar.png' }),
 )
 export const debugMode = useLocalStorage('debug', false)
-export const baseUrl = useLocalStorage('baseUrl', 'http://localhost:11434/api')
+export const baseUrl = useLocalStorage('baseUrl', import.meta.env.VITE_OPENAI_BASE_URL)
 export const isDarkMode = useLocalStorage('darkMode', true)
 export const isSettingsOpen = useLocalStorage('settingsPanelOpen', true)
 export const isSystemPromptOpen = useLocalStorage('systemPromptOpen', true)
