@@ -59,7 +59,7 @@ OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 
 ```bash
 # Pull and run the latest image
-docker run -p 8080:80 ghcr.io/helgesverre/ollama-gui:main
+docker run -d -p 8080:80 ghcr.io/helgesverre/ollama-gui:main
 
 # Access at http://localhost:8080
 ```
@@ -71,7 +71,7 @@ Or build the image locally, and run it:
 docker build -t ollama-gui .
 
 # Run the container
-docker run -p 8080:80 ollama-gui
+docker run -d -p 8080:80 ollama-gui
 
 # Access at http://localhost:8080
 ```
