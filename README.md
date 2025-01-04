@@ -58,6 +58,15 @@ OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 ### Docker Deployment
 
 ```bash
+# Pull and run the latest image
+docker run -p 8080:80 ghcr.io/helgesverre/ollama-gui:main
+
+# Access at http://localhost:8080
+```
+
+Or build the image locally, and run it:
+
+```bash
 # Build the image
 docker build -t ollama-gui .
 
