@@ -28,7 +28,7 @@
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Prerequisites (only needed for local development)
 
 1. Install [Ollama](https://ollama.ai/download)
 2. Install [Node.js](https://nodejs.org/) (v16+) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install)
@@ -57,15 +57,46 @@ OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 
 ### Docker Deployment
 
-```bash
-# Build the image
-docker build -t ollama-gui .
+No need to install anything other than `docker`.
 
-# Run the container
-docker run -p 8080:80 ollama-gui
+> If you have GPU, please uncomment the following lines in the file `compose.yml`
+```Dockerfile
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+```
+
+#### Run
+```bash
+docker compose up -d
 
 # Access at http://localhost:8080
 ```
+
+#### Stop
+```bash
+docker compose down
+```
+
+#### Download more models
+```bash
+# Enter the ollama container
+docker exec -it ollama bash
+
+# Inside the container
+ollama pull <model_name>
+
+# Example
+ollama pull deepseek-r1:7b
+```
+
+Restart the containers using `docker compose restart`.
+
+Models will get downloaded inside the folder `./ollama_data` in the repository. You can change it inside the `compose.yml`
 
 ## 🛣️ Roadmap
 
