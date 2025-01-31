@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useTextareaAutosize } from '@vueuse/core'
 import { useChats } from '../services/chat.ts'
 import { IconPlayerStopFilled, IconSend, IconWhirl } from '@tabler/icons-vue'
+import testConnection from '../services/testConnection.ts'
 
 const { textarea, input: userInput } = useTextareaAutosize({ input: '' })
 const { addUserMessage, abort, hasActiveChat } = useChats()
@@ -42,6 +43,12 @@ const onKeydown = (event: KeyboardEvent) => {
     onSubmit()
   }
 }
+const isConnected = ref(true)
+onMounted(async () => {
+  if (!(await testConnection())) {
+    isConnected.value = false
+  }
+})
 
 const handleCompositionStart = () => {
   flag.value = false
@@ -56,6 +63,7 @@ const handleCompositionEnd = () => {
   <form class="mt-2" @submit.prevent="onSubmit">
     <div class="relative">
       <textarea
+        :disabled="!isConnected"
         ref="textarea"
         v-model="userInput"
         class="block max-h-[500px] w-full resize-none rounded-xl border-none bg-gray-50 p-4 pl-4 pr-20 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-gray-50 dark:placeholder-gray-300 dark:focus:ring-blue-600 sm:text-base"

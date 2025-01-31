@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Message } from '../../services/database.ts'
 import { avatarUrl, debugMode } from '../../services/appConfig.ts'
-import Markdown from '../Markdown.ts'
+import Markdown from '../Markdown.vue'
 
 type Props = {
   message: Message
