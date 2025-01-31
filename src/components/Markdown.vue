@@ -1,27 +1,45 @@
 <template>
-  <div v-html="content" />
+  <VueMarkdown :source="content" :plugins="plugins" />
 </template>
+<script setup>
+import { onMounted } from 'vue'
+import VueMarkdown from 'vue-markdown-render'
+import MarkdownItAnchor from 'markdown-it-anchor'
+import hljs from 'highlight.js'
+import '../assets/atom-one-dark.css'
+import ClipboardJS from 'clipboard'
 
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import markdownit from 'markdown-it';
-import highlightjs from 'markdown-it-highlightjs';
-import { useCopyCode } from 'markdown-it-copy-code';
+const plugins = [MarkdownItAnchor]
+const { role, content } = defineProps({ role: String, content: String })
 
-// Props declaration
-const props = defineProps<{
-  source: string;
-}>();
-onMounted(()=>{
-  useCopyCode()
+onMounted(() => {
+  document.querySelectorAll('pre code').forEach((block) => {
+    // Highlight the code block
+    hljs.highlightElement(block)
+
+    // Check if the button already exists
+    if (!block.parentNode.querySelector('button.copy-button')) {
+      const button = document.createElement('button')
+      const clipboard = new ClipboardJS(button, {
+        target: () => block,
+      })
+
+      clipboard.on('success', () => {
+        button.innerText = 'Copied!'
+        setTimeout(() => {
+          button.innerText = 'Copy'
+        }, 2000)
+      })
+
+      clipboard.on('error', () => {
+        button.innerText = 'Failed'
+      })
+
+      button.className =
+        'copy-button bg-[#282c34] text-slate-100 mt-2 p-2 rounded shadow-2xl hover:shadow-md active:shadow-none transition-shadow'
+      button.innerText = 'Copy'
+      block.parentNode.appendChild(button)
+    }
+  })
 })
-// Initialize markdown-it with highlightjs plugin
-const md = markdownit().use(highlightjs, {
-  inline: true,
-  auto: true,
-  ignoreIllegals: true,
-})
-
-// Computed property to render markdown
-const content = computed(() => md.render(props.source));
 </script>

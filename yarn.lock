@@ -443,7 +443,7 @@ chokidar@^3.6.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
-clipboard@^2.0.6:
+clipboard@^2.0.11:
   version "2.0.11"
   resolved "https://registry.npmjs.org/clipboard/-/clipboard-2.0.11.tgz"
   integrity sha512-C+0bbOqkezLIsmWSvlsXS0Q0bmkugu7jcfMIACB+RDEntIzQIkdr148we28AfSloQLRdZlYL/QYyrq05j/3Faw==
@@ -542,6 +542,11 @@ entities@^4.4.0, entities@^4.5.0:
   version "4.5.0"
   resolved "https://registry.npmjs.org/entities/-/entities-4.5.0.tgz"
   integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
+
+entities@~3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmjs.org/entities/-/entities-3.0.1.tgz"
+  integrity sha512-WiyBqoomrwMdFG1e0kqvASYfnlb0lp8M5o5Fw2OFq1hNZxxcNk8Ik0Xm7LxzBhuidnZB/UtBqVCgUz3kBOP51Q==
 
 esbuild@^0.21.3:
   version "0.21.5"
@@ -765,6 +770,13 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
+linkify-it@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.npmjs.org/linkify-it/-/linkify-it-4.0.1.tgz"
+  integrity sha512-C7bfi1UZmoj8+PQx22XyeXCuBlokoyWQL5pWSP+EI6nzRylyThouddufc2c1NDIcP9k5agmN9fLpA7VNJfIiqw==
+  dependencies:
+    uc.micro "^1.0.1"
+
 linkify-it@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/linkify-it/-/linkify-it-5.0.0.tgz"
@@ -787,11 +799,6 @@ lodash.merge@^4.6.2:
   resolved "https://registry.npmjs.org/lodash.merge/-/lodash.merge-4.6.2.tgz"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash@^4.17.15:
-  version "4.17.21"
-  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
-  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
-
 lru-cache@^10.2.0:
   version "10.4.3"
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.4.3.tgz"
@@ -808,24 +815,6 @@ markdown-it-anchor@^8.6.7:
   version "8.6.7"
   resolved "https://registry.npmjs.org/markdown-it-anchor/-/markdown-it-anchor-8.6.7.tgz"
   integrity sha512-FlCHFwNnutLgVTflOYHPW2pPcl2AACqVzExlkGQNsi4CJgqOHN7YTgDd4LuhgN1BFO3TS0vLAruV1Td6dwWPJA==
-
-markdown-it-code-copy@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.npmjs.org/markdown-it-code-copy/-/markdown-it-code-copy-0.2.1.tgz"
-  integrity sha512-WuMKSdhYDwTXM78LYHDj4ZFd2RFmodzyfDoJGEW7YLVwVPpaSAm2Jhcxgr3LWFygfvjTUeQu+TH+JZ/IF0u7yg==
-  dependencies:
-    clipboard "^2.0.6"
-    lodash "^4.17.15"
-
-markdown-it-copy-code@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.npmjs.org/markdown-it-copy-code/-/markdown-it-copy-code-0.0.3.tgz"
-  integrity sha512-MDDmuk/kBxjd94RGsBxfWeDBbl/MUNpxUaD0XdYCxGnPv69pdAZ3vQaGAOolNaCPe4+gft9wWVYjuURv5oa3rw==
-
-markdown-it-copy@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/markdown-it-copy/-/markdown-it-copy-1.2.0.tgz"
-  integrity sha512-8Pm/cF7kpr+9VArhICCndb31zmz75hMR0WpmelUNn1RYe8vkqumLKt0xaInTT4mELhMqmnIr+8dm30w7Pzqc4A==
 
 markdown-it-highlightjs@^4.2.0:
   version "4.2.0"
@@ -846,12 +835,28 @@ markdown-it@*, markdown-it@^14.1.0:
     punycode.js "^2.3.1"
     uc.micro "^2.1.0"
 
+markdown-it@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.npmjs.org/markdown-it/-/markdown-it-13.0.2.tgz"
+  integrity sha512-FtwnEuuK+2yVU7goGn/MJ0WBZMM9ZPgU9spqlFs7/A/pDIUNSOQZhUgOqYCficIuR2QaFnrt8LHqBWsbTAoI5w==
+  dependencies:
+    argparse "^2.0.1"
+    entities "~3.0.1"
+    linkify-it "^4.0.1"
+    mdurl "^1.0.1"
+    uc.micro "^1.0.5"
+
 md5-hex@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/md5-hex/-/md5-hex-4.0.0.tgz"
   integrity sha512-di38zHPn4Tz8LCb5Lz8SpLb/20Hv23aPXpF4Bq1mR5r9JuCZQ/JpcDUxFfZF9Ur5GiUvqS5NQOkR+fm5cYZ0IQ==
   dependencies:
     blueimp-md5 "^2.18.0"
+
+mdurl@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/mdurl/-/mdurl-1.0.1.tgz"
+  integrity sha512-/sKlQJCBYVY9Ers9hqzKou4H6V5UWc/M59TH2dvkt+84itfnq7uFOMLpOiOS4ujvHP4etln18fmIxA5R5fll0g==
 
 mdurl@^2.0.0:
   version "2.0.0"
@@ -1293,6 +1298,11 @@ typescript@*, typescript@^5.6.3, typescript@>=5.0.0:
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.6.3.tgz"
   integrity sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==
 
+uc.micro@^1.0.1, uc.micro@^1.0.5:
+  version "1.0.6"
+  resolved "https://registry.npmjs.org/uc.micro/-/uc.micro-1.0.6.tgz"
+  integrity sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==
+
 uc.micro@^2.0.0, uc.micro@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/uc.micro/-/uc.micro-2.1.0.tgz"
@@ -1336,6 +1346,13 @@ vue-demi@>=0.14.8:
   version "0.14.10"
   resolved "https://registry.npmjs.org/vue-demi/-/vue-demi-0.14.10.tgz"
   integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
+
+vue-markdown-render@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.npmjs.org/vue-markdown-render/-/vue-markdown-render-2.2.1.tgz"
+  integrity sha512-XkYnC0PMdbs6Vy6j/gZXSvCuOS0787Se5COwXlepRqiqPiunyCIeTPQAO2XnB4Yl04EOHXwLx5y6IuszMWSgyQ==
+  dependencies:
+    markdown-it "^13.0.2"
 
 vue-tsc@^2.1.10:
   version "2.1.10"
