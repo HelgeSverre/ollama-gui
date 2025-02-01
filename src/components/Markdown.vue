@@ -1,6 +1,5 @@
-
 <template>
-  <VueMarkdown :source="content" :plugins="plugins" />
+    <VueMarkdown :source="content" :plugins="plugins" />
 </template>
 
 <script setup lang="ts">
