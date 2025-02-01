@@ -5,9 +5,11 @@ import { Config, db } from './database'
 
 export const currentModel = useLocalStorage('currentModel', 'none')
 export const gravatarEmail = useLocalStorage('gravatarEmail', 'helge.sverre@gmail.com')
+export const defaultAvatarURL = "default_avatar.png"
 export const historyMessageLength = useLocalStorage('historyMessageLength', 10)
 export const avatarUrl = computed(() =>
-  gravatarUrl(gravatarEmail.value, { size: 200, default: '/avatar.png' }),
+  gravatarEmail.value ? 
+  gravatarUrl(gravatarEmail.value, { size: 200, default: '/avatar.png' }) : defaultAvatarURL,
 )
 export const debugMode = useLocalStorage('debug', false)
 export const baseUrl = useLocalStorage('baseUrl', 'http://localhost:11434/api')

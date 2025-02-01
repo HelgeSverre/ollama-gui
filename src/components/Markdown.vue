@@ -3,7 +3,7 @@
   <VueMarkdown :source="content" :plugins="plugins" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import VueMarkdown from 'vue-markdown-render'
 import MarkdownItAnchor from 'markdown-it-anchor'
@@ -17,16 +17,16 @@ const { content } = defineProps({ content: String })
 const applySyntaxHighlighting = () => {
   document.querySelectorAll('pre code').forEach((block) => {
     if (!block.classList.contains('hljs')) {
-      hljs.highlightElement(block) // Apply syntax highlighting
+      hljs.highlightElement(block as unknown as any) // Apply syntax highlighting
     }
 
     // Ensure copy button isn't added multiple times
-    if (!block.parentNode.querySelector('button.copy-button')) {
+    if (!block.parentNode!.querySelector('button.copy-button')) {
       const button = document.createElement('button')
       button.className =
         'copy-button bg-[#282c34] text-slate-100 mt-2 px-3 py-1 rounded transition-all duration-300 shadow-2xl hover:shadow-md active:shadow-none'
       button.innerText = 'Copy'
-      block.parentNode.appendChild(button)
+      block.parentNode!.appendChild(button)
 
       // ClipboardJS setup
       const clipboard = new ClipboardJS(button, { target: () => block })
