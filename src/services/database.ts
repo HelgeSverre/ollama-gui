@@ -22,6 +22,7 @@ export interface Message {
   chatId: number
   role: ChatRole
   content: string
+  images: string[]
   meta?: any
   context?: number[]
   createdAt: Date
