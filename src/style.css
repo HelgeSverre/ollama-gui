@@ -12,7 +12,9 @@
   transform: translateX(100%);
 }
 
+
 .slide-enter-to,
 .slide-leave-from {
   transform: translateX(0);
 }
+
