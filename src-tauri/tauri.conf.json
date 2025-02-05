@@ -14,7 +14,9 @@
       {
         "title": "ollama-gui",
         "resizable": true,
-        "fullscreen": false
+        "width": 1000,
+        "height": 800,
+        "fullscreen": true
       }
     ],
     "security": {
