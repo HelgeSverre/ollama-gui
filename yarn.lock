@@ -177,27 +177,6 @@
     lodash.merge "^4.6.2"
     postcss-selector-parser "6.0.10"
 
-"@tauri-apps/cli-darwin-arm64@2.2.7":
-  version "2.2.7"
-  resolved "https://registry.npmjs.org/@tauri-apps/cli-darwin-arm64/-/cli-darwin-arm64-2.2.7.tgz"
-  integrity sha512-54kcpxZ3X1Rq+pPTzk3iIcjEVY4yv493uRx/80rLoAA95vAC0c//31Whz75UVddDjJfZvXlXZ3uSZ+bnCOnt0A==
-
-"@tauri-apps/cli@^2.2.7":
-  version "2.2.7"
-  resolved "https://registry.npmjs.org/@tauri-apps/cli/-/cli-2.2.7.tgz"
-  integrity sha512-ZnsS2B4BplwXP37celanNANiIy8TCYhvg5RT09n72uR/o+navFZtGpFSqljV8fy1Y4ixIPds8FrGSXJCN2BerA==
-  optionalDependencies:
-    "@tauri-apps/cli-darwin-arm64" "2.2.7"
-    "@tauri-apps/cli-darwin-x64" "2.2.7"
-    "@tauri-apps/cli-linux-arm-gnueabihf" "2.2.7"
-    "@tauri-apps/cli-linux-arm64-gnu" "2.2.7"
-    "@tauri-apps/cli-linux-arm64-musl" "2.2.7"
-    "@tauri-apps/cli-linux-x64-gnu" "2.2.7"
-    "@tauri-apps/cli-linux-x64-musl" "2.2.7"
-    "@tauri-apps/cli-win32-arm64-msvc" "2.2.7"
-    "@tauri-apps/cli-win32-ia32-msvc" "2.2.7"
-    "@tauri-apps/cli-win32-x64-msvc" "2.2.7"
-
 "@types/estree@1.0.6":
   version "1.0.6"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.6.tgz"
@@ -220,13 +199,6 @@
   version "1.0.5"
   resolved "https://registry.npmjs.org/@types/mdurl/-/mdurl-1.0.5.tgz"
   integrity sha512-6L6VymKTzYSrEf4Nev4Xa1LCHKrlTlYCBMTlQKFuddo1CvQcE52I0mwfOJayueUC7MJuXOeHTcIU683lzd0cUA==
-
-"@types/node@^18.0.0 || >=20.0.0":
-  version "20.17.16"
-  resolved "https://registry.npmjs.org/@types/node/-/node-20.17.16.tgz"
-  integrity sha512-vOTpLduLkZXePLxHiHsBLp98mHGnl8RptV4YAO3HfKO5UHjDvySGbxKtpYfy8Sx5+WKcgc45qNreJJRVM3L6mw==
-  dependencies:
-    undici-types "~6.19.2"
 
 "@types/prismjs@^1.26.0":
   version "1.26.5"
@@ -1459,11 +1431,6 @@ uc.micro@^2.0.0, uc.micro@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/uc.micro/-/uc.micro-2.1.0.tgz"
   integrity sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A==
-
-undici-types@~6.19.2:
-  version "6.19.8"
-  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.19.8.tgz"
-  integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
 
 update-browserslist-db@^1.1.1:
   version "1.1.1"
