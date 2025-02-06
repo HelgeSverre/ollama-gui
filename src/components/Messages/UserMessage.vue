@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Message } from '../../services/database.ts'
-import { avatarUrl, debugMode } from '../../services/appConfig.ts'
-import Markdown from '../Markdown.ts'
-
+import { avatarUrl, debugMode, defaultAvatarURL } from '../../services/appConfig.ts'
 type Props = {
   message: Message
 }
@@ -22,8 +20,10 @@ const { message } = defineProps<Props>()
         v-else
         class="prose prose-base max-w-full dark:prose-invert prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-p:text-gray-900 prose-p:first:mt-0 prose-a:text-blue-600 prose-code:text-sm prose-code:text-gray-900 prose-pre:p-2 dark:prose-p:text-gray-100 dark:prose-code:text-gray-100"
       >
-        <Markdown :source="message.content" />
+        {{message.content}}
+        <img v-for="imageUrl in message.images" :src="imageUrl" alt="Image Prompt" class="max-w-md rounded-lg">
       </div>
+      
     </div>
   </div>
 </template>

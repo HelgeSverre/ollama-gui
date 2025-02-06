@@ -147,33 +147,37 @@ export function useChats() {
     systemPrompt.value = {
       chatId: activeChat.value.id!,
       role: 'system',
+      images: [],
       content,
       meta,
       createdAt: new Date(),
     }
   }
+  
 
-  const addUserMessage = async (content: string) => {
+  const addUserMessage = async (content: string, base64Images: string[]) => {
     if (!activeChat.value) {
       console.warn('There was no active chat.')
       return
     }
-
     const currentChatId = activeChat.value.id!
     const message: Message = {
       chatId: activeChat.value.id!,
       role: 'user',
       content,
+      images: [...base64Images],
       createdAt: new Date(),
     }
 
     try {
       message.id = await dbLayer.addMessage(message)
       messages.value.push(message)
-
+            
       await generate(
         currentModel.value,
-        messages.value,
+        messages.value.map(msg=>{
+          return {...msg, images: msg.images.map(img=>img.split(',')[1])}
+        }),
         systemPrompt.value,
         historyMessageLength.value,
         (data) => handleAiPartialResponse(data, currentChatId),
@@ -251,6 +255,7 @@ export function useChats() {
     const message: Message = {
       chatId: chatId,
       role: 'assistant',
+      images: [],
       content: initialContent,
       createdAt: new Date(),
     }

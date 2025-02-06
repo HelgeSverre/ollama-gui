@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Message } from '../../services/database.ts'
 import { debugMode } from '../../services/appConfig.ts'
-import Markdown from '../Markdown.ts'
 import 'highlight.js/styles/github-dark.css'
 import logo from '/logo.png'
+import Markdown from '../Markdown.vue'
 
 type Props = {
   message: Message

@@ -16,6 +16,8 @@ import {
   toggleSystemPromptPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
+import { onMounted, ref } from 'vue'
+import testConnection from '../services/testConnection.ts'
 
 const { sortedChats, activeChat, switchChat, deleteChat, startNewChat, wipeDatabase } =
   useChats()
@@ -24,6 +26,13 @@ const onNewChat = () => {
   checkSystemPromptPanel()
   return startNewChat('New chat')
 }
+const isConnected = ref(true)
+onMounted(async () => {
+  if (!(await testConnection())) {
+    isConnected.value = false
+  }
+})
+
 
 const onSwitchChat = (chatId: number) => {
   checkSystemPromptPanel()
@@ -42,8 +51,9 @@ const checkSystemPromptPanel = () => {
     >
       <div class="mx-2 mb-2">
         <button
-          @click="onNewChat"
-          class="flex w-full items-center justify-center gap-x-2 rounded-md bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-offset-gray-900"
+        v-if="isConnected"
+        @click="onNewChat"
+        class=" flex w-full items-center justify-center gap-x-2 rounded-md bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-offset-gray-900"
         >
           <IconPlus class="h-5 w-5" />
           <span>New Chat</span>
