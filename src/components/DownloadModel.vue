@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import TextInput from './Inputs/TextInput.vue'
+import { useAI } from '../services/useAI'
 const modelName = ref('')
 const downloadProgress = ref(0)
 const isDownloading = ref(false)
 const errorMessage = ref('')
-
+const { refreshModels } = useAI();
 async function downloadModel() {
   errorMessage.value = ''
   isDownloading.value = true
@@ -54,7 +55,8 @@ async function downloadModel() {
     setTimeout(() => {
       downloadProgress.value = 0
     }, 2000)
-  }
+}
+refreshModels()
 }
 </script>
 

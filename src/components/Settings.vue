@@ -17,7 +17,7 @@ import {
 <template>
   <aside>
     <div
-      class="relative h-screen w-60 overflow-y-auto border-l border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900 sm:w-64"
+      class="relative h-screen w-60 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-700 dark:scrollbar-track-gray-900 scroll-smooth border-l border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900 sm:w-64"
     >
     <div class="mb-4 flex items-center gap-x-2 px-2 text-gray-900 dark:text-gray-100">
       

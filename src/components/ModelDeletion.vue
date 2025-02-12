@@ -42,34 +42,32 @@ const deleteModel = async () => {
 </script>
 
 <template>
-    <span class="font-bold mb-2 text-gray-900 dark:text-gray-100">
-      Model Deletion
-    </span>
-    <div class="space-y-2">
-      <label for="model-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        Select a model to delete:
+    
+    <div class="space-y-4">
+      <label for="model-select" class="block text-sm ml-2 font-semibold text-gray-700 dark:text-gray-300">
+        Delete Model
       </label>
       <select
         id="model-select"
         v-model="selectedModel"
-        class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+        class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 text-sm"
       >
-        <option value="" disabled class="text-gray-700 dark:text-gray-200">
+        <option value="" disabled class="text-gray-900 dark:text-gray-200">
           Select a model
         </option>
         <option
           v-for="model in availableModels"
           :key="model.name"
           :value="model.name"
-          class="text-gray-700 dark:text-gray-200"
+          class="text-gray-900 dark:text-gray-200 text-sm"
         >
-          {{ model.name }} ({{ model.size }} MB)
+          {{ model.name }} ({{ (model.size / 1024 / 1024).toFixed(2) }} MB)
         </option>
       </select>
       <button
         @click="deleteModel"
         :disabled="!selectedModel"
-        class="w-full py-2 px-2 bg-red-500 dark:bg-red-600 text-white rounded-md hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
+        class="w-full py-2 px-4 bg-red-500 dark:bg-red-600 text-white font-semibold rounded-md hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-sm"
       >
         Delete Model
       </button>
