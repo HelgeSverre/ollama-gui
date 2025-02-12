@@ -1,28 +1,3 @@
-<template>
-    <div class="mb-4">
-  <TextInput label="Download Model" v-model="modelName" placeholder="Model Name" />
-  <button
-    @click="downloadModel"
-    :disabled="isDownloading || !modelName"
-    class="mt-2 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    <span v-if="isDownloading">Downloading...</span>
-    <span v-else>Download</span>
-  </button>
-
-  <div v-if="downloadProgress > 0" class="mt-2 h-2 w-full rounded-full bg-gray-200">
-    <div
-      class="h-2 rounded-full bg-blue-600 transition-all duration-300"
-      :style="{ width: `${downloadProgress}%` }"
-    />
-  </div>
-  
-    <div v-if="errorMessage.length" class="mt-2 text-sm text-red-500">
-      {{ errorMessage }}
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import TextInput from './Inputs/TextInput.vue'
@@ -82,5 +57,32 @@ async function downloadModel() {
   }
 }
 </script>
+
+
+<template>
+    <div class="mb-4">
+  <TextInput label="Download Model" v-model="modelName" placeholder="Model Name" />
+  <button
+    @click="downloadModel"
+    :disabled="isDownloading || !modelName"
+    class="mt-2 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    <span v-if="isDownloading">Downloading...</span>
+    <span v-else>Download</span>
+  </button>
+
+  <div v-if="downloadProgress > 0" class="mt-2 h-2 w-full rounded-full bg-gray-200">
+    <div
+      class="h-2 rounded-full bg-blue-600 transition-all duration-300"
+      :style="{ width: `${downloadProgress}%` }"
+    />
+  </div>
+  
+    <div v-if="errorMessage.length" class="mt-2 text-sm text-red-500">
+      {{ errorMessage }}
+    </div>
+  </div>
+</template>
+
 
 <style scoped></style>
