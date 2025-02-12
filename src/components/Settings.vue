@@ -3,6 +3,7 @@ import { IconLayoutSidebarRightCollapse } from '@tabler/icons-vue'
 import ToggleInput from './Inputs/ToggleInput.vue'
 import TextInput from './Inputs/TextInput.vue'
 import DownloadModel from './DownloadModel.vue';
+import ModelDeletion from './ModelDeletion.vue';
 import {
   baseUrl,
   historyMessageLength,
@@ -33,6 +34,7 @@ import {
       class="my-4 border-t border-gray-200 px-2 py-4 text-gray-900 dark:border-gray-700 dark:text-gray-100"
       >
       <DownloadModel/>
+      <ModelDeletion/>
         <ToggleInput label="Enable debug mode" v-model="debugMode" />
         <TextInput label="Base URL" v-model="baseUrl" />
         <TextInput label="Gravatar Email" v-model="gravatarEmail" />
