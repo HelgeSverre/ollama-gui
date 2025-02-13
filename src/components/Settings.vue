@@ -11,7 +11,6 @@ import {
   gravatarEmail,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
-
 </script>
 
 <template>
@@ -54,7 +53,6 @@ import {
           />
         </div>
 
-        <!-- Remaining settings... -->
       </div>
     </div>
   </aside>

@@ -2,15 +2,23 @@
 import { ref } from 'vue'
 import TextInput from './Inputs/TextInput.vue'
 import { useAI } from '../services/useAI'
+
 const modelName = ref('')
 const downloadProgress = ref(0)
 const isDownloading = ref(false)
 const errorMessage = ref('')
-const { refreshModels } = useAI();
+const { refreshModels } = useAI()
+
+// Create a ref to hold the AbortController instance
+const abortController = ref<AbortController | null>(null)
+
 async function downloadModel() {
   errorMessage.value = ''
   isDownloading.value = true
   downloadProgress.value = 0
+
+  // Create a new AbortController for the current download
+  abortController.value = new AbortController()
 
   try {
     const response = await fetch(`http://localhost:11434/api/pull`, {
@@ -19,6 +27,7 @@ async function downloadModel() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ model: modelName.value }),
+      signal: abortController.value.signal, // Pass the signal to the fetch request
     })
 
     if (!response.ok) {
@@ -46,45 +55,49 @@ async function downloadModel() {
         }
       }
     }
-  } catch (err) {
-    errorMessage.value = err instanceof Error ? err.message : 'Failed to download model'
-    console.log(err);
-    
+  } catch (err) {    
+      errorMessage.value = err instanceof Error ? err.message : 'Failed to download model'
   } finally {
     isDownloading.value = false
+    abortController.value = null
     setTimeout(() => {
       downloadProgress.value = 0
     }, 2000)
+    refreshModels()
+  }
 }
-refreshModels()
+
+function cancelDownload() {
+  if (abortController.value) {
+    abortController.value.abort() // Abort the fetch request
+  }
 }
 </script>
 
-
 <template>
-    <div class="mb-4">
-  <TextInput label="Download Model" v-model="modelName" placeholder="Model Name" />
-  <button
-    @click="downloadModel"
-    :disabled="isDownloading || !modelName"
-    class="mt-2 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-  >
-    <span v-if="isDownloading">Downloading...</span>
-    <span v-else>Download</span>
-  </button>
+  <div class="mb-4">
+    <TextInput label="Download Model" v-model="modelName" placeholder="Model Name" />
+    <button
+      @click="isDownloading ? cancelDownload() : downloadModel()"
+      :disabled="!modelName"
+      class="mt-2 w-full rounded-lg  px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+      :class="isDownloading ?'bg-red-600 hover:bg-red-700' : 'bg-blue-600'"
+    >
+      <span v-if="isDownloading">Cancel Download</span>
+      <span v-else>Download</span>
+    </button>
 
-  <div v-if="downloadProgress > 0" class="mt-2 h-2 w-full rounded-full bg-gray-200">
-    <div
-      class="h-2 rounded-full bg-blue-600 transition-all duration-300"
-      :style="{ width: `${downloadProgress}%` }"
-    />
-  </div>
-  
+    <div v-if="downloadProgress > 0" class="mt-2 h-2 w-full rounded-full bg-gray-200">
+      <div
+        class="h-2 rounded-full bg-blue-600 transition-all duration-300"
+        :style="{ width: `${downloadProgress}%` }"
+      />
+    </div>
+
     <div v-if="errorMessage.length" class="mt-2 text-sm text-red-500">
       {{ errorMessage }}
     </div>
   </div>
 </template>
-
 
 <style scoped></style>
