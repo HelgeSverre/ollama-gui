@@ -1,0 +1,18 @@
+{
+    "build": {
+        "icons": {
+            "src": "frontend/public/favicon/android-chrome-256x256.png",
+            "dest": "icon.icns",
+            "type": "png"
+        },
+      "directories": ["dist"],
+      "mac": {
+        "target": "darwin-x64",
+        "packageType": "msi"
+      },
+      "win32": {
+        "target": "win-x64",
+        "packageType": "msi"
+      }
+    }
+  }
