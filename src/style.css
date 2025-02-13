@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.2s ease-in-out;
@@ -12,7 +13,9 @@
   transform: translateX(100%);
 }
 
+
 .slide-enter-to,
 .slide-leave-from {
   transform: translateX(0);
 }
+
