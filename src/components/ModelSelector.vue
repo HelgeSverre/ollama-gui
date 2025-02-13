@@ -20,9 +20,6 @@ const performRefreshModel = async () => {
     refreshingModel.value = false
   })
 }
-const reload = ()=>{
-  window.location.reload()
-}
 const isConnected = ref(true)
 const handleModelChange = (event: Event) => {
   const wip = event.target as HTMLSelectElement
@@ -71,5 +68,5 @@ onMounted(async ()=>{
       
     </div>
   </div>
-  <span v-else class="text-red-400 text my-2 font-semibold">Connection Error: Make sure Ollama is on. <a @click="reload" class="underline font-medium">Click here to refresh</a></span>
+  <span v-else class="text-red-400 text my-2 font-semibold">Connection Error: Make sure Ollama is on</span>
 </template>
