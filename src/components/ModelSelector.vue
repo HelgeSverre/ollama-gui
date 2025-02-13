@@ -2,8 +2,9 @@
 import { IconRefresh } from '@tabler/icons-vue'
 import { useChats } from '../services/chat.ts'
 import { useAI } from '../services/useAI.ts'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { currentModel } from '../services/appConfig'
+import testConnection from '../services/testConnection.ts'
 
 const { activeChat, switchModel, hasMessages } = useChats()
 const { refreshModels, availableModels } = useAI()
@@ -19,21 +20,30 @@ const performRefreshModel = async () => {
     refreshingModel.value = false
   })
 }
-
+const reload = ()=>{
+  window.location.reload()
+}
+const isConnected = ref(true)
 const handleModelChange = (event: Event) => {
   const wip = event.target as HTMLSelectElement
   console.log('switch', wip.value)
   switchModel(wip.value)
 }
-
 type Props = {
   disabled: boolean
 }
 const { disabled } = defineProps<Props>()
+onMounted(async ()=>{
+  if(!await testConnection()){
+    isConnected.value = false
+  }
+  
+  
+})
 </script>
 
 <template>
-  <div class="flex flex-row text-gray-900 dark:text-gray-100">
+  <div class="flex flex-row text-gray-900 dark:text-gray-100" v-if="isConnected">
     <div class="inline-flex items-center gap-2">
       <select
         :disabled="disabled"
@@ -58,6 +68,8 @@ const { disabled } = defineProps<Props>()
           :class="{ 'animate-spin': refreshingModel }"
         />
       </button>
+      
     </div>
   </div>
+  <span v-else class="text-red-400 text my-2 font-semibold">Connection Error: Make sure Ollama is on. <a @click="reload" class="underline font-medium">Click here to refresh</a></span>
 </template>

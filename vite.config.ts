@@ -6,4 +6,5 @@ export default defineConfig({
   plugins: [vue()],
   // Shh....
   build: { chunkSizeWarningLimit: 1500 },
+  
 })
