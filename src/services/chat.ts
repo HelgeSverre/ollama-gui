@@ -4,6 +4,10 @@ import { historyMessageLength, currentModel, useConfig } from './appConfig'
 import { useAI } from './useAI.ts'
 import { ChatCompletedResponse, ChatPartResponse, useApi } from './api.ts'
 
+interface ChatExport extends Chat {
+  messages: Message[]
+}
+
 // State
 const chats = ref<Chat[]>([])
 const activeChat = ref<Chat | null>(null)
@@ -47,6 +51,10 @@ const dbLayer = {
 
   async deleteMessagesOfChat(chatId: number) {
     return db.messages.where('chatId').equals(chatId).delete()
+  },
+
+  async deleteMessage(messageId: number) {
+    return db.messages.delete(messageId)
   },
 
   async clearChats() {
@@ -104,7 +112,7 @@ export function useChats() {
 
   const switchModel = async (model: string) => {
     currentModel.value = model
-    if (!activeChat.value || hasMessages.value) return
+    if (!activeChat.value) return
 
     try {
       await dbLayer.updateChat(activeChat.value.id!, { model })
@@ -144,13 +152,18 @@ export function useChats() {
     if (!activeChat.value) return
     if (!content) return
 
-    systemPrompt.value = {
+    const systemPromptMessage: Message = {
       chatId: activeChat.value.id!,
       role: 'system',
       content,
       meta,
       createdAt: new Date(),
     }
+
+    systemPromptMessage.id = await dbLayer.addMessage(systemPromptMessage)
+    messages.value.push(systemPromptMessage)
+
+    systemPrompt.value = systemPromptMessage
   }
 
   const addUserMessage = async (content: string) => {
@@ -188,6 +201,34 @@ export function useChats() {
       }
 
       console.error('Failed to add user message:', error)
+    }
+  }
+
+  const regenerateResponse = async () => {
+    if (!activeChat.value) return
+    const currentChatId = activeChat.value.id!
+    const message = messages.value[messages.value.length - 1]
+    if (message && message.role === 'assistant') {
+      if (message.id) db.messages.delete(message.id)
+      messages.value.pop()
+    }
+    try {
+      await generate(
+        currentModel.value,
+        messages.value,
+        systemPrompt.value,
+        historyMessageLength.value,
+        (data) => handleAiPartialResponse(data, currentChatId),
+        (data) => handleAiCompletion(data, currentChatId),
+      )
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          ongoingAiMessages.value.delete(currentChatId)
+          return
+        }
+      }
+      console.error('Failed to regenerate response:', error)
     }
   }
 
@@ -283,6 +324,38 @@ export function useChats() {
     }
   }
 
+  const exportChats = async () => {
+    const chats = await dbLayer.getAllChats()
+    const exportData: ChatExport[] = []
+    await Promise.all(chats.map(async chat => {
+      if (!chat?.id) return
+      const messages = await dbLayer.getMessages(chat.id)
+      exportData.push(Object.assign({ messages }, chat))
+    }))
+    return exportData
+  }
+
+  const importChats = async (jsonData: ChatExport[]) => {
+    jsonData.forEach(async chatData => {
+      const chat: Chat = {
+        name: chatData?.name,
+        model: chatData?.model,
+        createdAt: new Date(chatData?.createdAt || chatData.messages[0].createdAt),
+      }
+      chat.id = await dbLayer.addChat(chat)
+      chats.value.push(chat)
+      chatData.messages.forEach(async messageData => {
+        const message: Message = {
+          chatId: chat.id!,
+          role: messageData.role,
+          content: messageData.content,
+          createdAt: new Date(messageData.createdAt),
+        }
+        await dbLayer.addMessage(message)
+      })
+    })
+  }
+
   return {
     chats,
     sortedChats,
@@ -296,9 +369,12 @@ export function useChats() {
     switchChat,
     deleteChat,
     addUserMessage,
+    regenerateResponse,
     addSystemMessage,
     initialize,
     wipeDatabase,
     abort,
+    exportChats,
+    importChats,
   }
 }

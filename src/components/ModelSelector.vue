@@ -27,9 +27,9 @@ const handleModelChange = (event: Event) => {
 }
 
 type Props = {
-  disabled: boolean
+  disabled?: boolean
 }
-const { disabled } = defineProps<Props>()
+const { disabled = false } = defineProps<Props>()
 </script>
 
 <template>

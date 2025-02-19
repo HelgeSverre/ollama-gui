@@ -10,7 +10,7 @@ const { message } = defineProps<Props>()
 <template>
   <div class="mb-4 flex rounded-xl bg-blue-50 px-2 py-6 dark:bg-blue-900 sm:px-4">
     <div
-      class="mr-2 flex size-10 items-center justify-center rounded-full bg-blue-100 text-center text-2xl dark:bg-blue-800 sm:mr-4"
+      class="mr-1 flex size-10 aspect-square items-center justify-center rounded-full bg-blue-100 text-center text-2xl dark:bg-blue-800 sm:mr-3"
     >
       🧠
     </div>

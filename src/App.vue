@@ -10,20 +10,27 @@ import {
   isSettingsOpen,
   isSystemPromptOpen,
 } from './services/appConfig.ts'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { useAI } from './services/useAI.ts'
 import { useChats } from './services/chat.ts'
 import TextInput from './components/Inputs/TextInput.vue'
 import Settings from './components/Settings.vue'
 
 const { refreshModels, availableModels } = useAI()
-const { activeChat, renameChat, switchModel, initialize, hasMessages } = useChats()
+const { activeChat, renameChat, switchModel, initialize } = useChats()
 const isEditingChatName = ref(false)
 const editedChatName = ref('')
+const chatNameInput = ref()
 
 const startEditing = () => {
   isEditingChatName.value = true
   editedChatName.value = activeChat.value?.name || ''
+  nextTick(() => {
+    if (!chatNameInput.value) return
+    const input = chatNameInput.value.$el.querySelector('input')
+    input.focus()
+    input.select()
+  })
 }
 
 const cancelEditing = () => {
@@ -72,8 +79,9 @@ onMounted(() => {
               <div>
                 <div v-if="isEditingChatName">
                   <TextInput
-                    autofocus
+                    id="chat-name"
                     v-model="editedChatName"
+                    ref="chatNameInput"
                     @keyup.enter="confirmRename"
                     @keyup.esc="cancelEditing"
                     @blur="cancelEditing"
@@ -91,7 +99,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <ModelSelector :disabled="hasMessages" />
+            <ModelSelector />
           </div>
 
           <ChatMessages />
