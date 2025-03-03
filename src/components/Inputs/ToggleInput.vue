@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect, withDefaults } from 'vue'
+import { ref, watchEffect } from 'vue'
 
 type Props = {
   label?: string
@@ -25,9 +25,10 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div>
+  <div class="flex items-center mb-4 justify-between">
     <label
-      class="mb-2 mt-4 block px-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+      @click="toggle"
+      class="block px-2 text-sm font-medium text-gray-900 dark:text-gray-100"
       v-if="label"
     >
       {{ label }}

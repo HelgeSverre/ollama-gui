@@ -4,16 +4,18 @@ import { computed } from 'vue'
 import { Config, db } from './database'
 
 export const currentModel = useLocalStorage('currentModel', 'none')
-export const gravatarEmail = useLocalStorage('gravatarEmail', 'helge.sverre@gmail.com')
+export const gravatarEmail = useLocalStorage('gravatarEmail', '')
 export const historyMessageLength = useLocalStorage('historyMessageLength', 10)
-export const avatarUrl = computed(() =>
-  gravatarUrl(gravatarEmail.value, { size: 200, default: '/avatar.png' }),
+export const avatarUrl = computed(() => gravatarEmail.value
+  ? gravatarUrl(gravatarEmail.value, { size: 200, default: '/avatar.png' })
+  : null,
 )
-export const debugMode = useLocalStorage('debug', false)
+export const enableMarkdown = useLocalStorage('markdown', true)
+export const showSystem = useLocalStorage('systemMessages', true)
 export const baseUrl = useLocalStorage('baseUrl', 'http://localhost:11434/api')
 export const isDarkMode = useLocalStorage('darkMode', true)
 export const isSettingsOpen = useLocalStorage('settingsPanelOpen', true)
-export const isSystemPromptOpen = useLocalStorage('systemPromptOpen', true)
+export const isSystemPromptOpen = useLocalStorage('systemPromptOpen', false)
 export const toggleSettingsPanel = () => (isSettingsOpen.value = !isSettingsOpen.value)
 export const toggleSystemPromptPanel = () =>
   (isSystemPromptOpen.value = !isSystemPromptOpen.value)

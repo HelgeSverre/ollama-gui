@@ -1,15 +1,15 @@
 <script setup lang="ts">
 type Props = {
+  id?: string
   label?: string
   type?: string
-  autofocus?: boolean
   placeholder?: string
   modelValue: string
+  small?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
-  autofocus: false,
 })
 
 const emit = defineEmits<{
@@ -20,16 +20,17 @@ const emit = defineEmits<{
 
 <template>
   <div>
-    <label class="mb-2 mt-4 block px-2 text-sm font-medium" v-if="label">
+    <label :for="id" class="mt-4 mb-2 block px-2 text-sm font-medium" v-if="label">
       {{ label }}
     </label>
     <input
       :value="modelValue"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       @blur="$emit('blur')"
+      :id="id"
       :type="type"
-      :autofocus="autofocus"
-      class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
+      :class="small ? 'text-xs' : 'text-sm'"
+      class="block w-full rounded-lg text-gray-900 dark:text-gray-100 bg-gray-100 p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
       :placeholder="placeholder"
     />
   </div>

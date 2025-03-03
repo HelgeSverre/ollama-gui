@@ -58,7 +58,7 @@ const onKeydown = (event: KeyboardEvent) => {
       <div class="mr-auto flex h-full items-center">
         <div>
           <span
-            class="block h-full rounded border-none p-2 text-lg font-medium text-gray-900 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-gray-100 dark:focus:ring-blue-600"
+            class="block h-full rounded border-none p-2 text-lg font-medium text-gray-900 dark:text-gray-100"
           >
             System Prompts
           </span>
@@ -67,7 +67,7 @@ const onKeydown = (event: KeyboardEvent) => {
       <ModelSelector :disabled="false" @change="initialize" />
     </div>
 
-    <div class="flex flex-col space-y-6 px-4">
+    <div class="flex flex-col overflow-y-auto space-y-6 px-4">
       <!-- Custom Instructions Section -->
       <div class="rounded-xl bg-gray-100 p-6 shadow-sm dark:bg-gray-800">
         <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
