@@ -52,7 +52,7 @@ const visibleMessages = computed(() =>
 <template>
   <div
     ref="chatElement"
-    class="flex-1 overflow-y-auto scroll-smooth rounded-xl p-4 text-sm leading-6 text-gray-900 dark:text-gray-100 sm:text-base sm:leading-7"
+    class="flex-1 overflow-y-auto scroll-smooth rounded-xl p-4 text-sm leading-6 text-gray-900 dark:text-gray-100 sm:text-base sm:leading-7 relative h-full"
   >
     <ChatMessage v-for="message in visibleMessages" :message="message" />
   </div>
