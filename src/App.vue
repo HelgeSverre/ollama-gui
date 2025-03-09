@@ -70,7 +70,7 @@ onMounted(() => {
 
         <div
           v-if="!isSystemPromptOpen"
-          class="mx-auto flex h-screen w-full max-w-7xl flex-col gap-4 px-4 pb-4"
+          class="mx-auto flex h-screen w-full max-w-7xl flex-col gap-4 px-4 pb-4 overflow-hidden relative"
         >
           <div
             class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-gray-100 px-4 py-2 dark:bg-gray-800"

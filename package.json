@@ -13,6 +13,7 @@
     "@tabler/icons-vue": "^2.38.0",
     "@tailwindcss/typography": "^0.5.10",
     "@types/markdown-it": "^13.0.7",
+    "@vscode/markdown-it-katex": "^1.1.1",
     "@vueuse/core": "^10.5.0",
     "autoprefixer": "^10.4.16",
     "date-fns": "^3.0.1",
