@@ -139,6 +139,7 @@ export const useApi = () => {
 
     const reader = res.body?.getReader()
     let results: ChatResponse[] = []
+    let buffer = ''
 
     if (reader) {
       while (true) {
@@ -147,14 +148,21 @@ export const useApi = () => {
           break
         }
 
-        try {
-          const chunk = new TextDecoder().decode(value)
-          const parsedChunk: ChatPartResponse = JSON.parse(chunk)
+        buffer += new TextDecoder().decode(value)
 
-          onDataReceived(parsedChunk)
-          results.push(parsedChunk)
-        } catch (e) {
-          // Carry on...
+        const chunks = buffer.split('\n')
+        buffer = chunks.pop() || '' 
+
+        for (const chunk of chunks) {
+          if (chunk.trim() === '') continue 
+
+          try {
+            const parsedChunk: ChatPartResponse = JSON.parse(chunk)
+            onDataReceived(parsedChunk)
+            results.push(parsedChunk)
+          } catch (e) {
+            console.error('JSON parsing error:', e)
+          }
         }
       }
     }
