@@ -4,7 +4,8 @@ import { enableMarkdown } from '../../services/appConfig.ts'
 import Markdown from '../Markdown.ts'
 import 'highlight.js/styles/github-dark.css'
 import logo from '/logo.png'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { IconCopy, IconCheck } from '@tabler/icons-vue'
 
 type Props = {
   message: Message
@@ -22,17 +23,32 @@ const thought = computed(() => {
     return [null, message.content]
   }
 })
+
+const copied = ref(false)
+
+const copyToClipboard = () => {
+  navigator.clipboard.writeText(thought.value[1])
+    .then(() => {
+      copied.value = true
+      setTimeout(() => {
+        copied.value = false
+      }, 2000)
+    })
+    .catch(err => {
+      console.error('Failed to copy text: ', err)
+    })
+}
 </script>
 
 <template>
-  <div class="flex rounded-xl bg-gray-100 px-2 py-6 dark:bg-gray-800 sm:px-4">
+  <div class="flex rounded-xl bg-gray-100 px-2 py-6 dark:bg-gray-800 sm:px-4 relative">
     <img
       class="mr-2 flex size-10 aspect-square rounded-full border border-gray-200 bg-white object-contain sm:mr-4"
       :src="logo"
       alt="Ollama"
     />
 
-    <div class="flex max-w-3xl items-center rounded-xl">
+    <div class="flex flex-col max-w-3xl rounded-xl">
       <code v-if="!enableMarkdown" class="whitespace-pre-line">{{ message.content }}</code>
       <div
         v-else
@@ -48,5 +64,13 @@ const thought = computed(() => {
         <Markdown :source="thought[1]" />
       </div>
     </div>
+    <button 
+      @click="copyToClipboard" 
+      class="absolute bottom-2 right-2 p-1 rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors opacity-70 hover:opacity-100"
+      :title="copied ? 'Copied!' : 'Copy to clipboard'"
+    >
+      <IconCheck v-if="copied" class="size-4 text-green-500" />
+      <IconCopy v-else class="size-4" />
+    </button>
   </div>
 </template>
