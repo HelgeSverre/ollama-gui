@@ -111,8 +111,14 @@ export type GenerateEmbeddingsResponse = {
 }
 
 // Define a method to get the full API URL for a given path
-const getApiUrl = (path: string) =>
-  `${baseUrl.value || 'http://localhost:11434/api'}${path}`
+const getApiUrl = (path: string) => {
+  // In development mode, use relative paths to leverage Vite proxy
+  if (import.meta.env.DEV) {
+    return `/api${path}`
+  }
+  // In production, use the configured base URL
+  return `${baseUrl.value || 'http://localhost:11434/api'}${path}`
+}
 
 const abortController = ref<AbortController>(new AbortController())
 const signal = ref<AbortSignal>(abortController.value.signal)
