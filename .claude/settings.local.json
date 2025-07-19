@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(find:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh api:*)",
+      "Bash(yarn install)",
+      "Bash(pkill:*)"
+    ],
+    "deny": []
+  }
+}

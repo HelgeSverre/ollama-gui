@@ -25,6 +25,7 @@
 - 🌙 Dark mode support
 - 🚀 Fast and responsive
 - 🔒 Privacy-focused: All processing happens locally
+- 🌐 Development proxy for easy network access
 
 ## 🚀 Quick Start
 
@@ -47,6 +48,25 @@ yarn install
 yarn dev
 ```
 
+#### Network Access (Development Only)
+
+The development server includes an automatic proxy that forwards API requests to your local Ollama instance. This allows other devices on your network to access both the UI and Ollama API:
+
+```bash
+# Start dev server with network access
+yarn dev --host
+
+# Access from other devices using your machine's IP
+# Example: http://192.168.1.100:5173
+```
+
+**Note:** This proxy feature is only available during development with `yarn dev`. For production deployments, you'll need to configure CORS on your Ollama instance or use a reverse proxy.
+
+To disable the proxy (e.g., when using a custom Ollama endpoint):
+```bash
+VITE_NO_PROXY=true yarn dev
+```
+
 ### Using the Hosted Version
 
 To use the [hosted version](https://ollama-gui.vercel.app), run Ollama with:
@@ -57,7 +77,7 @@ OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 
 ### Docker Deployment
 
-No need to install anything other than `docker`.
+The Docker setup runs both Ollama and the GUI together, so no proxy or CORS configuration is needed. No need to install anything other than `docker`.
 
 > If you have GPU, please uncomment the following lines in the file `compose.yml`
 ```Dockerfile
@@ -97,6 +117,25 @@ ollama pull deepseek-r1:7b
 Restart the containers using `docker compose restart`.
 
 Models will get downloaded inside the folder `./ollama_data` in the repository. You can change it inside the `compose.yml`
+
+## 🏭 Production Deployment
+
+When building the application for production (`yarn build`), the resulting static files do not include a proxy server. You have several options for production deployments:
+
+### Option 1: Configure CORS on Ollama
+```bash
+# Allow your production domain
+OLLAMA_ORIGINS=https://your-domain.com ollama serve
+```
+
+### Option 2: Use a Reverse Proxy
+Set up a reverse proxy (nginx, Apache, Caddy) to forward `/api` requests to your Ollama instance.
+
+### Option 3: Use Docker Compose
+The provided Docker setup runs both services together, eliminating CORS issues:
+```bash
+docker compose up -d
+```
 
 ## 🛣️ Roadmap
 
