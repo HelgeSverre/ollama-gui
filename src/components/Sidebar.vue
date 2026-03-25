@@ -12,6 +12,7 @@ import {
 import {
   isDarkMode,
   isSystemPromptOpen,
+  resolvedLocale,
   toggleSettingsPanel,
   toggleSystemPromptPanel,
 } from '../services/appConfig.ts'
@@ -33,8 +34,6 @@ const onSwitchChat = (chatId: number) => {
 const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
-
-const lang = navigator.language
 </script>
 
 <template>
@@ -72,7 +71,7 @@ const lang = navigator.language
           </span>
           <span class="text-xs leading-none text-gray-700 dark:text-gray-300">
             {{
-              chat.createdAt.toLocaleDateString(lang, {
+              chat.createdAt.toLocaleDateString(resolvedLocale, {
                 day: '2-digit',
                 month: 'short',
                 weekday: 'long',

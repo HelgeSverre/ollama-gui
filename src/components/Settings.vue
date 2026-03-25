@@ -10,8 +10,23 @@ import {
   enableMarkdown,
   showSystem,
   gravatarEmail,
+  locale,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
+
+const LOCALE_OPTIONS = [
+  { value: '', label: 'System default' },
+  { value: 'en-US', label: 'English (US)' },
+  { value: 'en-GB', label: 'English (UK)' },
+  { value: 'nb-NO', label: 'Norsk bokmål' },
+  { value: 'de-DE', label: 'Deutsch' },
+  { value: 'fr-FR', label: 'Français' },
+  { value: 'es-ES', label: 'Español' },
+  { value: 'pt-BR', label: 'Português (Brasil)' },
+  { value: 'zh-CN', label: '简体中文' },
+  { value: 'ja-JP', label: '日本語' },
+  { value: 'ko-KR', label: '한국어' },
+]
 import { useChats } from '../services/chat.ts'
 
 const { wipeDatabase } =
@@ -51,6 +66,21 @@ const confirmWipe = () => {
         </div>
 
         <TextInput id="base-url" label="Base URL" v-model="baseUrl" />
+
+        <div>
+          <label for="locale-select" class="mb-2 mt-4 block px-2 text-sm font-medium">
+            Locale
+          </label>
+          <select
+            id="locale-select"
+            v-model="locale"
+            class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-300 dark:focus:ring-blue-600"
+          >
+            <option v-for="opt in LOCALE_OPTIONS" :key="opt.value" :value="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
 
         <TextInput id="gravatar-email" label="Gravatar Email" v-model="gravatarEmail" />
 
