@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import {
   IconMoon,
   IconPlus,
@@ -14,6 +15,7 @@ import {
   isSystemPromptOpen,
   toggleSettingsPanel,
   toggleSystemPromptPanel,
+  userLocale,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
 
@@ -34,7 +36,7 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const lang = navigator.language
+const lang = computed(() => userLocale.value || navigator.language)
 </script>
 
 <template>
