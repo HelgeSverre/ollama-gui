@@ -10,6 +10,7 @@ import {
   enableMarkdown,
   showSystem,
   gravatarEmail,
+  locale,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
@@ -51,6 +52,13 @@ const confirmWipe = () => {
         </div>
 
         <TextInput id="base-url" label="Base URL" v-model="baseUrl" />
+
+        <TextInput
+          id="locale"
+          label="Locale"
+          placeholder="Use system locale"
+          v-model="locale"
+        />
 
         <TextInput id="gravatar-email" label="Gravatar Email" v-model="gravatarEmail" />
 

@@ -13,6 +13,8 @@ export const avatarUrl = computed(() => gravatarEmail.value
 export const enableMarkdown = useLocalStorage('markdown', true)
 export const showSystem = useLocalStorage('systemMessages', true)
 export const baseUrl = useLocalStorage('baseUrl', 'http://localhost:11434/api')
+export const locale = useLocalStorage('locale', '')
+export const dateLocale = computed(() => locale.value.trim() || navigator.language)
 export const isDarkMode = useLocalStorage('darkMode', true)
 export const isSettingsOpen = useLocalStorage('settingsPanelOpen', true)
 export const isSystemPromptOpen = useLocalStorage('systemPromptOpen', false)
