@@ -35,7 +35,17 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const getDateLocale = () => locale.value || navigator.language
+const getDateLocale = () => {
+  const configuredLocale = locale.value.trim()
+  if (!configuredLocale) return navigator.language
+
+  try {
+    Intl.DateTimeFormat(configuredLocale)
+    return configuredLocale
+  } catch {
+    return navigator.language
+  }
+}
 </script>
 
 <template>
