@@ -11,14 +11,15 @@ import {
 
 import {
   isDarkMode,
+  dateLocale,
   isSystemPromptOpen,
   toggleSettingsPanel,
   toggleSystemPromptPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
+import { computed } from 'vue'
 
-const { sortedChats, activeChat, switchChat, deleteChat, startNewChat } =
-  useChats()
+const { sortedChats, activeChat, switchChat, deleteChat, startNewChat } = useChats()
 
 const onNewChat = () => {
   checkSystemPromptPanel()
@@ -34,7 +35,7 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const lang = navigator.language
+const lang = computed(() => dateLocale.value.trim() || navigator.language || undefined)
 </script>
 
 <template>

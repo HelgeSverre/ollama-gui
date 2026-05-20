@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { IconFileExport, IconUpload, IconLayoutSidebarRightCollapse, IconTrashX } from '@tabler/icons-vue'
+import {
+  IconFileExport,
+  IconUpload,
+  IconLayoutSidebarRightCollapse,
+  IconTrashX,
+} from '@tabler/icons-vue'
 import ToggleInput from './Inputs/ToggleInput.vue'
 import TextInput from './Inputs/TextInput.vue'
 import ExportButton from './History/ExportButton.vue'
@@ -10,12 +15,12 @@ import {
   enableMarkdown,
   showSystem,
   gravatarEmail,
+  dateLocale,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
 
-const { wipeDatabase } =
-  useChats()
+const { wipeDatabase } = useChats()
 
 const confirmWipe = () => {
   if (confirm('Delete all chat history?')) {
@@ -27,7 +32,7 @@ const confirmWipe = () => {
 <template>
   <aside>
     <div
-      class="relative h-screen w-60 flex flex-col overflow-y-auto border-l border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900 sm:w-64"
+      class="relative flex h-screen w-60 flex-col overflow-y-auto border-l border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900 sm:w-64"
     >
       <div class="mb-4 flex items-center gap-x-2 px-2 text-gray-900 dark:text-gray-100">
         <button
@@ -54,8 +59,13 @@ const confirmWipe = () => {
 
         <TextInput id="gravatar-email" label="Gravatar Email" v-model="gravatarEmail" />
 
+        <TextInput id="date-locale" label="Date Locale" v-model="dateLocale" />
+
         <div>
-          <label for="chat-history-length" class="mb-2 mt-4 block px-2 text-sm font-medium">
+          <label
+            for="chat-history-length"
+            class="mb-2 mt-4 block px-2 text-sm font-medium"
+          >
             Conversation History Size
           </label>
           <input
@@ -111,10 +121,7 @@ const confirmWipe = () => {
         </div>
       </div>
 
-
-      <div
-        class="mt-auto px-2 space-y-2 text-gray-900 dark:text-gray-100"
-      >
+      <div class="mt-auto space-y-2 px-2 text-gray-900 dark:text-gray-100">
         <ImportButton
           class="group flex w-full items-center gap-x-2 rounded-md px-3 py-2 text-left text-sm font-medium text-gray-900 transition-colors duration-100 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-300 dark:hover:bg-gray-700 dark:focus:ring-blue-500"
         >
