@@ -10,6 +10,7 @@ import {
 } from '@tabler/icons-vue'
 
 import {
+  dateLocale,
   isDarkMode,
   isSystemPromptOpen,
   toggleSettingsPanel,
@@ -17,8 +18,7 @@ import {
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
 
-const { sortedChats, activeChat, switchChat, deleteChat, startNewChat } =
-  useChats()
+const { sortedChats, activeChat, switchChat, deleteChat, startNewChat } = useChats()
 
 const onNewChat = () => {
   checkSystemPromptPanel()
@@ -34,7 +34,24 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const lang = navigator.language
+const dateFormatOptions: Intl.DateTimeFormatOptions = {
+  day: '2-digit',
+  month: 'short',
+  weekday: 'long',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+}
+
+const formatChatDate = (date: Date) => {
+  const configuredLocale = dateLocale.value.trim()
+
+  try {
+    return date.toLocaleDateString(configuredLocale || undefined, dateFormatOptions)
+  } catch {
+    return date.toLocaleDateString(undefined, dateFormatOptions)
+  }
+}
 </script>
 
 <template>
@@ -71,16 +88,7 @@ const lang = navigator.language
             {{ chat.model }}
           </span>
           <span class="text-xs leading-none text-gray-700 dark:text-gray-300">
-            {{
-              chat.createdAt.toLocaleDateString(lang, {
-                day: '2-digit',
-                month: 'short',
-                weekday: 'long',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-              })
-            }}
+            {{ formatChatDate(chat.createdAt) }}
           </span>
         </button>
       </div>
