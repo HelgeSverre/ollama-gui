@@ -35,7 +35,26 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const lang = computed(() => dateLocale.value.trim() || navigator.language || undefined)
+const validDateLocale = (locale?: string) => {
+  const trimmedLocale = locale?.trim()
+
+  if (!trimmedLocale) return undefined
+
+  try {
+    Intl.DateTimeFormat(trimmedLocale)
+    return Intl.DateTimeFormat.supportedLocalesOf(trimmedLocale).length
+      ? trimmedLocale
+      : undefined
+  } catch {
+    return undefined
+  }
+}
+
+const lang = computed(
+  () =>
+    validDateLocale(dateLocale.value) ??
+    validDateLocale(typeof navigator === 'undefined' ? undefined : navigator.language),
+)
 </script>
 
 <template>
