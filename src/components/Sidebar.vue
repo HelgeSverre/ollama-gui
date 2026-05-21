@@ -10,6 +10,7 @@ import {
 } from '@tabler/icons-vue'
 
 import {
+  dateLocale,
   isDarkMode,
   isSystemPromptOpen,
   toggleSettingsPanel,
@@ -34,7 +35,20 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const lang = navigator.language
+const lang = () => {
+  const configuredLocale = dateLocale.value.trim()
+  if (!configuredLocale) {
+    return navigator.language
+  }
+
+  try {
+    return (
+      Intl.DateTimeFormat.supportedLocalesOf(configuredLocale)[0] ?? navigator.language
+    )
+  } catch {
+    return navigator.language
+  }
+}
 </script>
 
 <template>
@@ -72,7 +86,7 @@ const lang = navigator.language
           </span>
           <span class="text-xs leading-none text-gray-700 dark:text-gray-300">
             {{
-              chat.createdAt.toLocaleDateString(lang, {
+              chat.createdAt.toLocaleDateString(lang(), {
                 day: '2-digit',
                 month: 'short',
                 weekday: 'long',

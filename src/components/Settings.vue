@@ -6,6 +6,7 @@ import ExportButton from './History/ExportButton.vue'
 import ImportButton from './History/ImportButton.vue'
 import {
   baseUrl,
+  dateLocale,
   historyMessageLength,
   enableMarkdown,
   showSystem,
@@ -53,6 +54,13 @@ const confirmWipe = () => {
         <TextInput id="base-url" label="Base URL" v-model="baseUrl" />
 
         <TextInput id="gravatar-email" label="Gravatar Email" v-model="gravatarEmail" />
+
+        <TextInput
+          id="date-locale"
+          label="Date Locale"
+          placeholder="System default"
+          v-model="dateLocale"
+        />
 
         <div>
           <label for="chat-history-length" class="mb-2 mt-4 block px-2 text-sm font-medium">
