@@ -34,7 +34,7 @@ const checkSystemPromptPanel = () => {
   isSystemPromptOpen.value = false
 }
 
-const lang = navigator.language
+import { dateLocale } from '../services/appConfig.ts'
 </script>
 
 <template>
@@ -72,7 +72,7 @@ const lang = navigator.language
           </span>
           <span class="text-xs leading-none text-gray-700 dark:text-gray-300">
             {{
-              chat.createdAt.toLocaleDateString(lang, {
+              chat.createdAt.toLocaleDateString(dateLocale || undefined, {
                 day: '2-digit',
                 month: 'short',
                 weekday: 'long',

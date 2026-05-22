@@ -10,6 +10,7 @@ import {
   enableMarkdown,
   showSystem,
   gravatarEmail,
+  dateLocale,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
@@ -53,6 +54,8 @@ const confirmWipe = () => {
         <TextInput id="base-url" label="Base URL" v-model="baseUrl" />
 
         <TextInput id="gravatar-email" label="Gravatar Email" v-model="gravatarEmail" />
+
+        <TextInput id="date-locale" label="Date Locale (e.g. en-US, no, fr)" v-model="dateLocale" />
 
         <div>
           <label for="chat-history-length" class="mb-2 mt-4 block px-2 text-sm font-medium">

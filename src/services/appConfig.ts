@@ -16,6 +16,7 @@ export const baseUrl = useLocalStorage('baseUrl', 'http://localhost:11434/api')
 export const isDarkMode = useLocalStorage('darkMode', true)
 export const isSettingsOpen = useLocalStorage('settingsPanelOpen', true)
 export const isSystemPromptOpen = useLocalStorage('systemPromptOpen', false)
+export const dateLocale = useLocalStorage('dateLocale', navigator.language)
 export const toggleSettingsPanel = () => (isSettingsOpen.value = !isSettingsOpen.value)
 export const toggleSystemPromptPanel = () =>
   (isSystemPromptOpen.value = !isSystemPromptOpen.value)
