@@ -361,11 +361,6 @@ export function useChats() {
     const aiMessage = ongoingAiMessages.value.get(chatId)
     if (aiMessage) {
       aiMessage.content += content
-      try {
-        await dbLayer.updateMessage(aiMessage.id!, { content: aiMessage.content })
-      } catch (error) {
-        console.error('Failed to append to AI message:', error)
-      }
     }
   }
 
@@ -450,11 +445,8 @@ export function useChats() {
   const searchChats = async (query: string) => {
     const results = await dbLayer.searchMessages(query)
     const chatIds = [...new Set(results.map((m) => m.chatId))]
-    const chatMap = new Map<number, string>()
-    for (const id of chatIds) {
-      const chat = await dbLayer.getChat(id)
-      if (chat) chatMap.set(id, chat.name)
-    }
+    const chats = await db.chats.where('id').anyOf(chatIds).toArray()
+    const chatMap = new Map(chats.map((c) => [c.id!, c.name]))
     return results.reduce<
       { chatId: number; chatName: string; matchCount: number; preview: string }[]
     >((acc, m) => {
