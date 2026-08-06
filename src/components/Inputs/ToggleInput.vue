@@ -25,25 +25,25 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="flex items-center mb-4 justify-between">
+  <div class="mb-2 flex items-center justify-between">
     <label
       @click="toggle"
-      class="block px-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+      class="text-text block cursor-pointer px-2 text-[11px] font-medium"
       v-if="label"
     >
       {{ label }}
     </label>
     <button
-      :class="toggleState ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'"
-      class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50"
+      :class="toggleState ? 'bg-accent border-accent' : 'bg-hover border-border'"
+      class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border transition-none focus:outline-none"
       @click="toggle"
       role="switch"
       :aria-checked="toggleState"
     >
       <span
-        :class="toggleState ? 'translate-x-5' : 'translate-x-0'"
+        :class="toggleState ? 'translate-x-4' : 'translate-x-0'"
         aria-hidden="true"
-        class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+        class="pointer-events-none inline-block h-4 w-4 translate-y-[1px] rounded-full bg-white transition-none"
       ></span>
     </button>
   </div>

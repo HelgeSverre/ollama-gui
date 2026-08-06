@@ -1,35 +1,37 @@
 <script setup lang="ts">
 import { Message } from '../../services/database.ts'
 import { avatarUrl, enableMarkdown } from '../../services/appConfig.ts'
-import Markdown from '../Markdown.ts'
+import Markdown from '../Markdown.vue'
 
-type Props = {
-  message: Message
-}
-
+type Props = { message: Message }
 const { message } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="flex flex-row px-2 py-4 sm:px-4">
-    <img v-if="avatarUrl" class="mr-2 flex size-10 rounded-full sm:mr-4" :src="avatarUrl" />
+  <div class="flex justify-end gap-3 py-2" data-testid="user-message">
     <div
-      v-else
-      class="mr-2 flex size-10 aspect-square items-center justify-center rounded-full bg-white text-center text-2xl dark:bg-gray-600 sm:mr-4"
+      class="border-border bg-panel max-w-[85%] min-w-0 rounded-[5px] border px-3.5 py-2.5"
     >
-      🧑
-    </div>
-
-    <div class="flex max-w-3xl items-center">
-      <code v-if="!enableMarkdown" class="whitespace-pre-line text-gray-900 dark:text-gray-100">
-        {{ message.content }}
-      </code>
       <div
-        v-else
-        class="prose prose-base max-w-full dark:prose-invert prose-headings:font-semibold prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-p:text-gray-900 prose-p:first:mt-0 prose-a:text-blue-600 prose-code:text-sm prose-code:text-gray-900 prose-pre:p-2 dark:prose-p:text-gray-100 dark:prose-code:text-gray-100"
+        v-if="!enableMarkdown"
+        class="text-text text-[13px] leading-relaxed whitespace-pre-wrap"
       >
+        {{ message.content }}
+      </div>
+      <div v-else class="text-text message-content text-[13px] leading-relaxed">
         <Markdown :source="message.content" />
       </div>
+    </div>
+    <img
+      v-if="avatarUrl"
+      class="mt-0.5 h-[22px] w-[22px] flex-none rounded-[3px]"
+      :src="avatarUrl"
+    />
+    <div
+      v-else
+      class="bg-hover mt-0.5 flex h-[22px] w-[22px] flex-none items-center justify-center rounded-[3px] text-[12px]"
+    >
+      &#x1F9D1;
     </div>
   </div>
 </template>

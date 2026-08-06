@@ -1,8 +1,7 @@
 import { computed, ref } from 'vue'
 import { Chat, db, Message } from './database'
 import { historyMessageLength, currentModel, useConfig } from './appConfig'
-import { useAI } from './useAI.ts'
-import { ChatCompletedResponse, ChatPartResponse, useApi } from './api.ts'
+import { streamResponse, activeStream } from './stream'
 
 interface ChatExport extends Chat {
   messages: Message[]
@@ -64,15 +63,29 @@ const dbLayer = {
   async clearMessages() {
     return db.messages.clear()
   },
+
+  async searchMessages(query: string) {
+    try {
+      return db.messages
+        .filter((m) => m.content.toLowerCase().includes(query.toLowerCase()))
+        .toArray()
+    } catch (error) {
+      console.error('Failed to search messages:', error)
+      return []
+    }
+  },
 }
 
 export function useChats() {
-  const { generate } = useAI()
-  const { abort } = useApi()
-
   // Computed
   const sortedChats = computed<Chat[]>(() =>
-    [...chats.value].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
+    [...chats.value].sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1
+      if (!a.pinned && b.pinned) return 1
+      if (a.archived && !b.archived) return 1
+      if (!a.archived && b.archived) return -1
+      return b.createdAt.getTime() - a.createdAt.getTime()
+    }),
   )
   const hasActiveChat = computed(() => activeChat.value !== null)
   const hasMessages = computed(() => messages.value.length > 0)
@@ -184,7 +197,7 @@ export function useChats() {
       message.id = await dbLayer.addMessage(message)
       messages.value.push(message)
 
-      await generate(
+      await streamResponse(
         currentModel.value,
         messages.value,
         systemPrompt.value,
@@ -193,13 +206,8 @@ export function useChats() {
         (data) => handleAiCompletion(data, currentChatId),
       )
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          ongoingAiMessages.value.delete(currentChatId)
-          return
-        }
-      }
-
+      ongoingAiMessages.value.delete(currentChatId)
+      if (error instanceof Error && error.name === 'AbortError') return
       console.error('Failed to add user message:', error)
     }
   }
@@ -209,46 +217,70 @@ export function useChats() {
     const currentChatId = activeChat.value.id!
     const message = messages.value[messages.value.length - 1]
     if (message && message.role === 'assistant') {
-      if (message.id) db.messages.delete(message.id)
+      if (message.id) await dbLayer.deleteMessage(message.id)
       messages.value.pop()
-    }
-    try {
-      await generate(
-        currentModel.value,
-        messages.value,
-        systemPrompt.value,
-        historyMessageLength.value,
-        (data) => handleAiPartialResponse(data, currentChatId),
-        (data) => handleAiCompletion(data, currentChatId),
-      )
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
+      try {
+        await streamResponse(
+          currentModel.value,
+          messages.value,
+          systemPrompt.value,
+          historyMessageLength.value,
+          (content) => handleAiPartialResponse(content, currentChatId),
+          (data) => handleAiCompletion(data, currentChatId),
+        )
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
           ongoingAiMessages.value.delete(currentChatId)
           return
         }
+        console.error('Failed to regenerate response:', error)
       }
-      console.error('Failed to regenerate response:', error)
     }
   }
 
-  const handleAiPartialResponse = (data: ChatPartResponse, chatId: number) => {
-    ongoingAiMessages.value.has(chatId)
-      ? appendToAiMessage(data.message.content, chatId)
-      : startAiMessage(data.message.content, chatId)
+  const handleAiPartialResponse = (content: string, chatId: number) => {
+    const existing = ongoingAiMessages.value.get(chatId)
+    existing ? appendToAiMessage(content, chatId) : startAiMessage(content, chatId)
   }
 
-  const handleAiCompletion = async (data: ChatCompletedResponse, chatId: number) => {
+  const handleAiCompletion = async (
+    data: { total_duration: number; eval_count: number; prompt_eval_count: number },
+    chatId: number,
+  ) => {
     const aiMessage = ongoingAiMessages.value.get(chatId)
-    if (aiMessage) {
-      try {
-        ongoingAiMessages.value.delete(chatId)
-      } catch (error) {
-        console.error('Failed to finalize AI message:', error)
+    if (!aiMessage) {
+      console.error('No ongoing AI message to finalize')
+      return
+    }
+
+    try {
+      await dbLayer.updateMessage(aiMessage.id!, {
+        content: aiMessage.content,
+        meta: {
+          total_duration: data.total_duration,
+          eval_count: data.eval_count,
+          prompt_eval_count: data.prompt_eval_count,
+        },
+      })
+
+      if (activeChat.value && (data.prompt_eval_count || data.eval_count)) {
+        const current = activeChat.value.tokenUsage || {
+          prompt: 0,
+          completion: 0,
+          total: 0,
+        }
+        const usage = {
+          prompt: current.prompt + (data.prompt_eval_count || 0),
+          completion: current.completion + (data.eval_count || 0),
+          total: current.total + (data.prompt_eval_count || 0) + (data.eval_count || 0),
+        }
+        await dbLayer.updateChat(activeChat.value.id!, { tokenUsage: usage })
+        activeChat.value.tokenUsage = usage
       }
-    } else {
-      console.error('no ongoing message to finalize:')
-      debugger
+    } catch (error) {
+      console.error('Failed to finalize AI message:', error)
+    } finally {
+      ongoingAiMessages.value.delete(chatId)
     }
   }
 
@@ -296,12 +328,14 @@ export function useChats() {
       createdAt: new Date(),
     }
 
+    ongoingAiMessages.value.set(chatId, message)
+    messages.value.push(message)
+
     try {
       message.id = await dbLayer.addMessage(message)
-      ongoingAiMessages.value.set(chatId, message)
-      messages.value.push(message)
     } catch (error) {
       console.error('Failed to start AI message:', error)
+      ongoingAiMessages.value.delete(chatId)
     }
   }
 
@@ -311,49 +345,177 @@ export function useChats() {
       aiMessage.content += content
       try {
         await dbLayer.updateMessage(aiMessage.id!, { content: aiMessage.content })
-
-        // Only "load the messages" if we are on this chat atm.
-        if (chatId == activeChat.value?.id) {
-          setMessages(await dbLayer.getMessages(chatId))
-        }
       } catch (error) {
         console.error('Failed to append to AI message:', error)
       }
-    } else {
-      console.log('No ongoing AI message?')
     }
   }
 
   const exportChats = async () => {
     const chats = await dbLayer.getAllChats()
     const exportData: ChatExport[] = []
-    await Promise.all(chats.map(async chat => {
-      if (!chat?.id) return
-      const messages = await dbLayer.getMessages(chat.id)
-      exportData.push(Object.assign({ messages }, chat))
-    }))
+    await Promise.all(
+      chats.map(async (chat) => {
+        if (!chat?.id) return
+        const messages = await dbLayer.getMessages(chat.id)
+        exportData.push(Object.assign({ messages }, chat))
+      }),
+    )
     return exportData
   }
 
   const importChats = async (jsonData: ChatExport[]) => {
-    jsonData.forEach(async chatData => {
+    for (const chatData of jsonData) {
       const chat: Chat = {
         name: chatData?.name,
         model: chatData?.model,
-        createdAt: new Date(chatData?.createdAt || chatData.messages[0].createdAt),
+        createdAt: new Date(
+          chatData?.createdAt || (chatData.messages?.[0]?.createdAt ?? Date.now()),
+        ),
       }
       chat.id = await dbLayer.addChat(chat)
       chats.value.push(chat)
-      chatData.messages.forEach(async messageData => {
+      for (const messageData of chatData.messages ?? []) {
         const message: Message = {
           chatId: chat.id!,
           role: messageData.role,
           content: messageData.content,
-          createdAt: new Date(messageData.createdAt),
+          createdAt: new Date(messageData.createdAt ?? Date.now()),
         }
         await dbLayer.addMessage(message)
-      })
+      }
+    }
+  }
+
+  const togglePinChat = async (chatId: number) => {
+    const chat = await dbLayer.getChat(chatId)
+    if (!chat) return
+    const updates: Partial<Chat> = { pinned: !chat.pinned }
+    if (updates.pinned && chat.archived) {
+      updates.archived = false
+    }
+    await dbLayer.updateChat(chatId, updates)
+    chats.value = await dbLayer.getAllChats()
+  }
+
+  const toggleArchiveChat = async (chatId: number) => {
+    const chat = await dbLayer.getChat(chatId)
+    if (!chat) return
+    const updates: Partial<Chat> = { archived: !chat.archived }
+    if (updates.archived && chat.pinned) {
+      updates.pinned = false
+    }
+    await dbLayer.updateChat(chatId, updates)
+    chats.value = await dbLayer.getAllChats()
+  }
+
+  const exportChatToMarkdown = async (chat: Chat) => {
+    const msgs = await dbLayer.getMessages(chat.id!)
+    const date = new Date(chat.createdAt).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     })
+    let md = `# ${chat.name}\n**Model:** ${chat.model} | **Date:** ${date}\n\n---\n`
+    for (const m of msgs) {
+      if (m.role === 'system') continue
+      const label = m.role === 'user' ? 'User' : 'Assistant'
+      md += `\n**${label}:**\n${m.content}\n`
+    }
+    return md
+  }
+
+  const searchChats = async (query: string) => {
+    const results = await dbLayer.searchMessages(query)
+    const chatIds = [...new Set(results.map((m) => m.chatId))]
+    const chatMap = new Map<number, string>()
+    for (const id of chatIds) {
+      const chat = await dbLayer.getChat(id)
+      if (chat) chatMap.set(id, chat.name)
+    }
+    return results.reduce<
+      { chatId: number; chatName: string; matchCount: number; preview: string }[]
+    >((acc, m) => {
+      const existing = acc.find((r) => r.chatId === m.chatId)
+      const preview =
+        m.content.length > 100 ? m.content.substring(0, 100) + '...' : m.content
+      if (existing) {
+        existing.matchCount++
+        return acc
+      }
+      acc.push({
+        chatId: m.chatId,
+        chatName: chatMap.get(m.chatId) || 'Unknown',
+        matchCount: 1,
+        preview,
+      })
+      return acc
+    }, [])
+  }
+
+  const forkChat = async (chatId: number, fromMessageIndex: number) => {
+    try {
+      const original = await dbLayer.getChat(chatId)
+      if (!original) return
+      const originalMessages = await dbLayer.getMessages(chatId)
+      if (originalMessages.length === 0) return
+
+      const safeIndex = Math.max(
+        0,
+        Math.min(fromMessageIndex, originalMessages.length - 1),
+      )
+      const newChat: Chat = {
+        name: `Fork of ${original.name}`,
+        model: original.model,
+        createdAt: new Date(),
+      }
+      newChat.id = await dbLayer.addChat(newChat)
+      chats.value.push(newChat)
+      const slicedMessages = originalMessages.slice(0, safeIndex + 1)
+      for (const msg of slicedMessages) {
+        const { id, ...rest } = msg
+        await dbLayer.addMessage({ ...rest, chatId: newChat.id! })
+      }
+      await switchChat(newChat.id!)
+    } catch (error) {
+      console.error('Failed to fork chat:', error)
+    }
+  }
+
+  const editMessage = async (messageId: number, newContent: string, chatId: number) => {
+    try {
+      await dbLayer.updateMessage(messageId, { content: newContent })
+      const allMessages = await dbLayer.getMessages(chatId)
+      const targetIdx = allMessages.findIndex((m) => m.id === messageId)
+      if (targetIdx !== -1) {
+        for (let i = allMessages.length - 1; i > targetIdx; i--) {
+          if (allMessages[i].id) await dbLayer.deleteMessage(allMessages[i].id!)
+        }
+      }
+      const freshMessages = await dbLayer.getMessages(chatId)
+      setMessages(freshMessages)
+
+      if (!activeChat.value) return
+      const currentChatId = activeChat.value.id!
+      try {
+        await streamResponse(
+          currentModel.value,
+          freshMessages,
+          systemPrompt.value,
+          historyMessageLength.value,
+          (content) => handleAiPartialResponse(content, currentChatId),
+          (data) => handleAiCompletion(data, currentChatId),
+        )
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          ongoingAiMessages.value.delete(currentChatId)
+          return
+        }
+        console.error('Failed to regenerate after edit:', error)
+      }
+    } catch (error) {
+      console.error('Failed to edit message:', error)
+    }
   }
 
   return {
@@ -373,8 +535,14 @@ export function useChats() {
     addSystemMessage,
     initialize,
     wipeDatabase,
-    abort,
+    abort: () => activeStream.value?.abort(),
     exportChats,
     importChats,
+    togglePinChat,
+    toggleArchiveChat,
+    exportChatToMarkdown,
+    searchChats,
+    forkChat,
+    editMessage,
   }
 }

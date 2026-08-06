@@ -20,7 +20,11 @@ const emit = defineEmits<{
 
 <template>
   <div>
-    <label :for="id" class="mt-4 mb-2 block px-2 text-sm font-medium" v-if="label">
+    <label
+      :for="id"
+      class="text-text mt-3 mb-1.5 block px-2 text-[11px] font-medium"
+      v-if="label"
+    >
       {{ label }}
     </label>
     <input
@@ -29,8 +33,8 @@ const emit = defineEmits<{
       @blur="$emit('blur')"
       :id="id"
       :type="type"
-      :class="small ? 'text-xs' : 'text-sm'"
-      class="block w-full rounded-lg text-gray-900 dark:text-gray-100 bg-gray-100 p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
+      :class="small ? 'text-[10px]' : 'text-[11px]'"
+      class="border-border bg-list text-text focus:border-accent block w-full rounded-[5px] border p-2 outline-none"
       :placeholder="placeholder"
     />
   </div>

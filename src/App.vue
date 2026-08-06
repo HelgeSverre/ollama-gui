@@ -4,17 +4,13 @@ import ChatInput from './components/ChatInput.vue'
 import ChatMessages from './components/ChatMessages.vue'
 import SystemPrompt from './components/SystemPrompt.vue'
 import ModelSelector from './components/ModelSelector.vue'
-import {
-  currentModel,
-  isDarkMode,
-  isSettingsOpen,
-  isSystemPromptOpen,
-} from './services/appConfig.ts'
+import { currentModel, isSystemPromptOpen } from './services/appConfig.ts'
 import { nextTick, onMounted, ref } from 'vue'
 import { useAI } from './services/useAI.ts'
 import { useChats } from './services/chat.ts'
-import TextInput from './components/Inputs/TextInput.vue'
 import Settings from './components/Settings.vue'
+import CommandPalette from './components/CommandPalette.vue'
+import ModelManager from './components/ModelManager.vue'
 
 const { refreshModels, availableModels } = useAI()
 const { activeChat, renameChat, switchModel, initialize } = useChats()
@@ -25,12 +21,7 @@ const chatNameInput = ref()
 const startEditing = () => {
   isEditingChatName.value = true
   editedChatName.value = activeChat.value?.name || ''
-  nextTick(() => {
-    if (!chatNameInput.value) return
-    const input = chatNameInput.value.$el.querySelector('input')
-    input.focus()
-    input.select()
-  })
+  nextTick(() => chatNameInput.value?.focus())
 }
 
 const cancelEditing = () => {
@@ -39,8 +30,8 @@ const cancelEditing = () => {
 }
 
 const confirmRename = () => {
-  if (activeChat.value && editedChatName.value) {
-    renameChat(editedChatName.value)
+  if (activeChat.value && editedChatName.value.trim()) {
+    renameChat(editedChatName.value.trim())
     isEditingChatName.value = false
   }
 }
@@ -54,62 +45,51 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :class="{ dark: isDarkMode }">
-    <main
-      class="flex h-full w-full flex-1 flex-row items-stretch bg-white dark:bg-gray-900"
-    >
-      <Sidebar />
+  <main class="bg-page flex h-screen w-full flex-row">
+    <Sidebar />
 
-      <div class="mx-auto flex h-screen w-full flex-col">
-        <div
-          v-if="isSystemPromptOpen"
-          class="mx-auto flex h-screen w-full max-w-7xl flex-col gap-4 px-4 pb-4"
-        >
-          <SystemPrompt />
-        </div>
-
-        <div
-          v-if="!isSystemPromptOpen"
-          class="mx-auto flex h-screen w-full max-w-7xl flex-col gap-4 px-4 pb-4"
-        >
-          <div
-            class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-gray-100 px-4 py-2 dark:bg-gray-800"
-          >
-            <div class="mr-auto flex h-full items-center" v-if="activeChat">
-              <div>
-                <div v-if="isEditingChatName">
-                  <TextInput
-                    id="chat-name"
-                    v-model="editedChatName"
-                    ref="chatNameInput"
-                    @keyup.enter="confirmRename"
-                    @keyup.esc="cancelEditing"
-                    @blur="cancelEditing"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  class="block h-full rounded border-none p-2 text-gray-900 decoration-gray-400 decoration-dashed outline-none hover:underline focus:ring-2 focus:ring-blue-600 dark:text-gray-100 dark:focus:ring-blue-600"
-                  v-else
-                  @click.prevent="startEditing"
-                >
-                  {{ activeChat.name }}
-                </button>
-              </div>
-            </div>
-
-            <ModelSelector />
+    <div class="bg-list flex min-w-0 flex-1 flex-col">
+      <div
+        class="border-border bg-panel flex h-[38px] flex-none items-center gap-3 border-b px-3"
+      >
+        <div class="mr-auto flex min-w-0 items-center gap-2" v-if="activeChat">
+          <div v-if="isEditingChatName" class="flex items-center gap-1.5">
+            <input
+              ref="chatNameInput"
+              v-model="editedChatName"
+              @keyup.enter="confirmRename"
+              @keyup.esc="cancelEditing"
+              @blur="cancelEditing"
+              class="border-border bg-list text-text focus:border-accent w-[180px] rounded-[4px] border px-2 py-0.5 text-[12px] outline-none"
+            />
           </div>
-
-          <ChatMessages />
-          <ChatInput />
+          <button
+            v-else
+            class="text-text hover:border-border truncate rounded-[3px] border border-transparent px-1.5 py-0.5 text-[12.5px] font-semibold"
+            @click="startEditing"
+          >
+            {{ activeChat.name }}
+          </button>
+          <span class="text-text-muted font-mono text-[10px]">
+            {{ activeChat.model }}
+          </span>
         </div>
+        <div v-else class="text-text-muted mr-auto text-[12px]">No chat selected</div>
+        <ModelSelector />
       </div>
 
-      <transition name="slide">
-        <Settings v-if="isSettingsOpen" />
-      </transition>
-    </main>
-  </div>
+      <div v-if="isSystemPromptOpen" class="flex min-h-0 flex-1 flex-col">
+        <SystemPrompt />
+      </div>
+
+      <template v-else>
+        <ChatMessages />
+        <ChatInput />
+      </template>
+    </div>
+
+    <Settings />
+    <CommandPalette />
+    <ModelManager />
+  </main>
 </template>

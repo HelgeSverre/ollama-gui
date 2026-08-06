@@ -5,7 +5,9 @@ const { exportChats } = useChats()
 
 const downloadChats = async () => {
   const exportData = await exportChats()
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: 'application/json',
+  })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url

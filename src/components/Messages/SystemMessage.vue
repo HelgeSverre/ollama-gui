@@ -1,25 +1,18 @@
 <script setup lang="ts">
 import { Message } from '../../services/database.ts'
-
-type Props = {
-  message: Message
-}
+type Props = { message: Message }
 const { message } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="mb-4 flex rounded-xl bg-blue-50 px-2 py-6 dark:bg-blue-900 sm:px-4">
+  <div class="flex gap-3 py-1">
     <div
-      class="mr-1 flex size-10 aspect-square items-center justify-center rounded-full bg-blue-100 text-center text-2xl dark:bg-blue-800 sm:mr-3"
+      class="bg-accent/15 text-accent mt-0.5 flex h-[22px] w-[22px] flex-none items-center justify-center rounded-[3px] text-[11px] font-bold"
     >
-      🧠
+      S
     </div>
-
-    <div class="flex max-w-3xl items-center">
-      <pre
-        class="whitespace-pre-wrap rounded-md border border-blue-200 bg-blue-50 p-4 text-sm leading-tight text-blue-900 dark:border-blue-700 dark:bg-blue-800 dark:text-blue-50"
-        >{{ message.content }}</pre
-      >
-    </div>
+    <pre
+      class="border-border bg-page text-text-secondary min-w-0 flex-1 rounded-[5px] border p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap"
+      >{{ message.content }}</pre>
   </div>
 </template>

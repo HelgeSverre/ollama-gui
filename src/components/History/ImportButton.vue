@@ -8,7 +8,7 @@ const uploadChats = async (event: Event) => {
   if (!input.files) return
   const file = input.files[0]
   const reader = new FileReader()
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     if (!e.target?.result) return
     try {
       const jsonData = JSON.parse(e.target.result as string)
@@ -24,6 +24,6 @@ const uploadChats = async (event: Event) => {
 <template>
   <label class="cursor-pointer">
     <slot />
-    <input class="sr-only" type="file" @change="uploadChats">
+    <input class="sr-only" type="file" @change="uploadChats" />
   </label>
 </template>

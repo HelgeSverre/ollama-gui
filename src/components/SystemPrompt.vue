@@ -3,19 +3,17 @@ import { currentModel, useConfig } from '../services/appConfig'
 import { useTextareaAutosize } from '@vueuse/core'
 import { onMounted, ref } from 'vue'
 import ModelSelector from './ModelSelector.vue'
-
-const { setConfig, initializeConfig } = useConfig()
-const { textarea } = useTextareaAutosize()
-const configInput = ref('')
-const defaultConfigInput = ref('')
 import { IconWritingSign } from '@tabler/icons-vue'
 
-onMounted(() => {
-  initialize()
-})
+const { setConfig, initializeConfig } = useConfig()
+const configInput = ref('')
+const defaultConfigInput = ref('')
+const saved = ref(false)
+
+onMounted(() => initialize())
 
 const initialize = () => {
-  initializeConfig(currentModel.value).then(function (configs) {
+  initializeConfig(currentModel.value).then((configs) => {
     configInput.value = configs?.modelConfig?.systemPrompt ?? ''
     defaultConfigInput.value = configs?.defaultConfig?.systemPrompt ?? ''
   })
@@ -29,18 +27,13 @@ const onSubmit = () => {
     createdAt: new Date(),
   })
   if (model) {
-    setConfig({
-      model: model,
-      systemPrompt: configInput.value.trim(),
-      createdAt: new Date(),
-    })
+    setConfig({ model, systemPrompt: configInput.value.trim(), createdAt: new Date() })
   }
-  alert('Saved !')
+  saved.value = true
+  setTimeout(() => (saved.value = false), 2000)
 }
 
-const shouldSubmit = ({ key, shiftKey }: KeyboardEvent): boolean => {
-  return key === 'Enter' && !shiftKey
-}
+const shouldSubmit = ({ key, shiftKey }: KeyboardEvent) => key === 'Enter' && !shiftKey
 
 const onKeydown = (event: KeyboardEvent) => {
   if (shouldSubmit(event)) {
@@ -51,71 +44,49 @@ const onKeydown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <aside class="flex flex-col gap-6">
+  <div class="flex min-h-0 flex-1 flex-col">
     <div
-      class="flex w-full flex-row items-center justify-center gap-4 rounded-b-xl bg-gray-100 px-4 py-2 dark:bg-gray-800"
+      class="border-border bg-panel flex h-[38px] flex-none items-center gap-3 border-b px-3"
     >
-      <div class="mr-auto flex h-full items-center">
-        <div>
-          <span
-            class="block h-full rounded border-none p-2 text-lg font-medium text-gray-900 dark:text-gray-100"
-          >
-            System Prompts
-          </span>
-        </div>
-      </div>
-      <ModelSelector :disabled="false" @change="initialize" />
+      <div class="text-text mr-auto text-[13px] font-semibold">System Prompts</div>
+      <ModelSelector @change="initialize" />
     </div>
 
-    <div class="flex flex-col overflow-y-auto space-y-6 px-4">
-      <!-- Custom Instructions Section -->
-      <div class="rounded-xl bg-gray-100 p-6 shadow-sm dark:bg-gray-800">
-        <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Custom Instructions
-        </h2>
-        <p class="mb-4 text-sm text-gray-700 dark:text-gray-300">
-          What would you like the current model to know about you to provide better
-          responses?
-        </p>
-        <form @submit.prevent="onSubmit">
+    <div class="flex-1 overflow-y-auto">
+      <div class="mx-auto max-w-[48rem] space-y-4 p-4">
+        <div class="border-border bg-panel rounded-[5px] border p-4">
+          <h2 class="text-text mb-2 text-[13px] font-semibold">Custom Instructions</h2>
+          <p class="text-text-secondary mb-3 text-[11px]">
+            What would you like the current model to know to provide better responses?
+          </p>
           <textarea
-            ref="textarea"
             v-model="configInput"
-            class="block min-h-[150px] w-full resize-none rounded-lg border-none bg-white p-4 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:ring-blue-500 sm:text-base"
+            class="border-border bg-list text-text focus:border-accent block min-h-[120px] w-full resize-none rounded-[5px] border p-3 text-[12px] outline-none"
             @keydown="onKeydown"
           ></textarea>
-        </form>
-      </div>
+        </div>
 
-      <!-- Default Instructions Section -->
-      <div class="rounded-xl bg-gray-100 p-6 shadow-sm dark:bg-gray-800">
-        <h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Default Instructions
-        </h2>
-        <p class="mb-4 text-sm text-gray-700 dark:text-gray-300">
-          What would you like all models to know about you to provide better responses?
-          This prompt will be applied for all models by default even if you configure
-          custom prompt for a model.
-        </p>
-        <form @submit.prevent="onSubmit">
+        <div class="border-border bg-panel rounded-[5px] border p-4">
+          <h2 class="text-text mb-2 text-[13px] font-semibold">Default Instructions</h2>
+          <p class="text-text-secondary mb-3 text-[11px]">
+            Applied to all models by default, even when a model has custom instructions.
+          </p>
           <textarea
-            ref="textarea"
             v-model="defaultConfigInput"
-            class="block min-h-[150px] w-full resize-none rounded-lg border-none bg-white p-4 text-sm text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:ring-blue-500 sm:text-base"
+            class="border-border bg-list text-text focus:border-accent block min-h-[120px] w-full resize-none rounded-[5px] border p-3 text-[12px] outline-none"
           ></textarea>
-        </form>
-      </div>
+        </div>
 
-      <div>
         <button
           type="button"
           @click="onSubmit"
-          class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-offset-gray-900"
+          class="bg-accent inline-flex items-center gap-1.5 rounded-[5px] px-3 py-1.5 text-[12px] font-semibold text-white hover:opacity-90"
         >
-          <IconWritingSign class="h-5 w-5" />
+          <IconWritingSign :size="16" />
           Save Changes
         </button>
+        <span v-if="saved" role="status" class="text-green text-[11px]">Saved</span>
       </div>
     </div>
-  </aside>
+  </div>
 </template>

@@ -10,9 +10,8 @@ const userInterferedWithScroll = ref(false)
 
 const isAtBottom = () => {
   if (!chatElement.value) return false
-
   const { scrollTop, scrollHeight, clientHeight } = chatElement.value
-  return scrollHeight - scrollTop <= clientHeight + 10 // 10 is a small threshold
+  return scrollHeight - scrollTop <= clientHeight + 10
 }
 
 const handleUserScroll = () => {
@@ -21,7 +20,6 @@ const handleUserScroll = () => {
 
 const scrollToBottom = () => {
   if (userInterferedWithScroll.value) return
-
   nextTick(() => {
     if (chatElement.value) {
       chatElement.value.scrollTop = chatElement.value.scrollHeight
@@ -37,9 +35,7 @@ onMounted(() => {
 onUpdated(() => scrollToBottom())
 
 watch(messages, () => {
-  if (isAtBottom()) {
-    userInterferedWithScroll.value = false
-  }
+  if (isAtBottom()) userInterferedWithScroll.value = false
 })
 
 onUnmounted(() => chatElement.value?.removeEventListener('scroll', handleUserScroll))
@@ -52,8 +48,17 @@ const visibleMessages = computed(() =>
 <template>
   <div
     ref="chatElement"
-    class="flex-1 overflow-y-auto scroll-smooth rounded-xl p-4 text-sm leading-6 text-gray-900 dark:text-gray-100 sm:text-base sm:leading-7"
+    class="flex-1 overflow-y-auto"
+    role="log"
+    aria-live="polite"
+    aria-label="Chat messages"
   >
-    <ChatMessage v-for="message in visibleMessages" :message="message" />
+    <div class="mx-auto max-w-[48rem] px-4 py-4">
+      <ChatMessage
+        v-for="message in visibleMessages"
+        :key="message.id"
+        :message="message"
+      />
+    </div>
   </div>
 </template>

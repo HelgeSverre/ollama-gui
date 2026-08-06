@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconFileExport, IconUpload, IconLayoutSidebarRightCollapse, IconTrashX } from '@tabler/icons-vue'
+import { IconFileExport, IconUpload, IconTrashX, IconX } from '@tabler/icons-vue'
 import ToggleInput from './Inputs/ToggleInput.vue'
 import TextInput from './Inputs/TextInput.vue'
 import ExportButton from './History/ExportButton.vue'
@@ -10,134 +10,189 @@ import {
   enableMarkdown,
   showSystem,
   gravatarEmail,
+  isSettingsOpen,
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
+import { onKeyStroke, onClickOutside } from '@vueuse/core'
+import { ref, watch } from 'vue'
+import { useFocusTrap } from '../services/useFocusTrap.ts'
 
-const { wipeDatabase } =
-  useChats()
+const { wipeDatabase } = useChats()
+const panelRef = ref<HTMLElement>()
+const confirmingWipe = ref(false)
+
+const requestWipe = () => {
+  confirmingWipe.value = true
+}
 
 const confirmWipe = () => {
-  if (confirm('Delete all chat history?')) {
-    wipeDatabase()
-  }
+  wipeDatabase()
+  confirmingWipe.value = false
+}
+
+const cancelWipe = () => {
+  confirmingWipe.value = false
 }
 </script>
 
 <template>
-  <aside>
+  <Teleport to="body">
     <div
-      class="relative h-screen w-60 flex flex-col overflow-y-auto border-l border-gray-200 bg-white py-4 dark:border-gray-700 dark:bg-gray-900 sm:w-64"
+      v-if="isSettingsOpen"
+      class="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]"
+      data-testid="settings-overlay"
     >
-      <div class="mb-4 flex items-center gap-x-2 px-2 text-gray-900 dark:text-gray-100">
-        <button
-          @click="toggleSettingsPanel()"
-          class="inline-flex rounded-lg p-1 hover:bg-gray-100 hover:dark:bg-gray-700"
-        >
-          <IconLayoutSidebarRightCollapse class="h-6 w-6" />
-
-          <span class="sr-only">Close settings sidebar</span>
-        </button>
-        <h2 class="text-lg font-medium">Settings</h2>
-      </div>
-
-      <!-- More Settings -->
       <div
-        class="mb-4 border-t border-gray-200 px-2 py-4 text-gray-900 dark:border-gray-700 dark:text-gray-100"
-      >
-        <div>
-          <ToggleInput label="Enable Markdown" v-model="enableMarkdown" />
-          <ToggleInput label="Show System messages" v-model="showSystem" />
-        </div>
-
-        <TextInput id="base-url" label="Base URL" v-model="baseUrl" />
-
-        <TextInput id="gravatar-email" label="Gravatar Email" v-model="gravatarEmail" />
-
-        <div>
-          <label for="chat-history-length" class="mb-2 mt-4 block px-2 text-sm font-medium">
-            Conversation History Size
-          </label>
-          <input
-            type="number"
-            min="0"
-            max="100"
-            id="chat-history-length"
-            v-model="historyMessageLength"
-            class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
-            placeholder="2048"
-          />
-        </div>
-
-        <div v-if="false">
-          <div>
-            <label for="max-tokens" class="mb-2 mt-4 block px-2 text-sm font-medium">
-              Max tokens
-            </label>
-            <input
-              type="number"
-              disabled
-              id="max-tokens"
-              class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
-              placeholder="2048"
-            />
-          </div>
-
-          <div>
-            <label for="temperature" class="mb-2 mt-4 block px-2 text-sm font-medium">
-              Temperature
-            </label>
-            <input
-              type="number"
-              disabled
-              id="temperature"
-              class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
-              placeholder="0.7"
-            />
-          </div>
-
-          <div>
-            <label for="top-p" class="mb-2 mt-4 block px-2 text-sm font-medium">
-              Top P
-            </label>
-            <input
-              type="number"
-              disabled
-              id="top-p"
-              class="block w-full rounded-lg bg-gray-100 p-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-800 dark:placeholder-gray-300 dark:focus:ring-blue-600"
-              placeholder="1"
-            />
-          </div>
-        </div>
-      </div>
-
+        class="absolute inset-0 bg-black/55"
+        @click="toggleSettingsPanel"
+        data-testid="settings-backdrop"
+      ></div>
 
       <div
-        class="mt-auto px-2 space-y-2 text-gray-900 dark:text-gray-100"
+        ref="panelRef"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+        class="border-border-strong bg-panel relative max-h-[80vh] w-[520px] overflow-hidden rounded-[10px] border shadow-2xl"
       >
-        <ImportButton
-          class="group flex w-full items-center gap-x-2 rounded-md px-3 py-2 text-left text-sm font-medium text-gray-900 transition-colors duration-100 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-300 dark:hover:bg-gray-700 dark:focus:ring-blue-500"
-        >
-          <IconUpload class="size-4 opacity-50 group-hover:opacity-80" />
+        <div class="border-border flex items-center justify-between border-b px-4 py-2.5">
+          <h2 id="settings-title" class="text-text text-[13px] font-semibold">
+            Settings
+          </h2>
+          <button
+            @click="toggleSettingsPanel"
+            class="hover:bg-hover rounded-[4px] p-1.5"
+            data-testid="settings-close"
+          >
+            <IconX :size="16" class="text-text-secondary" />
+          </button>
+        </div>
 
-          Import chats
-        </ImportButton>
-        <ExportButton
-          class="group flex w-full items-center gap-x-2 rounded-md px-3 py-2 text-left text-sm font-medium text-gray-900 transition-colors duration-100 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-300 dark:hover:bg-gray-700 dark:focus:ring-blue-500"
-        >
-          <IconFileExport class="size-4 opacity-50 group-hover:opacity-80" />
+        <div class="space-y-5 overflow-y-auto px-4 py-4">
+          <div>
+            <div
+              class="text-text-muted mb-2 text-[10px] font-bold tracking-[0.08em] uppercase"
+            >
+              Display
+            </div>
+            <div class="space-y-1">
+              <ToggleInput
+                label="Enable Markdown"
+                v-model="enableMarkdown"
+                data-testid="toggle-markdown"
+              />
+              <ToggleInput
+                label="Show System Messages"
+                v-model="showSystem"
+                data-testid="toggle-system-msgs"
+              />
+            </div>
+          </div>
 
-          Export chats
-        </ExportButton>
-        <button
-          @click="confirmWipe"
-          class="group flex w-full items-center gap-x-2 rounded-md px-3 py-2 text-left text-sm font-medium text-gray-900 transition-colors duration-100 ease-in-out hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-300 dark:hover:bg-gray-700 dark:focus:ring-blue-500"
-        >
-          <IconTrashX class="size-4 opacity-50 group-hover:opacity-80" />
+          <div>
+            <div
+              class="text-text-muted mb-2 text-[10px] font-bold tracking-[0.08em] uppercase"
+            >
+              Connection
+            </div>
+            <TextInput
+              id="base-url"
+              label="Ollama API URL"
+              v-model="baseUrl"
+              data-testid="input-base-url"
+            />
+          </div>
 
-          Delete all chats
-        </button>
+          <div>
+            <div
+              class="text-text-muted mb-2 text-[10px] font-bold tracking-[0.08em] uppercase"
+            >
+              Profile
+            </div>
+            <TextInput
+              id="gravatar-email"
+              label="Gravatar Email"
+              v-model="gravatarEmail"
+              data-testid="input-gravatar"
+            />
+          </div>
+
+          <div>
+            <div
+              class="text-text-muted mb-2 text-[10px] font-bold tracking-[0.08em] uppercase"
+            >
+              History
+            </div>
+            <div>
+              <label for="chat-history-length" class="text-text mb-1.5 block text-[11px]">
+                Context length (messages)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                id="chat-history-length"
+                v-model="historyMessageLength"
+                class="border-border bg-list text-text focus:border-accent block w-full rounded-[5px] border p-2 text-[11px] outline-none"
+                placeholder="10"
+                data-testid="input-context-length"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div
+              class="text-text-muted mb-2 text-[10px] font-bold tracking-[0.08em] uppercase"
+            >
+              Data
+            </div>
+            <div class="space-y-1">
+              <ImportButton
+                class="text-text hover:bg-hover flex w-full items-center gap-2 rounded-[4px] px-2.5 py-1.5 text-[11.5px]"
+                data-testid="import-chats"
+              >
+                <IconUpload :size="14" class="text-text-muted" />
+                Import Chats
+              </ImportButton>
+              <ExportButton
+                class="text-text hover:bg-hover flex w-full items-center gap-2 rounded-[4px] px-2.5 py-1.5 text-[11.5px]"
+                data-testid="export-chats"
+              >
+                <IconFileExport :size="14" class="text-text-muted" />
+                Export Chats
+              </ExportButton>
+              <template v-if="!confirmingWipe">
+                <button
+                  @click="requestWipe"
+                  class="text-red hover:bg-hover flex w-full items-center gap-2 rounded-[4px] px-2.5 py-1.5 text-[11.5px]"
+                  data-testid="delete-all-chats"
+                >
+                  <IconTrashX :size="14" />
+                  Delete All Chats
+                </button>
+              </template>
+              <template v-else>
+                <div class="flex items-center gap-2">
+                  <span class="text-text text-[11px]">Are you sure?</span>
+                  <button
+                    @click="confirmWipe"
+                    class="text-red text-[11px] font-bold hover:underline"
+                  >
+                    Yes, delete all
+                  </button>
+                  <button
+                    @click="cancelWipe"
+                    class="text-text-secondary hover:text-text text-[11px]"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </aside>
+  </Teleport>
 </template>

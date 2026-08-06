@@ -14,7 +14,6 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const performRefreshModel = async () => {
   refreshingModel.value = true
   await Promise.all([refreshModels(), sleep(1000)])
-
   refreshModels().then(() => {
     refreshingModel.value = false
   })
@@ -22,7 +21,6 @@ const performRefreshModel = async () => {
 
 const handleModelChange = (event: Event) => {
   const wip = event.target as HTMLSelectElement
-  console.log('switch', wip.value)
   switchModel(wip.value)
 }
 
@@ -33,16 +31,18 @@ const { disabled = false } = defineProps<Props>()
 </script>
 
 <template>
-  <div class="flex flex-row text-gray-900 dark:text-gray-100">
-    <div class="inline-flex items-center gap-2">
+  <div class="flex flex-row">
+    <div class="inline-flex items-center gap-1.5">
       <select
         :disabled="disabled"
         :value="activeChat?.model ?? currentModel"
+        aria-label="Select model"
         @change="handleModelChange"
-        class="w-full cursor-pointer rounded-lg bg-white py-2 pl-3 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-100"
+        class="border-border bg-list text-text focus:border-accent cursor-pointer rounded-[5px] border px-2.5 py-1 text-[12px] outline-none disabled:opacity-30"
+        data-testid="model-select"
       >
         <option :value="undefined" disabled selected>Select a model</option>
-        <option v-for="model in availableModels" :value="model.name">
+        <option v-for="model in availableModels" :key="model.name" :value="model.name">
           {{ model.name }}
         </option>
       </select>
@@ -51,10 +51,11 @@ const { disabled = false } = defineProps<Props>()
         :disabled="disabled"
         title="Refresh available models"
         @click="performRefreshModel"
-        class="inline-flex items-center justify-center rounded-lg border-none bg-gray-100 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 dark:bg-gray-700 dark:text-gray-100"
+        class="bg-list text-text-secondary hover:bg-hover inline-flex items-center justify-center rounded-[4px] p-1.5 disabled:opacity-30"
       >
         <IconRefresh
-          class="h-4 w-4 -scale-100 text-white"
+          :size="14"
+          class="-scale-100"
           :class="{ 'animate-spin': refreshingModel }"
         />
       </button>
