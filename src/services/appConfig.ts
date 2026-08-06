@@ -27,7 +27,7 @@ export const avatarUrl = computed(() => {
 
 export function useConfig() {
   const setConfig = async (config: Config) => {
-    config.id = hashString(config.model)
+    config.id = configId(config.model)
     await db.config.put(config)
   }
 
@@ -55,9 +55,9 @@ export function useConfig() {
   return { initializeConfig, setConfig, getCurrentSystemMessage }
 }
 
-function hashString(str: string): number {
+function configId(model: string): number {
   let hash = 0
-  for (let i = 0; i < str.length; i++) hash = (hash * 31 + str.charCodeAt(i)) | 0
+  for (let i = 0; i < model.length; i++) hash = ((hash << 5) - hash + model.charCodeAt(i)) | 0
   return Math.abs(hash)
 }
 

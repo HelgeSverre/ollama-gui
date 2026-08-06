@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { currentModel, useConfig } from '../services/appConfig'
 import { useTextareaAutosize } from '@vueuse/core'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import ModelSelector from './ModelSelector.vue'
 import { IconWritingSign } from '@tabler/icons-vue'
 
@@ -11,6 +11,7 @@ const defaultConfigInput = ref('')
 const saved = ref(false)
 
 onMounted(() => initialize())
+watch(currentModel, () => initialize())
 
 const initialize = () => {
   initializeConfig(currentModel.value).then((configs) => {
@@ -49,7 +50,7 @@ const onKeydown = (event: KeyboardEvent) => {
       class="border-border bg-panel flex h-[38px] flex-none items-center gap-3 border-b px-3"
     >
       <div class="text-text mr-auto text-[13px] font-semibold">System Prompts</div>
-      <ModelSelector @change="initialize" />
+      <ModelSelector />
     </div>
 
     <div class="flex-1 overflow-y-auto">

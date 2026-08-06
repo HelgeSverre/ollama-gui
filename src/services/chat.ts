@@ -384,20 +384,22 @@ export function useChats() {
 
   const importChats = async (jsonData: ChatExport[]) => {
     for (const chatData of jsonData) {
+      if (!chatData?.name || !chatData?.model) continue
       const chat: Chat = {
-        name: chatData?.name,
-        model: chatData?.model,
+        name: String(chatData.name),
+        model: String(chatData.model),
         createdAt: new Date(
-          chatData?.createdAt || (chatData.messages?.[0]?.createdAt ?? Date.now()),
+          chatData.createdAt || (chatData.messages?.[0]?.createdAt ?? Date.now()),
         ),
       }
       chat.id = await dbLayer.addChat(chat)
       chats.value.push(chat)
       for (const messageData of chatData.messages ?? []) {
+        if (!['user', 'assistant', 'system'].includes(messageData.role)) continue
         const message: Message = {
           chatId: chat.id!,
           role: messageData.role,
-          content: messageData.content,
+          content: String(messageData.content ?? ''),
           createdAt: new Date(messageData.createdAt ?? Date.now()),
         }
         await dbLayer.addMessage(message)
@@ -473,17 +475,13 @@ export function useChats() {
     }, [])
   }
 
-  const forkChat = async (chatId: number, fromMessageIndex: number) => {
+  const forkChat = async (chatId: number) => {
     try {
       const original = await dbLayer.getChat(chatId)
       if (!original) return
       const originalMessages = await dbLayer.getMessages(chatId)
       if (originalMessages.length === 0) return
 
-      const safeIndex = Math.max(
-        0,
-        Math.min(fromMessageIndex, originalMessages.length - 1),
-      )
       const newChat: Chat = {
         name: `Fork of ${original.name}`,
         model: original.model,
@@ -491,8 +489,7 @@ export function useChats() {
       }
       newChat.id = await dbLayer.addChat(newChat)
       chats.value.push(newChat)
-      const slicedMessages = originalMessages.slice(0, safeIndex + 1)
-      for (const msg of slicedMessages) {
+      for (const msg of originalMessages) {
         const { id, ...rest } = msg
         await dbLayer.addMessage({ ...rest, chatId: newChat.id! })
       }

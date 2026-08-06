@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useTextareaAutosize, onClickOutside, onKeyStroke } from '@vueuse/core'
 import { useChats } from '../services/chat.ts'
 import { showSystem } from '../services/appConfig.ts'
+import { activeStream } from '../services/stream'
 import {
   IconPlayerStopFilled,
   IconSend,
@@ -25,10 +26,14 @@ const {
 
 const images = ref<string[]>([])
 const isSystemMessage = ref(false)
-const isInputValid = computed<boolean>(() => !!userInput.value.trim())
+const isInputValid = computed<boolean>(() => !!userInput.value.trim() || images.value.length > 0)
 const isAiResponding = ref(false)
-const flag = ref(true)
+const isComposing = ref(true)
 const showOptionsMenu = ref(false)
+
+watch(activeStream, (stream) => {
+  isAiResponding.value = !!stream
+})
 const menuRef = ref<HTMLElement>()
 const dropdownBtnRef = ref<HTMLElement>()
 
@@ -106,7 +111,7 @@ const onSubmit = () => {
 const shouldSubmit = ({ key, shiftKey }: KeyboardEvent) => key === 'Enter' && !shiftKey
 
 const onKeydown = (event: KeyboardEvent) => {
-  if (shouldSubmit(event) && flag.value && !isAiResponding.value) {
+  if (shouldSubmit(event) && isComposing.value && !isAiResponding.value) {
     event.preventDefault()
     onSubmit()
   }
@@ -236,8 +241,8 @@ const setMessageType = (isSystem: boolean) => {
             :placeholder="isSystemMessage ? 'System instructions...' : 'Message...'"
             @keydown="onKeydown"
             @paste="onPaste"
-            @compositionstart="flag = false"
-            @compositionend="flag = true"
+          @compositionstart="isComposing = false"
+          @compositionend="isComposing = true"
             data-testid="chat-textarea"
           ></textarea>
         </div>

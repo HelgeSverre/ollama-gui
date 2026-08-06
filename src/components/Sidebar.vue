@@ -95,7 +95,7 @@ const onToggleArchive = () => {
 
 const onForkChat = () => {
   if (contextMenuChatId.value != null) {
-    forkChat(contextMenuChatId.value, messages.value.length)
+    forkChat(contextMenuChatId.value)
     closeContextMenu()
   }
 }

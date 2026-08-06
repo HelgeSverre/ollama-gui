@@ -21,7 +21,10 @@ export const useAI = () => {
     modelError.value = null
     try {
       const response = await getOllama().list()
-      availableModels.value = response.models as unknown as OllamaModel[]
+      const raw = response.models ?? []
+      availableModels.value = raw
+        .filter((m: any) => typeof m?.name === 'string')
+        .map((m: any) => ({ name: m.name, size: m.size, modified_at: m.modified_at }))
     } catch (e) {
       modelError.value = e instanceof Error ? e.message : 'Failed to refresh models'
       console.error('Failed to refresh models:', e)
