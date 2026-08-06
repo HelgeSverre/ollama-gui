@@ -26,7 +26,9 @@ const {
 
 const images = ref<string[]>([])
 const isSystemMessage = ref(false)
-const isInputValid = computed<boolean>(() => !!userInput.value.trim() || images.value.length > 0)
+const isInputValid = computed<boolean>(
+  () => !!userInput.value.trim() || images.value.length > 0,
+)
 const isAiResponding = ref(false)
 const isComposing = ref(true)
 const showOptionsMenu = ref(false)
@@ -241,8 +243,8 @@ const setMessageType = (isSystem: boolean) => {
             :placeholder="isSystemMessage ? 'System instructions...' : 'Message...'"
             @keydown="onKeydown"
             @paste="onPaste"
-          @compositionstart="isComposing = false"
-          @compositionend="isComposing = true"
+            @compositionstart="isComposing = false"
+            @compositionend="isComposing = true"
             data-testid="chat-textarea"
           ></textarea>
         </div>

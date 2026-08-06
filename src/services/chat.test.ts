@@ -18,7 +18,12 @@ describe('chat sorting', () => {
   const oldest = { id: 3, createdAt: new Date('2023-01-01') }
   const pinned = { id: 4, pinned: true, createdAt: new Date('2023-06-01') }
   const archived = { id: 5, archived: true, createdAt: new Date('2024-04-01') }
-  const pinnedAndArchived = { id: 6, pinned: true, archived: true, createdAt: new Date('2024-03-01') }
+  const pinnedAndArchived = {
+    id: 6,
+    pinned: true,
+    archived: true,
+    createdAt: new Date('2024-03-01'),
+  }
 
   it('sorts by createdAt desc for normal chats', () => {
     const result = sortChats([base, newer])

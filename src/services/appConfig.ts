@@ -15,8 +15,10 @@ export const isModelManagerOpen = ref(false)
 export const isSystemPromptOpen = useLocalStorage('systemPromptOpen', false)
 
 export const toggleSettingsPanel = () => (isSettingsOpen.value = !isSettingsOpen.value)
-export const toggleModelManager = () => (isModelManagerOpen.value = !isModelManagerOpen.value)
-export const toggleSystemPromptPanel = () => (isSystemPromptOpen.value = !isSystemPromptOpen.value)
+export const toggleModelManager = () =>
+  (isModelManagerOpen.value = !isModelManagerOpen.value)
+export const toggleSystemPromptPanel = () =>
+  (isSystemPromptOpen.value = !isSystemPromptOpen.value)
 
 export const avatarUrl = computed(() => {
   const email = gravatarEmail.value.trim().toLowerCase()
@@ -55,6 +57,7 @@ export function useConfig() {
 
 function configId(model: string): number {
   let hash = 0
-  for (let i = 0; i < model.length; i++) hash = ((hash << 5) - hash + model.charCodeAt(i)) | 0
+  for (let i = 0; i < model.length; i++)
+    hash = ((hash << 5) - hash + model.charCodeAt(i)) | 0
   return Math.abs(hash)
 }

@@ -2,7 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 
 const getOllamaMock = vi.fn()
-vi.mock('./api', () => ({ getOllama: () => ({ chat: getOllamaMock, list: getOllamaMock }) }))
+vi.mock('./api', () => ({
+  getOllama: () => ({ chat: getOllamaMock, list: getOllamaMock }),
+}))
 
 describe('streamResponse', () => {
   let streamResponse: Function
@@ -24,9 +26,27 @@ describe('streamResponse', () => {
     const onDone = vi.fn()
 
     async function* mockStream() {
-      yield { done: false, message: { content: 'Hello' }, total_duration: 0, eval_count: 0, prompt_eval_count: 0 }
-      yield { done: false, message: { content: ' world' }, total_duration: 0, eval_count: 0, prompt_eval_count: 0 }
-      yield { done: true, message: { content: '' }, total_duration: 500, eval_count: 10, prompt_eval_count: 5 }
+      yield {
+        done: false,
+        message: { content: 'Hello' },
+        total_duration: 0,
+        eval_count: 0,
+        prompt_eval_count: 0,
+      }
+      yield {
+        done: false,
+        message: { content: ' world' },
+        total_duration: 0,
+        eval_count: 0,
+        prompt_eval_count: 0,
+      }
+      yield {
+        done: true,
+        message: { content: '' },
+        total_duration: 500,
+        eval_count: 10,
+        prompt_eval_count: 5,
+      }
     }
 
     getOllamaMock.mockResolvedValue(mockStream())
@@ -62,7 +82,13 @@ describe('streamResponse', () => {
     const onDone = vi.fn()
 
     async function* mockStream() {
-      yield { done: true, message: { content: '' }, total_duration: 0, eval_count: 0, prompt_eval_count: 0 }
+      yield {
+        done: true,
+        message: { content: '' },
+        total_duration: 0,
+        eval_count: 0,
+        prompt_eval_count: 0,
+      }
     }
     getOllamaMock.mockResolvedValue(mockStream())
 
@@ -85,11 +111,22 @@ describe('streamResponse', () => {
     const onDone = vi.fn()
 
     async function* mockStream() {
-      yield { done: true, message: { content: '' }, total_duration: 0, eval_count: 0, prompt_eval_count: 0 }
+      yield {
+        done: true,
+        message: { content: '' },
+        total_duration: 0,
+        eval_count: 0,
+        prompt_eval_count: 0,
+      }
     }
     getOllamaMock.mockResolvedValue(mockStream())
 
-    const system = { role: 'system', content: 'Be helpful', createdAt: new Date(), chatId: 1 } as any
+    const system = {
+      role: 'system',
+      content: 'Be helpful',
+      createdAt: new Date(),
+      chatId: 1,
+    } as any
 
     await streamResponse(
       'llama2',
@@ -106,18 +143,17 @@ describe('streamResponse', () => {
 
   it('cleans up activeStream after completion', async () => {
     async function* mockStream() {
-      yield { done: true, message: { content: '' }, total_duration: 0, eval_count: 0, prompt_eval_count: 0 }
+      yield {
+        done: true,
+        message: { content: '' },
+        total_duration: 0,
+        eval_count: 0,
+        prompt_eval_count: 0,
+      }
     }
     getOllamaMock.mockResolvedValue(mockStream())
 
-    await streamResponse(
-      'llama2',
-      [],
-      undefined,
-      10,
-      vi.fn(),
-      vi.fn(),
-    )
+    await streamResponse('llama2', [], undefined, 10, vi.fn(), vi.fn())
 
     expect(activeStream.value).toBeNull()
   })

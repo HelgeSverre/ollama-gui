@@ -20,7 +20,9 @@ let errorTimer: ReturnType<typeof setTimeout> | null = null
 function setError(msg: string) {
   error.value = msg
   if (errorTimer) clearTimeout(errorTimer)
-  errorTimer = setTimeout(() => { error.value = null }, 6000)
+  errorTimer = setTimeout(() => {
+    error.value = null
+  }, 6000)
 }
 
 // Database Layer

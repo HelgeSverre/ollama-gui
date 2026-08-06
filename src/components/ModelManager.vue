@@ -18,14 +18,17 @@ const pullModelName = ref('')
 const isPulling = ref(false)
 const pullProgress = ref('')
 const selectedModel = ref<string | null>(null)
-const modelInfo = ref<{ license?: string; parameters?: string; template?: string; modelfile?: string } | null>(null)
+const modelInfo = ref<{
+  license?: string
+  parameters?: string
+  template?: string
+  modelfile?: string
+} | null>(null)
 const isLoadingInfo = ref(false)
 const panelRef = ref<HTMLElement>()
 const deletingModel = ref<string | null>(null)
 
-
-watch(isModelManagerOpen, (open) => {
-})
+watch(isModelManagerOpen, (open) => {})
 
 onClickOutside(panelRef, () => close())
 

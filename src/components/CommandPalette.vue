@@ -15,7 +15,6 @@ const selectedIndex = ref(0)
 const inputRef = ref<HTMLInputElement>()
 const panelRef = ref<HTMLElement>()
 
-
 watch(isOpen, (open) => {
   if (open) {
     setTimeout(() => inputRef.value?.focus(), 50)
