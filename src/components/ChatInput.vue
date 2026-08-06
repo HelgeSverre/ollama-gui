@@ -243,8 +243,8 @@ const setMessageType = (isSystem: boolean) => {
             :placeholder="isSystemMessage ? 'System instructions...' : 'Message...'"
             @keydown="onKeydown"
             @paste="onPaste"
-          @compositionstart="canSubmit = false"
-          @compositionend="canSubmit = true"
+            @compositionstart="canSubmit = false"
+            @compositionend="canSubmit = true"
             data-testid="chat-textarea"
           ></textarea>
         </div>
