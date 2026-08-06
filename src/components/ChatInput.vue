@@ -17,6 +17,7 @@ const {
   addSystemMessage,
   addUserMessage,
   abort,
+  error,
   hasActiveChat,
   hasMessages,
   regenerateResponse,
@@ -201,6 +202,14 @@ const setMessageType = (isSystem: boolean) => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div
+        v-if="error"
+        role="alert"
+        class="border-red/30 bg-red/10 text-red mb-1 rounded-[5px] border px-3 py-1.5 text-[11px]"
+      >
+        {{ error }}
       </div>
 
       <div class="relative flex items-end gap-2 py-2">

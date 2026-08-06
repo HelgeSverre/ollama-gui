@@ -18,7 +18,7 @@ export default defineConfig({
     actionTimeout: 15_000,
   },
   webServer: {
-    command: 'bun run dev',
+    command: 'yarn dev',
     port: 5173,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,

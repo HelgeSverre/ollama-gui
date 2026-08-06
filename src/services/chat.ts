@@ -13,6 +13,15 @@ const activeChat = ref<Chat | null>(null)
 const messages = ref<Message[]>([])
 const systemPrompt = ref<Message>()
 const ongoingAiMessages = ref<Map<number, Message>>(new Map())
+const error = ref<string | null>(null)
+
+let errorTimer: ReturnType<typeof setTimeout> | null = null
+
+function setError(msg: string) {
+  error.value = msg
+  if (errorTimer) clearTimeout(errorTimer)
+  errorTimer = setTimeout(() => { error.value = null }, 6000)
+}
 
 // Database Layer
 const dbLayer = {
@@ -103,6 +112,7 @@ export function useChats() {
         await startNewChat('New chat')
       }
     } catch (error) {
+      setError('Failed to initialize chats')
       console.error('Failed to initialize chats:', error)
     }
   }
@@ -140,7 +150,8 @@ export function useChats() {
 
     activeChat.value.name = newName
     await dbLayer.updateChat(activeChat.value.id!, { name: newName })
-    chats.value = await dbLayer.getAllChats()
+    const idx = chats.value.findIndex((c) => c.id === activeChat.value!.id)
+    if (idx !== -1) chats.value[idx] = { ...chats.value[idx], name: newName }
   }
 
   const startNewChat = async (name: string) => {
@@ -185,6 +196,11 @@ export function useChats() {
       return
     }
 
+    if (activeStream.value) {
+      setError('A response is already generating')
+      return
+    }
+
     const currentChatId = activeChat.value.id!
     const message: Message = {
       chatId: activeChat.value.id!,
@@ -208,6 +224,7 @@ export function useChats() {
     } catch (error) {
       ongoingAiMessages.value.delete(currentChatId)
       if (error instanceof Error && error.name === 'AbortError') return
+      setError('Failed to send message')
       console.error('Failed to add user message:', error)
     }
   }
@@ -233,6 +250,7 @@ export function useChats() {
           ongoingAiMessages.value.delete(currentChatId)
           return
         }
+        setError('Failed to regenerate')
         console.error('Failed to regenerate response:', error)
       }
     }
@@ -395,7 +413,8 @@ export function useChats() {
       updates.archived = false
     }
     await dbLayer.updateChat(chatId, updates)
-    chats.value = await dbLayer.getAllChats()
+    const idx = chats.value.findIndex((c) => c.id === chatId)
+    if (idx !== -1) Object.assign(chats.value[idx], updates)
   }
 
   const toggleArchiveChat = async (chatId: number) => {
@@ -406,7 +425,8 @@ export function useChats() {
       updates.pinned = false
     }
     await dbLayer.updateChat(chatId, updates)
-    chats.value = await dbLayer.getAllChats()
+    const idx = chats.value.findIndex((c) => c.id === chatId)
+    if (idx !== -1) Object.assign(chats.value[idx], updates)
   }
 
   const exportChatToMarkdown = async (chat: Chat) => {
@@ -487,7 +507,7 @@ export function useChats() {
       await dbLayer.updateMessage(messageId, { content: newContent })
       const allMessages = await dbLayer.getMessages(chatId)
       const targetIdx = allMessages.findIndex((m) => m.id === messageId)
-      if (targetIdx !== -1) {
+      if (targetIdx !== -1 && targetIdx < allMessages.length - 1) {
         for (let i = allMessages.length - 1; i > targetIdx; i--) {
           if (allMessages[i].id) await dbLayer.deleteMessage(allMessages[i].id!)
         }
@@ -536,6 +556,7 @@ export function useChats() {
     initialize,
     wipeDatabase,
     abort: () => activeStream.value?.abort(),
+    error,
     exportChats,
     importChats,
     togglePinChat,

@@ -11,7 +11,6 @@ import {
   IconInfoCircle,
   IconLoader,
 } from '@tabler/icons-vue'
-import { useFocusTrap } from '../services/useFocusTrap.ts'
 
 const { availableModels, refreshModels } = useAI()
 
@@ -19,16 +18,13 @@ const pullModelName = ref('')
 const isPulling = ref(false)
 const pullProgress = ref('')
 const selectedModel = ref<string | null>(null)
-const modelInfo = ref<any>(null)
+const modelInfo = ref<{ license?: string; parameters?: string; template?: string; modelfile?: string } | null>(null)
 const isLoadingInfo = ref(false)
 const panelRef = ref<HTMLElement>()
 const deletingModel = ref<string | null>(null)
 
-const { activate: trapFocus, deactivate: releaseFocus } = useFocusTrap(panelRef)
 
 watch(isModelManagerOpen, (open) => {
-  if (open) trapFocus()
-  else releaseFocus()
 })
 
 onClickOutside(panelRef, () => close())

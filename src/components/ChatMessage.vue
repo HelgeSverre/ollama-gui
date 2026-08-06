@@ -13,6 +13,6 @@ const { message } = defineProps<Props>()
 
 <template>
   <SystemMessage v-if="message.role == 'system'" :message="message" />
-  <UserMessage v-if="message.role == 'user'" :message="message" />
-  <AiMessage v-if="message.role == 'assistant'" :message="message" />
+  <UserMessage v-else-if="message.role == 'user'" :message="message" />
+  <AiMessage v-else-if="message.role == 'assistant'" :message="message" />
 </template>

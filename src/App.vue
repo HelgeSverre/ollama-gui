@@ -39,7 +39,7 @@ const confirmRename = () => {
 onMounted(() => {
   refreshModels().then(async () => {
     await initialize()
-    await switchModel(currentModel.value ?? availableModels.value[0].name)
+    await switchModel(currentModel.value ?? availableModels.value[0]?.name ?? 'none')
   })
 })
 </script>

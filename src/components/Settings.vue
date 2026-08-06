@@ -16,7 +16,6 @@ import {
 import { useChats } from '../services/chat.ts'
 import { onKeyStroke, onClickOutside } from '@vueuse/core'
 import { ref, watch } from 'vue'
-import { useFocusTrap } from '../services/useFocusTrap.ts'
 
 const { wipeDatabase } = useChats()
 const panelRef = ref<HTMLElement>()

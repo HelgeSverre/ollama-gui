@@ -13,10 +13,9 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const performRefreshModel = async () => {
   refreshingModel.value = true
-  await Promise.all([refreshModels(), sleep(1000)])
-  refreshModels().then(() => {
-    refreshingModel.value = false
-  })
+  await refreshModels()
+  await sleep(500)
+  refreshingModel.value = false
 }
 
 const handleModelChange = (event: Event) => {

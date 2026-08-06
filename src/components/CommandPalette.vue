@@ -5,7 +5,6 @@ import { useChats } from '../services/chat.ts'
 import { useAI } from '../services/useAI.ts'
 import { toggleSettingsPanel, toggleSystemPromptPanel } from '../services/appConfig.ts'
 import { IconSearch, IconPlus, IconSettings, IconMessageCode } from '@tabler/icons-vue'
-import { useFocusTrap } from '../services/useFocusTrap.ts'
 
 const { sortedChats, switchChat, startNewChat } = useChats()
 const { refreshModels } = useAI()
@@ -16,14 +15,11 @@ const selectedIndex = ref(0)
 const inputRef = ref<HTMLInputElement>()
 const panelRef = ref<HTMLElement>()
 
-const { activate: trapFocus, deactivate: releaseFocus } = useFocusTrap(panelRef)
 
 watch(isOpen, (open) => {
   if (open) {
-    trapFocus()
     setTimeout(() => inputRef.value?.focus(), 50)
   } else {
-    releaseFocus()
   }
 })
 

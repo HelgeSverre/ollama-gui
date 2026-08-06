@@ -16,7 +16,7 @@ export async function streamResponse(
     prompt_eval_count: number
   }) => void,
 ): Promise<void> {
-  let chatHistory = messages.slice(-(historyLength ?? 0))
+  let chatHistory = messages.slice(-Math.max(historyLength ?? 10, 1))
   if (system) chatHistory.unshift(system)
 
   const stream = await getOllama().chat({
