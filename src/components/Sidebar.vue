@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import {
-  IconMoon,
   IconPlus,
   IconSettings2,
-  IconSun,
   IconTrashX,
   IconMessageCode,
   IconDots,
@@ -17,7 +15,6 @@ import {
 } from '@tabler/icons-vue'
 
 import {
-  isDarkMode,
   isSystemPromptOpen,
   toggleSettingsPanel,
   toggleSystemPromptPanel,
@@ -225,14 +222,6 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
         >
           <IconMessageCode :size="14" class="text-text-muted" />
           System Prompt
-        </button>
-        <button
-          @click="isDarkMode = !isDarkMode"
-          class="text-text hover:bg-hover flex w-full items-center gap-2 px-3.5 py-1.5 text-left text-[11.5px]"
-        >
-          <IconSun v-if="isDarkMode" :size="14" class="text-text-muted" />
-          <IconMoon v-else :size="14" class="text-text-muted" />
-          Toggle light mode
         </button>
         <button
           @click="toggleModelManager"

@@ -9,7 +9,6 @@ export const historyMessageLength = useLocalStorage('historyMessageLength', 10)
 export const enableMarkdown = useLocalStorage('markdown', true)
 export const showSystem = useLocalStorage('systemMessages', true)
 export const baseUrl = useLocalStorage('baseUrl', 'http://localhost:11434')
-export const isDarkMode = useLocalStorage('darkMode', true)
 
 export const isSettingsOpen = useLocalStorage('settingsPanelOpen', false)
 export const isModelManagerOpen = ref(false)
