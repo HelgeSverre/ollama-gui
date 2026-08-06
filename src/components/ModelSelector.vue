@@ -5,7 +5,7 @@ import { useAI } from '../services/useAI.ts'
 import { ref } from 'vue'
 import { currentModel } from '../services/appConfig'
 
-const { activeChat, switchModel, hasMessages } = useChats()
+const { activeChat, switchModel } = useChats()
 const { refreshModels, availableModels } = useAI()
 
 const refreshingModel = ref(false)
