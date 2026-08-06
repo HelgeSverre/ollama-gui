@@ -30,7 +30,7 @@ const isInputValid = computed<boolean>(
   () => !!userInput.value.trim() || images.value.length > 0,
 )
 const isAiResponding = ref(false)
-const isComposing = ref(true)
+const canSubmit = ref(true)
 const showOptionsMenu = ref(false)
 
 watch(activeStream, (stream) => {
@@ -113,7 +113,7 @@ const onSubmit = () => {
 const shouldSubmit = ({ key, shiftKey }: KeyboardEvent) => key === 'Enter' && !shiftKey
 
 const onKeydown = (event: KeyboardEvent) => {
-  if (shouldSubmit(event) && isComposing.value && !isAiResponding.value) {
+  if (shouldSubmit(event) && canSubmit.value && !isAiResponding.value) {
     event.preventDefault()
     onSubmit()
   }
@@ -243,8 +243,8 @@ const setMessageType = (isSystem: boolean) => {
             :placeholder="isSystemMessage ? 'System instructions...' : 'Message...'"
             @keydown="onKeydown"
             @paste="onPaste"
-            @compositionstart="isComposing = false"
-            @compositionend="isComposing = true"
+          @compositionstart="canSubmit = false"
+          @compositionend="canSubmit = true"
             data-testid="chat-textarea"
           ></textarea>
         </div>

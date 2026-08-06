@@ -14,8 +14,7 @@ import {
   toggleSettingsPanel,
 } from '../services/appConfig.ts'
 import { useChats } from '../services/chat.ts'
-import { onKeyStroke, onClickOutside } from '@vueuse/core'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const { wipeDatabase } = useChats()
 const panelRef = ref<HTMLElement>()

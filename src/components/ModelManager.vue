@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { onClickOutside, onKeyStroke } from '@vueuse/core'
 import { useAI } from '../services/useAI.ts'
 import { getOllama } from '../services/api.ts'
-import { isModelManagerOpen, toggleModelManager } from '../services/appConfig.ts'
+import { isModelManagerOpen } from '../services/appConfig.ts'
 import {
   IconDownload,
   IconTrash,
@@ -28,8 +28,6 @@ const isLoadingInfo = ref(false)
 const panelRef = ref<HTMLElement>()
 const deletingModel = ref<string | null>(null)
 
-watch(isModelManagerOpen, (open) => {})
-
 onClickOutside(panelRef, () => close())
 
 onKeyStroke('Escape', () => {
@@ -40,11 +38,6 @@ function close() {
   isModelManagerOpen.value = false
   selectedModel.value = null
   modelInfo.value = null
-}
-
-function open() {
-  isModelManagerOpen.value = true
-  refreshModels()
 }
 
 function formatSize(bytes: number): string {
