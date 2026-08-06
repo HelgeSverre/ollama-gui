@@ -131,11 +131,11 @@ const setMessageType = (isSystem: boolean) => {
 
 <template>
   <form
+    class="border-border bg-panel flex-none border-t"
+    data-testid="chat-input-form"
     @submit.prevent="onSubmit"
     @dragover.prevent
     @drop.prevent="onDrop"
-    class="border-border bg-panel flex-none border-t"
-    data-testid="chat-input-form"
   >
     <div class="mx-auto max-w-[48rem] px-4">
       <div class="flex items-center gap-2 py-1.5">
@@ -149,9 +149,9 @@ const setMessageType = (isSystem: boolean) => {
           <button
             v-if="hasMessages"
             type="button"
-            @click="regenerateResponse"
             class="text-text-secondary hover:bg-hover hover:text-text inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[11px]"
             data-testid="regenerate-btn"
+            @click="regenerateResponse"
           >
             <IconArrowBackUp :size="13" />
             Regenerate
@@ -159,12 +159,12 @@ const setMessageType = (isSystem: boolean) => {
 
           <button
             v-if="showSystem"
-            type="button"
             ref="dropdownBtnRef"
+            type="button"
             aria-label="Message options"
-            @click="toggleDropdown"
             class="text-text-muted hover:bg-hover hover:text-text inline-flex items-center rounded-[4px] p-1"
             data-testid="message-type-dropdown"
+            @click="toggleDropdown"
           >
             <IconDots :size="14" />
           </button>
@@ -177,10 +177,10 @@ const setMessageType = (isSystem: boolean) => {
           >
             <button
               type="button"
-              @click="setMessageType(false)"
               :class="!isSystemMessage ? 'text-text' : 'text-text-secondary'"
               class="hover:bg-hover flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11.5px]"
               data-testid="msg-type-user"
+              @click="setMessageType(false)"
             >
               <IconMessage :size="14" />
               User message
@@ -193,10 +193,10 @@ const setMessageType = (isSystem: boolean) => {
             </button>
             <button
               type="button"
-              @click="setMessageType(true)"
               :class="isSystemMessage ? 'text-text' : 'text-text-secondary'"
               class="hover:bg-hover flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11.5px]"
               data-testid="msg-type-system"
+              @click="setMessageType(true)"
             >
               <IconRobot :size="14" />
               System message
@@ -221,15 +221,22 @@ const setMessageType = (isSystem: boolean) => {
 
       <div class="relative flex items-end gap-2 py-2">
         <div class="min-w-0 flex-1">
-          <div v-if="images.length" class="flex flex-wrap gap-2 py-1.5">
-            <div v-for="(img, i) in images" :key="i" class="relative">
+          <div
+            v-if="images.length"
+            class="flex flex-wrap gap-2 py-1.5"
+          >
+            <div
+              v-for="(img, i) in images"
+              :key="i"
+              class="relative"
+            >
               <img
                 :src="img"
                 class="border-border h-16 w-16 rounded-[4px] border object-cover"
-              />
+              >
               <button
-                @click="images.splice(i, 1)"
                 class="bg-border text-text hover:bg-hover absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[9px]"
+                @click="images.splice(i, 1)"
               >
                 x
               </button>
@@ -241,12 +248,12 @@ const setMessageType = (isSystem: boolean) => {
             rows="1"
             class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent max-h-[300px] min-h-[36px] w-full resize-none rounded-[5px] border px-3 py-2 text-[12.5px] leading-relaxed outline-none"
             :placeholder="isSystemMessage ? 'System instructions...' : 'Message...'"
+            data-testid="chat-textarea"
             @keydown="onKeydown"
             @paste="onPaste"
             @compositionstart="canSubmit = false"
             @compositionend="canSubmit = true"
-            data-testid="chat-textarea"
-          ></textarea>
+          />
         </div>
         <button
           type="submit"
@@ -255,8 +262,14 @@ const setMessageType = (isSystem: boolean) => {
           class="bg-accent flex h-[36px] w-[36px] flex-none items-center justify-center rounded-[5px] text-white hover:opacity-90 disabled:opacity-30"
           data-testid="send-btn"
         >
-          <IconPlayerStopFilled v-if="isAiResponding" :size="15" />
-          <IconSend v-else :size="15" />
+          <IconPlayerStopFilled
+            v-if="isAiResponding"
+            :size="15"
+          />
+          <IconSend
+            v-else
+            :size="15"
+          />
         </button>
       </div>
     </div>

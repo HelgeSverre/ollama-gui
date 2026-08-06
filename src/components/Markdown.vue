@@ -31,5 +31,5 @@ const html = computed(() => md.render(props.source))
 </script>
 
 <template>
-  <div v-html="html"></div>
+  <div v-html="html" />
 </template>

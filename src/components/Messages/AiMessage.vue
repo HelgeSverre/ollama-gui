@@ -23,14 +23,20 @@ const parts = computed(() => {
 </script>
 
 <template>
-  <div class="flex gap-3 py-2.5" data-testid="ai-message">
+  <div
+    class="flex gap-3 py-2.5"
+    data-testid="ai-message"
+  >
     <img
       class="mt-0.5 h-[22px] w-[22px] flex-none rounded-[3px] object-contain opacity-80"
       :src="logo"
       alt="Ollama"
-    />
+    >
     <div class="min-w-0 flex-1">
-      <details v-if="parts.thinking" class="mb-3">
+      <details
+        v-if="parts.thinking"
+        class="mb-3"
+      >
         <summary
           class="text-text-muted hover:text-text-secondary cursor-pointer text-[11px]"
         >
@@ -38,7 +44,7 @@ const parts = computed(() => {
         </summary>
         <pre
           class="border-border bg-page text-text-secondary mt-2 rounded-[5px] border p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap"
-          >{{ parts.thinking }}</pre>
+        >{{ parts.thinking }}</pre>
       </details>
       <div
         v-if="!enableMarkdown"
@@ -46,7 +52,10 @@ const parts = computed(() => {
       >
         {{ parts.response }}
       </div>
-      <div v-else class="text-text message-content text-[13px] leading-relaxed">
+      <div
+        v-else
+        class="text-text message-content text-[13px] leading-relaxed"
+      >
         <Markdown :source="parts.response" />
       </div>
     </div>

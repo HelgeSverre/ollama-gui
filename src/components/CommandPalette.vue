@@ -153,9 +153,9 @@ watch(query, () => {
     >
       <div
         class="absolute inset-0 bg-black/55"
-        @click="close"
         data-testid="command-palette-backdrop"
-      ></div>
+        @click="close"
+      />
 
       <div
         ref="panelRef"
@@ -165,15 +165,18 @@ watch(query, () => {
         class="border-border-strong bg-panel relative flex max-h-[60vh] w-[520px] flex-col overflow-hidden rounded-[10px] border shadow-2xl"
       >
         <div class="border-border flex items-center gap-2.5 border-b px-3.5 py-2.5">
-          <IconSearch :size="16" class="text-text-muted flex-none" />
+          <IconSearch
+            :size="16"
+            class="text-text-muted flex-none"
+          />
           <input
-            ref="inputRef"
             id="command-palette-title"
+            ref="inputRef"
             v-model="query"
             type="text"
             placeholder="Search chats and commands..."
             class="text-text placeholder:text-text-muted flex-1 bg-transparent text-[13px] outline-none"
-          />
+          >
         </div>
 
         <div class="overflow-y-auto">
@@ -194,14 +197,14 @@ watch(query, () => {
             <div
               v-for="(item, idx) in filteredActions"
               :key="item.id"
-              @click="item.action()"
-              @mouseenter="selectedIndex = idx"
               :class="[
                 'flex cursor-pointer items-center gap-2.5 border-l-2 px-3.5 py-2',
                 selectedIndex === idx
                   ? 'border-accent bg-sel'
                   : 'hover:bg-hover border-transparent',
               ]"
+              @click="item.action()"
+              @mouseenter="selectedIndex = idx"
             >
               <component
                 :is="item.icon"
@@ -220,14 +223,14 @@ watch(query, () => {
             <div
               v-for="(chat, idx) in filteredChats"
               :key="chat.id"
-              @click="switchChat(chat.id!)"
-              @mouseenter="selectedIndex = filteredActions.length + idx"
               :class="[
                 'flex cursor-pointer flex-col border-l-2 px-3.5 py-1.5',
                 selectedIndex === filteredActions.length + idx
                   ? 'border-accent bg-sel'
                   : 'hover:bg-hover border-transparent',
               ]"
+              @click="switchChat(chat.id!)"
+              @mouseenter="selectedIndex = filteredActions.length + idx"
             >
               <span class="text-text text-[12px] font-semibold">{{ chat.name }}</span>
               <span class="text-text-muted font-mono text-[10px]">{{ chat.model }}</span>

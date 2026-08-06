@@ -27,24 +27,24 @@ watchEffect(() => {
 <template>
   <div class="mb-2 flex items-center justify-between">
     <label
-      @click="toggle"
-      class="text-text block cursor-pointer px-2 text-[11px] font-medium"
       v-if="label"
+      class="text-text block cursor-pointer px-2 text-[11px] font-medium"
+      @click="toggle"
     >
       {{ label }}
     </label>
     <button
       :class="toggleState ? 'bg-accent border-accent' : 'bg-hover border-border'"
       class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border transition-none focus:outline-none"
-      @click="toggle"
       role="switch"
       :aria-checked="toggleState"
+      @click="toggle"
     >
       <span
         :class="toggleState ? 'translate-x-4' : 'translate-x-0'"
         aria-hidden="true"
         class="pointer-events-none inline-block h-4 w-4 translate-y-[1px] rounded-full bg-white transition-none"
-      ></span>
+      />
     </button>
   </div>
 </template>

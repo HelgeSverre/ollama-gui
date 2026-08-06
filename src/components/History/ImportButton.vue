@@ -24,6 +24,10 @@ const uploadChats = async (event: Event) => {
 <template>
   <label class="cursor-pointer">
     <slot />
-    <input class="sr-only" type="file" @change="uploadChats" />
+    <input
+      class="sr-only"
+      type="file"
+      @change="uploadChats"
+    >
   </label>
 </template>

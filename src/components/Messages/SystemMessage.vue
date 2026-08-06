@@ -13,6 +13,6 @@ const { message } = defineProps<Props>()
     </div>
     <pre
       class="border-border bg-page text-text-secondary min-w-0 flex-1 rounded-[5px] border p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap"
-      >{{ message.content }}</pre>
+    >{{ message.content }}</pre>
   </div>
 </template>

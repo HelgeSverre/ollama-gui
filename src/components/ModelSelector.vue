@@ -36,12 +36,22 @@ const { disabled = false } = defineProps<Props>()
         :disabled="disabled"
         :value="activeChat?.model ?? currentModel"
         aria-label="Select model"
-        @change="handleModelChange"
         class="border-border bg-list text-text focus:border-accent cursor-pointer rounded-[5px] border px-2.5 py-1 text-[12px] outline-none disabled:opacity-30"
         data-testid="model-select"
+        @change="handleModelChange"
       >
-        <option :value="undefined" disabled selected>Select a model</option>
-        <option v-for="model in availableModels" :key="model.name" :value="model.name">
+        <option
+          :value="undefined"
+          disabled
+          selected
+        >
+          Select a model
+        </option>
+        <option
+          v-for="model in availableModels"
+          :key="model.name"
+          :value="model.name"
+        >
           {{ model.name }}
         </option>
       </select>
@@ -49,8 +59,8 @@ const { disabled = false } = defineProps<Props>()
       <button
         :disabled="disabled"
         title="Refresh available models"
-        @click="performRefreshModel"
         class="bg-list text-text-secondary hover:bg-hover inline-flex items-center justify-center rounded-[4px] p-1.5 disabled:opacity-30"
+        @click="performRefreshModel"
       >
         <IconRefresh
           :size="14"

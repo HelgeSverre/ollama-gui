@@ -117,7 +117,10 @@ async function showInfo(name: string) {
       v-if="isModelManagerOpen"
       class="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]"
     >
-      <div class="absolute inset-0 bg-black/55" @click="close"></div>
+      <div
+        class="absolute inset-0 bg-black/55"
+        @click="close"
+      />
 
       <div
         ref="panelRef"
@@ -127,11 +130,20 @@ async function showInfo(name: string) {
         class="border-border-strong bg-panel relative max-h-[80vh] w-[520px] overflow-hidden rounded-[10px] border shadow-2xl"
       >
         <div class="border-border flex items-center justify-between border-b px-4 py-2.5">
-          <h2 id="model-manager-title" class="text-text text-[13px] font-semibold">
+          <h2
+            id="model-manager-title"
+            class="text-text text-[13px] font-semibold"
+          >
             Model Manager
           </h2>
-          <button @click="close" class="hover:bg-hover rounded-[4px] p-1.5">
-            <IconX :size="16" class="text-text-secondary" />
+          <button
+            class="hover:bg-hover rounded-[4px] p-1.5"
+            @click="close"
+          >
+            <IconX
+              :size="16"
+              class="text-text-secondary"
+            />
           </button>
         </div>
 
@@ -149,14 +161,21 @@ async function showInfo(name: string) {
                 :disabled="isPulling"
                 class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent flex-1 rounded-[5px] border px-2.5 py-1.5 text-[12px] outline-none disabled:opacity-50"
                 @keydown.enter="handlePull"
-              />
+              >
               <button
-                @click="handlePull"
                 :disabled="isPulling || !pullModelName.trim()"
                 class="bg-accent flex items-center gap-1.5 rounded-[5px] px-3 py-1.5 text-[12px] font-medium text-white hover:opacity-90 disabled:opacity-40"
+                @click="handlePull"
               >
-                <IconLoader v-if="isPulling" :size="14" class="animate-spin" />
-                <IconDownload v-else :size="14" />
+                <IconLoader
+                  v-if="isPulling"
+                  :size="14"
+                  class="animate-spin"
+                />
+                <IconDownload
+                  v-else
+                  :size="14"
+                />
                 Pull
               </button>
             </div>
@@ -185,7 +204,10 @@ async function showInfo(name: string) {
             >
               No models installed. Pull a model above to get started.
             </div>
-            <div v-else class="space-y-0.5">
+            <div
+              v-else
+              class="space-y-0.5"
+            >
               <div
                 v-for="model in availableModels"
                 :key="model.name"
@@ -198,8 +220,8 @@ async function showInfo(name: string) {
               >
                 <div class="flex items-center gap-3 px-3 py-2">
                   <button
-                    @click="showInfo(model.name)"
                     class="flex min-w-0 flex-1 items-center gap-3"
+                    @click="showInfo(model.name)"
                   >
                     <IconInfoCircle
                       :size="15"
@@ -221,14 +243,14 @@ async function showInfo(name: string) {
                   <template v-if="deletingModel === model.name">
                     <div class="flex items-center gap-1.5">
                       <button
-                        @click="handleDelete(model.name)"
                         class="text-red text-[10px] font-bold hover:underline"
+                        @click="handleDelete(model.name)"
                       >
                         Delete
                       </button>
                       <button
-                        @click="cancelDelete"
                         class="text-text-muted hover:text-text text-[10px]"
+                        @click="cancelDelete"
                       >
                         Cancel
                       </button>
@@ -236,9 +258,9 @@ async function showInfo(name: string) {
                   </template>
                   <button
                     v-else
-                    @click="handleDelete(model.name)"
                     class="text-text-muted hover:bg-hover hover:text-red shrink-0 rounded-[4px] p-1.5"
                     title="Delete model"
+                    @click="handleDelete(model.name)"
                   >
                     <IconTrash :size="14" />
                   </button>
@@ -251,19 +273,31 @@ async function showInfo(name: string) {
                     v-if="isLoadingInfo"
                     class="text-text-muted flex items-center gap-2 text-[11px]"
                   >
-                    <IconLoader :size="12" class="animate-spin" />
+                    <IconLoader
+                      :size="12"
+                      class="animate-spin"
+                    />
                     Loading model info…
                   </div>
-                  <div v-else-if="modelInfo" class="space-y-2 text-[11px]">
+                  <div
+                    v-else-if="modelInfo"
+                    class="space-y-2 text-[11px]"
+                  >
                     <template v-if="modelInfo.license">
                       <div>
-                        <div class="text-text-secondary font-semibold">License</div>
-                        <div class="text-text">{{ modelInfo.license }}</div>
+                        <div class="text-text-secondary font-semibold">
+                          License
+                        </div>
+                        <div class="text-text">
+                          {{ modelInfo.license }}
+                        </div>
                       </div>
                     </template>
                     <template v-if="modelInfo.parameters">
                       <div>
-                        <div class="text-text-secondary font-semibold">Parameters</div>
+                        <div class="text-text-secondary font-semibold">
+                          Parameters
+                        </div>
                         <div class="text-text whitespace-pre-wrap">
                           {{ modelInfo.parameters }}
                         </div>
@@ -271,18 +305,22 @@ async function showInfo(name: string) {
                     </template>
                     <template v-if="modelInfo.template">
                       <div>
-                        <div class="text-text-secondary font-semibold">Template</div>
+                        <div class="text-text-secondary font-semibold">
+                          Template
+                        </div>
                         <pre
                           class="border-border bg-page text-text mt-1 overflow-x-auto rounded-[5px] border p-2 text-[10px]"
-                          >{{ modelInfo.template }}</pre>
+                        >{{ modelInfo.template }}</pre>
                       </div>
                     </template>
                     <template v-if="modelInfo.modelfile">
                       <div>
-                        <div class="text-text-secondary font-semibold">Modelfile</div>
+                        <div class="text-text-secondary font-semibold">
+                          Modelfile
+                        </div>
                         <pre
                           class="border-border bg-page text-text mt-1 overflow-x-auto rounded-[5px] border p-2 text-[10px]"
-                          >{{ modelInfo.modelfile }}</pre>
+                        >{{ modelInfo.modelfile }}</pre>
                       </div>
                     </template>
                   </div>

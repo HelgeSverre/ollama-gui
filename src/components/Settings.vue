@@ -43,9 +43,9 @@ const cancelWipe = () => {
     >
       <div
         class="absolute inset-0 bg-black/55"
-        @click="toggleSettingsPanel"
         data-testid="settings-backdrop"
-      ></div>
+        @click="toggleSettingsPanel"
+      />
 
       <div
         ref="panelRef"
@@ -55,15 +55,21 @@ const cancelWipe = () => {
         class="border-border-strong bg-panel relative max-h-[80vh] w-[520px] overflow-hidden rounded-[10px] border shadow-2xl"
       >
         <div class="border-border flex items-center justify-between border-b px-4 py-2.5">
-          <h2 id="settings-title" class="text-text text-[13px] font-semibold">
+          <h2
+            id="settings-title"
+            class="text-text text-[13px] font-semibold"
+          >
             Settings
           </h2>
           <button
-            @click="toggleSettingsPanel"
             class="hover:bg-hover rounded-[4px] p-1.5"
             data-testid="settings-close"
+            @click="toggleSettingsPanel"
           >
-            <IconX :size="16" class="text-text-secondary" />
+            <IconX
+              :size="16"
+              class="text-text-secondary"
+            />
           </button>
         </div>
 
@@ -76,13 +82,13 @@ const cancelWipe = () => {
             </div>
             <div class="space-y-1">
               <ToggleInput
-                label="Enable Markdown"
                 v-model="enableMarkdown"
+                label="Enable Markdown"
                 data-testid="toggle-markdown"
               />
               <ToggleInput
-                label="Show System Messages"
                 v-model="showSystem"
+                label="Show System Messages"
                 data-testid="toggle-system-msgs"
               />
             </div>
@@ -96,8 +102,8 @@ const cancelWipe = () => {
             </div>
             <TextInput
               id="base-url"
-              label="Ollama API URL"
               v-model="baseUrl"
+              label="Ollama API URL"
               data-testid="input-base-url"
             />
           </div>
@@ -110,8 +116,8 @@ const cancelWipe = () => {
             </div>
             <TextInput
               id="gravatar-email"
-              label="Gravatar Email"
               v-model="gravatarEmail"
+              label="Gravatar Email"
               data-testid="input-gravatar"
             />
           </div>
@@ -123,19 +129,22 @@ const cancelWipe = () => {
               History
             </div>
             <div>
-              <label for="chat-history-length" class="text-text mb-1.5 block text-[11px]">
+              <label
+                for="chat-history-length"
+                class="text-text mb-1.5 block text-[11px]"
+              >
                 Context length (messages)
               </label>
               <input
+                id="chat-history-length"
+                v-model="historyMessageLength"
                 type="number"
                 min="0"
                 max="100"
-                id="chat-history-length"
-                v-model="historyMessageLength"
                 class="border-border bg-list text-text focus:border-accent block w-full rounded-[5px] border p-2 text-[11px] outline-none"
                 placeholder="10"
                 data-testid="input-context-length"
-              />
+              >
             </div>
           </div>
 
@@ -150,21 +159,27 @@ const cancelWipe = () => {
                 class="text-text hover:bg-hover flex w-full items-center gap-2 rounded-[4px] px-2.5 py-1.5 text-[11.5px]"
                 data-testid="import-chats"
               >
-                <IconUpload :size="14" class="text-text-muted" />
+                <IconUpload
+                  :size="14"
+                  class="text-text-muted"
+                />
                 Import Chats
               </ImportButton>
               <ExportButton
                 class="text-text hover:bg-hover flex w-full items-center gap-2 rounded-[4px] px-2.5 py-1.5 text-[11.5px]"
                 data-testid="export-chats"
               >
-                <IconFileExport :size="14" class="text-text-muted" />
+                <IconFileExport
+                  :size="14"
+                  class="text-text-muted"
+                />
                 Export Chats
               </ExportButton>
               <template v-if="!confirmingWipe">
                 <button
-                  @click="requestWipe"
                   class="text-red hover:bg-hover flex w-full items-center gap-2 rounded-[4px] px-2.5 py-1.5 text-[11.5px]"
                   data-testid="delete-all-chats"
+                  @click="requestWipe"
                 >
                   <IconTrashX :size="14" />
                   Delete All Chats
@@ -174,14 +189,14 @@ const cancelWipe = () => {
                 <div class="flex items-center gap-2">
                   <span class="text-text text-[11px]">Are you sure?</span>
                   <button
-                    @click="confirmWipe"
                     class="text-red text-[11px] font-bold hover:underline"
+                    @click="confirmWipe"
                   >
                     Yes, delete all
                   </button>
                   <button
-                    @click="cancelWipe"
                     class="text-text-secondary hover:text-text text-[11px]"
+                    @click="cancelWipe"
                   >
                     Cancel
                   </button>

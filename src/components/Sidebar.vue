@@ -115,9 +115,9 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
 
       <div class="px-2.5 pb-1">
         <button
-          @click="onNewChat"
           class="bg-accent flex w-full items-center justify-center gap-1.5 rounded-[5px] px-3 py-1.5 text-[12px] font-semibold text-white hover:opacity-90"
           data-testid="new-chat-btn"
+          @click="onNewChat"
         >
           <IconPlus :size="15" />
           New Chat
@@ -136,7 +136,7 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
             placeholder="Search chats..."
             class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent w-full rounded-[5px] border py-1 pr-2 pl-7 text-[11px] outline-none"
             data-testid="search-chats"
-          />
+          >
         </div>
       </div>
 
@@ -151,10 +151,6 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
         <div
           v-for="chat in filteredChats"
           :key="chat.id"
-          @click="onSwitchChat(chat.id!)"
-          @contextmenu="onContextMenu($event, chat.id!)"
-          @keydown.enter="onSwitchChat(chat.id!)"
-          @keydown.space.prevent="onSwitchChat(chat.id!)"
           role="button"
           tabindex="0"
           :aria-label="`Chat: ${chat.name}`"
@@ -167,6 +163,10 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
             chat.archived && activeChat?.id !== chat.id ? 'opacity-50' : '',
           ]"
           data-testid="chat-item"
+          @click="onSwitchChat(chat.id!)"
+          @contextmenu="onContextMenu($event, chat.id!)"
+          @keydown.enter="onSwitchChat(chat.id!)"
+          @keydown.space.prevent="onSwitchChat(chat.id!)"
         >
           <div class="flex items-center gap-1.5">
             <span
@@ -174,11 +174,15 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
               :class="
                 activeChat?.id === chat.id ? 'bg-green' : 'border-text-muted border'
               "
-            ></span>
+            />
             <span class="text-text flex-1 truncate text-[12px] font-semibold">
               {{ chat.name }}
             </span>
-            <IconPinned v-if="chat.pinned" :size="10" class="text-text-muted flex-none" />
+            <IconPinned
+              v-if="chat.pinned"
+              :size="10"
+              class="text-text-muted flex-none"
+            />
             <button
               v-if="activeChat?.id === chat.id"
               class="text-text-muted hover:bg-hover hover:text-text flex-none rounded-[3px] p-0.5"
@@ -217,25 +221,34 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
           Actions
         </div>
         <button
-          @click="toggleSystemPromptPanel"
           class="text-text hover:bg-hover flex w-full items-center gap-2 px-3.5 py-1.5 text-left text-[11.5px]"
+          @click="toggleSystemPromptPanel"
         >
-          <IconMessageCode :size="14" class="text-text-muted" />
+          <IconMessageCode
+            :size="14"
+            class="text-text-muted"
+          />
           System Prompt
         </button>
         <button
-          @click="toggleModelManager"
           class="text-text hover:bg-hover flex w-full items-center gap-2 px-3.5 py-1.5 text-left text-[11.5px]"
+          @click="toggleModelManager"
         >
-          <IconBox :size="14" class="text-text-muted" />
+          <IconBox
+            :size="14"
+            class="text-text-muted"
+          />
           Model Manager
         </button>
         <button
-          @click="toggleSettingsPanel"
           class="text-text hover:bg-hover flex w-full items-center gap-2 px-3.5 py-1.5 text-left text-[11.5px]"
           data-testid="settings-btn"
+          @click="toggleSettingsPanel"
         >
-          <IconSettings2 :size="14" class="text-text-muted" />
+          <IconSettings2
+            :size="14"
+            class="text-text-muted"
+          />
           Settings
         </button>
       </div>
@@ -245,7 +258,10 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
       >
         <span>{{ activeChat?.model ?? 'no model' }}</span>
         <span v-if="activeChat?.tokenUsage">|</span>
-        <span v-if="activeChat?.tokenUsage?.total" class="tabular-nums">
+        <span
+          v-if="activeChat?.tokenUsage?.total"
+          class="tabular-nums"
+        >
           {{ activeChat.tokenUsage.total.toLocaleString() }} tok
         </span>
       </div>
@@ -260,47 +276,56 @@ const formatDate = (date: Date) => formatDistanceToNow(date, { addSuffix: true }
       :style="{ left: contextMenuPos.x + 'px', top: contextMenuPos.y + 'px' }"
     >
       <button
-        @click="onTogglePin"
         class="text-text hover:bg-hover flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11.5px]"
+        @click="onTogglePin"
       >
         <IconPinnedOff
           v-if="sortedChats.find((c) => c.id === contextMenuChatId)?.pinned"
           :size="14"
         />
-        <IconPinned v-else :size="14" />
+        <IconPinned
+          v-else
+          :size="14"
+        />
         {{
           sortedChats.find((c) => c.id === contextMenuChatId)?.pinned ? 'Unpin' : 'Pin'
         }}
       </button>
       <button
-        @click="onToggleArchive"
         class="text-text hover:bg-hover flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11.5px]"
+        @click="onToggleArchive"
       >
         <IconArchiveOff
           v-if="sortedChats.find((c) => c.id === contextMenuChatId)?.archived"
           :size="14"
         />
-        <IconArchive v-else :size="14" />
+        <IconArchive
+          v-else
+          :size="14"
+        />
         {{
           sortedChats.find((c) => c.id === contextMenuChatId)?.archived
             ? 'Unarchive'
             : 'Archive'
         }}
       </button>
-      <div v-if="messages.length > 0" class="border-border my-1 border-t"></div>
+      <div
+        v-if="messages.length > 0"
+        class="border-border my-1 border-t"
+      />
       <button
         v-if="messages.length > 0"
-        @click="onForkChat"
         class="text-text hover:bg-hover flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11.5px]"
+        @click="onForkChat"
       >
         <IconGitFork :size="14" />
         Fork chat
       </button>
-      <div class="border-border my-1 border-t"></div>
+      <div class="border-border my-1 border-t" />
       <button
-        @click="onDeleteChat"
         class="text-red hover:bg-hover flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11.5px]"
         data-testid="delete-chat-btn"
+        @click="onDeleteChat"
       >
         <IconTrashX :size="14" />
         Delete chat

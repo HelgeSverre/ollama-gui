@@ -52,16 +52,22 @@ onMounted(() => {
       <div
         class="border-border bg-panel flex h-[38px] flex-none items-center gap-3 border-b px-3"
       >
-        <div class="mr-auto flex min-w-0 items-center gap-2" v-if="activeChat">
-          <div v-if="isEditingChatName" class="flex items-center gap-1.5">
+        <div
+          v-if="activeChat"
+          class="mr-auto flex min-w-0 items-center gap-2"
+        >
+          <div
+            v-if="isEditingChatName"
+            class="flex items-center gap-1.5"
+          >
             <input
               ref="chatNameInput"
               v-model="editedChatName"
+              class="border-border bg-list text-text focus:border-accent w-[180px] rounded-[4px] border px-2 py-0.5 text-[12px] outline-none"
               @keyup.enter="confirmRename"
               @keyup.esc="cancelEditing"
               @blur="cancelEditing"
-              class="border-border bg-list text-text focus:border-accent w-[180px] rounded-[4px] border px-2 py-0.5 text-[12px] outline-none"
-            />
+            >
           </div>
           <button
             v-else
@@ -74,11 +80,19 @@ onMounted(() => {
             {{ activeChat.model }}
           </span>
         </div>
-        <div v-else class="text-text-muted mr-auto text-[12px]">No chat selected</div>
+        <div
+          v-else
+          class="text-text-muted mr-auto text-[12px]"
+        >
+          No chat selected
+        </div>
         <ModelSelector />
       </div>
 
-      <div v-if="isSystemPromptOpen" class="flex min-h-0 flex-1 flex-col">
+      <div
+        v-if="isSystemPromptOpen"
+        class="flex min-h-0 flex-1 flex-col"
+      >
         <SystemPrompt />
       </div>
 
