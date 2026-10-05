@@ -66,6 +66,14 @@ The [hosted version](https://ollama-gui.vercel.app) runs in your browser and con
 OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
 ```
 
+If you use the Ollama desktop app on macOS instead, set the variable for apps and restart Ollama:
+
+```bash
+launchctl setenv OLLAMA_ORIGINS "https://ollama-gui.vercel.app"
+```
+
+Chrome and Edge also ask whether the site may access devices on your local network. Choose Allow. If you dismissed it, re-enable "Local network access" in the site settings next to the address bar.
+
 ### Docker
 
 The image serves the app with nginx and proxies `/api` to Ollama, so the browser only talks to one origin and `OLLAMA_ORIGINS` isn't needed.

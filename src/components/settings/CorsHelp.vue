@@ -25,9 +25,11 @@ async function copy() {
 <template>
   <div class="text-text-secondary space-y-1.5 text-[12px] leading-relaxed">
     <p>
-      Check that Ollama is running
-      <template v-if="crossOrigin">and allows requests from this page</template>
-      :
+      {{
+        crossOrigin
+          ? 'Check that Ollama is running and allows requests from this page:'
+          : 'Check that Ollama is running:'
+      }}
     </p>
     <div
       v-if="crossOrigin"
@@ -44,10 +46,13 @@ async function copy() {
         <IconCopy v-else :size="14" />
       </button>
     </div>
+    <p v-if="crossOrigin">
+      {{
+        'Your browser may also ask to let this site access devices on your local network. Choose Allow, or re-enable it in the site settings next to the address bar.'
+      }}
+    </p>
     <p v-else>
-      Start it with
-      <code class="bg-hover rounded px-1">ollama serve</code>
-      , or check the proxy in front of this page.
+      {{ 'Start it with "ollama serve", or check the proxy in front of this page.' }}
     </p>
   </div>
 </template>
