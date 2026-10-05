@@ -11,7 +11,8 @@
     "lint": "eslint src/",
     "test": "vitest run --config vitest.config.ts",
     "test:watch": "vitest",
-    "test:e2e": "playwright test --config e2e/playwright.config.ts"
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage --coverage.include='src/**/*.{ts,vue}' --coverage.exclude='src/**/*.test.ts'"
   },
   "dependencies": {
     "@tabler/icons-vue": "^3.46.0",
@@ -33,6 +34,7 @@
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.20.1",
     "@vitejs/plugin-vue": "^6.0.8",
+    "@vitest/coverage-v8": "4.1.10",
     "@vue/test-utils": "^2.4.11",
     "eslint": "^10.8.0",
     "eslint-plugin-vue": "^10.10.0",
