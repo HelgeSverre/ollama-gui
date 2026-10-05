@@ -43,3 +43,6 @@ vite.config.js
 ollama_data/
 # Coverage reports
 coverage/
+
+# Personal Claude Code settings
+.claude/settings.local.json
