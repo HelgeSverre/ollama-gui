@@ -10,7 +10,7 @@ Ollama GUI: a Vue 3 + TypeScript web UI for chatting with local LLMs through Oll
 
 ```bash
 bun install
-bun run dev          # Vite on :5173 (strictPort), proxies /api → localhost:11434
+bun run dev          # Vite on :5173 (strictPort), proxies /api → 127.0.0.1:11434
 bun run dev --host   # also reachable from the LAN (UI and API through the proxy)
 bun run lint         # ESLint
 bun run test         # Vitest (unit + integration; fake-indexeddb, mocked fetch)

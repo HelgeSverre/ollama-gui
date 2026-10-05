@@ -49,7 +49,8 @@ export default defineConfig({
       ? {}
       : {
           '/api': {
-            target: 'http://localhost:11434',
+            // 127.0.0.1, not localhost: Node may resolve localhost to ::1 while Ollama listens on IPv4 (#63)
+            target: 'http://127.0.0.1:11434',
             changeOrigin: true,
           },
         },
