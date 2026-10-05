@@ -99,6 +99,13 @@ bun run test:e2e   # Playwright, against a mocked Ollama API
 bun run build      # type-check and production build
 ```
 
+`e2e/real-ollama.spec.ts` runs the attachment and vision flows against a real Ollama instead of the mock. It's skipped by default:
+
+```bash
+ollama pull qwen3-vl:2b && ollama pull qwen3:0.6b
+OLLAMA_REAL=1 bun run test:e2e real-ollama
+```
+
 See `CLAUDE.md` for an overview of the code structure.
 
 Built with [Vue](https://vuejs.org/), [Vite](https://vitejs.dev/), [Tailwind CSS](https://tailwindcss.com/), [VueUse](https://vueuse.org/), [Dexie](https://dexie.org/), [markdown-it](https://github.com/markdown-it/markdown-it), [highlight.js](https://highlightjs.org/), [KaTeX](https://katex.org/) and [Tabler Icons](https://tabler.io/icons).

@@ -177,6 +177,34 @@ describe('chatEvents', () => {
     expect(parts.map((p) => p.type)).toEqual(['reasoning', 'text', 'tool-call'])
   })
 
+  it('strips literal think tags from the native thinking field', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        ndjsonResponse([
+          {
+            model: 'vl',
+            message: { role: 'assistant', content: '', thinking: '<think>\nLooking' },
+            done: false,
+          },
+          {
+            model: 'vl',
+            message: { role: 'assistant', content: '', thinking: ' closely</think>' },
+            done: false,
+          },
+          { model: 'vl', message: { role: 'assistant', content: 'Hi' }, done: true },
+        ]),
+      ),
+    )
+    const events = await collect(chatEvents({ model: 'vl', messages: [] }))
+    expect(
+      events
+        .filter((e) => e.type === 'reasoning')
+        .map((e) => (e as { text: string }).text)
+        .join(''),
+    ).toBe('\nLooking closely')
+  })
+
   it('splits inline <think> tags from content', async () => {
     vi.stubGlobal(
       'fetch',

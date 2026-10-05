@@ -91,7 +91,9 @@ export async function* chatEvents(
   let finished = false
   for await (const chunk of streamJson<ChatChunk>('chat', request, signal)) {
     const message = chunk.message
-    if (message?.thinking) yield { type: 'reasoning', text: message.thinking }
+    // Some models (e.g. qwen3-vl) wrap the native thinking field in literal <think> tags
+    const thinking = message?.thinking?.replace(/<\/?think>/g, '')
+    if (thinking) yield { type: 'reasoning', text: thinking }
     if (message?.content) yield* splitter.push(message.content)
     for (const call of message?.tool_calls ?? []) {
       yield { type: 'tool-call', name: call.function.name, args: call.function.arguments }

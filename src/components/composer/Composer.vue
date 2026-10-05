@@ -90,7 +90,9 @@ const contextUsage = computed(() => {
 const nf = computed(() => new Intl.NumberFormat(locale.value))
 
 async function addFiles(list: FileList | File[] | null | undefined) {
-  for (const file of list ?? []) {
+  // Copy first: a FileList is live, and the picker clears it as soon as this starts awaiting
+  const pending = [...(list ?? [])]
+  for (const file of pending) {
     if (file.type.startsWith('image/') && info.value && !supportsVision.value) {
       toast(`${chats.activeModel.value} can't read images. Pick a vision model.`, 'error')
       continue

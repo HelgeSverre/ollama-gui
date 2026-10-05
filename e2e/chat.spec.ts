@@ -250,6 +250,20 @@ test.describe('chat management', () => {
     })
   })
 
+  test('attaches several files picked at once', async ({ page }) => {
+    const mock = await freshPage(page)
+    await page.getByTestId('file-input').setInputFiles([
+      { name: 'a.txt', mimeType: 'text/plain', buffer: Buffer.from('alpha') },
+      { name: 'b.txt', mimeType: 'text/plain', buffer: Buffer.from('beta') },
+      { name: 'c.md', mimeType: 'text/markdown', buffer: Buffer.from('gamma') },
+    ])
+    await expect(page.getByTestId('attachment-chip')).toHaveCount(3)
+    await send(page, 'Read all three')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    const content = mock.chatRequests[0].messages[0].content
+    for (const word of ['alpha', 'beta', 'gamma']) expect(content).toContain(word)
+  })
+
   test('inlines text file attachments into the message', async ({ page }) => {
     const mock = await freshPage(page)
     await page.getByTestId('file-input').setInputFiles({
