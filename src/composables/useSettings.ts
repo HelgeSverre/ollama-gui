@@ -55,6 +55,16 @@ watch(
 function migrateLegacySettings() {
   try {
     for (const key of ['settingsPanelOpen', 'systemPromptOpen', 'historyMessageLength']) localStorage.removeItem(key)
+    // v1 stored the placeholder "none" when no model was picked
+    if (localStorage.getItem('currentModel') === 'none') localStorage.removeItem('currentModel')
+    // v1 had a dark-mode switch (default on); keep the user's choice instead of jumping to "system"
+    const darkMode = localStorage.getItem('darkMode')
+    if (darkMode !== null) {
+      if (localStorage.getItem('ollama-gui:theme') === null) {
+        localStorage.setItem('ollama-gui:theme', darkMode === 'false' ? 'light' : 'dark')
+      }
+      localStorage.removeItem('darkMode')
+    }
     // useLocalStorage stores strings raw, not JSON-encoded
     const value = localStorage.getItem('baseUrl')
     if (value === null) return

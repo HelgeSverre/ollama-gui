@@ -55,6 +55,31 @@ describe('v11 → v13 migration', () => {
     db.close()
   })
 
+  it('upgrades a v10 database from the original main branch', async () => {
+    const name = `v10-${crypto.randomUUID()}`
+    const old = new Dexie(name)
+    old.version(10).stores({
+      chats: '++id,name,model,createdAt',
+      messages: '++id,chatId,role,content,meta,context,createdAt',
+      config: '++id,model,systemPrompt,createdAt',
+    })
+    const chatId = await old.table('chats').add({ name: 'From main', model: 'mistral', createdAt: new Date(1000) })
+    await old.table('messages').bulkAdd([
+      { chatId, role: 'user', content: 'Hello', createdAt: new Date(2000) },
+      { chatId, role: 'assistant', content: 'Hi!', context: [1, 2, 3], meta: { eval_count: 4 }, createdAt: new Date(3000) },
+    ])
+    old.close()
+
+    const db = new ChatDatabase(name)
+    await db.open()
+    const [chat] = await db.conversations.toArray()
+    expect(chat).toMatchObject({ title: 'From main', model: 'mistral' })
+    const nodes = await db.nodes.where('chatId').equals(chat.id).toArray()
+    expect(nodes.map((n) => n.role).sort()).toEqual(['assistant', 'user'])
+    expect(nodes.find((n) => n.role === 'assistant')).toMatchObject({ meta: { evalTokens: 4 } })
+    db.close()
+  })
+
   it('creates an empty database on first install', async () => {
     const db = new ChatDatabase(`fresh-${crypto.randomUUID()}`)
     await db.open()
