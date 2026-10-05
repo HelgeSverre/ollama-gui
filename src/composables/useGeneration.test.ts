@@ -102,7 +102,9 @@ describe('generation', () => {
     const hold = deferred()
     scripts.push({ chunks: ['Partial '], hold: hold.promise })
     const sending = gen.send(text('Go'))
-    await tick()
+    await vi.waitFor(() =>
+      expect(textOf(chats.activeThread.value[1]?.parts ?? [])).toBe('Partial '),
+    )
     const chatId = chats.activeChatId.value
     expect(gen.isGenerating(chatId)).toBe(true)
     gen.stop(chatId)
@@ -117,7 +119,9 @@ describe('generation', () => {
     const hold = deferred()
     scripts.push({ chunks: ['for A'], hold: hold.promise })
     const sendingA = gen.send(text('Chat A'))
-    await tick()
+    await vi.waitFor(() =>
+      expect(textOf(chats.activeThread.value[1]?.parts ?? [])).toBe('for A'),
+    )
     const chatA = chats.activeChatId.value
 
     chats.newChat()
@@ -162,8 +166,7 @@ describe('generation', () => {
   it('auto-titles after the first exchange', async () => {
     autoTitle.value = true
     await gen.send(text('Hello!'))
-    await tick()
-    expect(chats.activeChat.value?.title).toBe('Greeting Chat')
+    await vi.waitFor(() => expect(chats.activeChat.value?.title).toBe('Greeting Chat'))
   })
 })
 
@@ -175,7 +178,7 @@ describe('generation edge cases', () => {
     showHold = show.promise
     currentModel.value = 'slow-model'
     const first = gen.send(text('one'))
-    await tick()
+    await vi.waitFor(() => expect(chats.activeChatId.value).not.toBe(''))
     expect(gen.isGenerating(chats.activeChatId.value)).toBe(true)
     expect(await gen.send(text('two'))).toBe(false)
     show.resolve()
@@ -197,7 +200,7 @@ describe('generation edge cases', () => {
     showHold = show.promise
     currentModel.value = 'slow-model-2'
     const sending = gen.send(text('stop me'))
-    await tick()
+    await vi.waitFor(() => expect(chats.activeChatId.value).not.toBe(''))
     gen.stop(chats.activeChatId.value)
     show.resolve()
     await sending
@@ -209,7 +212,9 @@ describe('generation edge cases', () => {
     const hold = deferred()
     scripts.push({ chunks: ['partial'], hold: hold.promise })
     const sending = gen.send(text('doomed'))
-    await tick()
+    await vi.waitFor(() =>
+      expect(textOf(chats.activeThread.value[1]?.parts ?? [])).toBe('partial'),
+    )
     const chatId = chats.activeChatId.value
     await chats.deleteChat(chatId)
     hold.resolve()
@@ -261,8 +266,7 @@ describe('generation edge cases', () => {
     await gen.send(text('first'))
     expect(chats.activeChat.value?.titleGenerated).toBeFalsy()
     await gen.send(text('second'))
-    await tick()
-    expect(chats.activeChat.value?.title).toBe('Greeting Chat')
+    await vi.waitFor(() => expect(chats.activeChat.value?.title).toBe('Greeting Chat'))
   })
 })
 
