@@ -17,6 +17,7 @@ bun run test         # Vitest (unit + integration; fake-indexeddb, mocked fetch)
 bun run test:e2e     # Playwright on :5180 against a mocked Ollama (e2e/*.spec.ts)
 bun run test:coverage
 bun run catalog:update  # refresh src/data/model-catalog.json from ollama.com (ollama-library-scraper)
+bun run ci:local -W .github/workflows/ci.yml push   # run a GitHub workflow locally with act (.actrc)
 bun run build        # vue-tsc -b + vite build → dist/
 docker compose up -d # Ollama + GUI; nginx proxies /api (see nginx/default.conf.template)
 ```
@@ -61,6 +62,13 @@ src/
 
 - Unit and integration tests sit next to the code (`*.test.ts`) and use fake-indexeddb with a stubbed `fetch`.
 - `e2e/helpers.ts` mocks the Ollama API with `page.route`. `manualStreams()` swaps `/api/chat` streaming for streams a test pushes chunk by chunk, so behaviour mid-reply can be tested: stop, reload, switching chats, deleting, dropped connections.
+
+### CI
+
+- `ci.yml`: lint, format check, unit tests and build on every push and PR.
+- `catalog.yml`: weekly (Mondays) and on demand, re-scrapes the Ollama library and opens or updates a `chore/model-catalog` PR when the data changed. Under act it prints the diff and PR text instead of pushing.
+- `docker.yml`: publishes the image to GHCR from `main` and `v*` tags.
+- `bun run ci:local` pulls the runner image with the Docker CLI and runs act with `--pull=false`; act's own registry login fails with some Docker keychain setups.
 
 ### Conventions
 

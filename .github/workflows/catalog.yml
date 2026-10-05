@@ -1,0 +1,51 @@
+name: Refresh model catalog
+
+# Re-scrapes the Ollama library into src/data/model-catalog.json (used by the model search in
+# the Models dialog) and opens or updates a pull request when anything changed.
+on:
+  schedule:
+    - cron: '17 6 * * 1' # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: model-catalog
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      - name: Scrape ollama.com/library
+        run: bun run catalog:update
+        env:
+          CATALOG_SUMMARY_FILE: ${{ runner.temp }}/catalog-summary.md
+
+      - name: Check the new snapshot
+        run: bun run test src/domain/catalog.test.ts
+
+      # Running locally under act: show what would be proposed instead of pushing to GitHub
+      - name: Preview (local act run)
+        if: ${{ env.ACT }}
+        run: |
+          git --no-pager diff --stat
+          cat "${{ runner.temp }}/catalog-summary.md"
+
+      - name: Open or update pull request
+        if: ${{ !env.ACT }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/model-catalog
+          delete-branch: true
+          add-paths: src/data/model-catalog.json
+          commit-message: 'chore: refresh Ollama model catalog'
+          title: 'chore: refresh Ollama model catalog'
+          body-path: ${{ runner.temp }}/catalog-summary.md
+          labels: dependencies

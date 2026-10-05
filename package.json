@@ -14,7 +14,8 @@
     "test:e2e": "playwright test --config e2e/playwright.config.ts",
     "test:coverage": "vitest run --config vitest.config.ts --coverage --coverage.include='src/**/*.{ts,vue}' --coverage.exclude='src/**/*.test.ts'",
     "format:check": "prettier --check src e2e",
-    "catalog:update": "bun scripts/build-model-catalog.ts"
+    "catalog:update": "bun scripts/build-model-catalog.ts",
+    "ci:local": "docker pull -q catthehacker/ubuntu:act-latest >/dev/null && act"
   },
   "dependencies": {
     "@tabler/icons-vue": "^3.48.0",
