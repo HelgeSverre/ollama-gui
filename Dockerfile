@@ -1,6 +1,6 @@
 # Build stage
 # Node runs the toolchain (vue-tsc needs it); bun installs from bun.lock
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 RUN npm install -g bun
 WORKDIR /app
 COPY package.json bun.lock ./
