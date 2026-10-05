@@ -6,6 +6,7 @@ import { expect, type Page, type Route } from '@playwright/test'
  */
 export interface Mock {
   chatRequests: any[]
+  pullRequests: string[]
   replies: string[]
 }
 
@@ -44,7 +45,7 @@ const CAPS: Record<string, string[]> = {
 const ndjson = (lines: object[]) => lines.map((l) => JSON.stringify(l)).join('\n') + '\n'
 
 export async function mockOllama(page: Page): Promise<Mock> {
-  const mock: Mock = { chatRequests: [], replies: [] }
+  const mock: Mock = { chatRequests: [], pullRequests: [], replies: [] }
   await page.route('**/api/**', async (route: Route) => {
     const url = new URL(route.request().url())
     const body = route.request().postDataJSON?.() ?? null
@@ -101,6 +102,7 @@ export async function mockOllama(page: Page): Promise<Mock> {
         })
       }
       case '/api/pull':
+        mock.pullRequests.push(body.model)
         return route.fulfill({
           contentType: 'application/x-ndjson',
           body: ndjson([

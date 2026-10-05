@@ -18,7 +18,7 @@ Ollama GUI is a single-page app that talks directly to the Ollama API from your 
 - **Chat:** streaming replies that you can stop, regenerate or edit. Edits and regenerations are kept as versions you can switch between, and any reply can be branched into a new chat.
 - **Thinking models** such as qwen3, deepseek-r1 and gpt-oss: the reasoning is shown in a collapsible block, and you can turn thinking on or off (or set the effort level for gpt-oss).
 - **Attachments:** images for vision models (llava, gemma3), and text or code files, which are added to the message.
-- **Models:** pull (with progress), delete, inspect capabilities and context length, and unload models from memory.
+- **Models:** search the Ollama library as you type and pick a size, then pull with progress. Also delete, inspect capabilities and context length, and unload models from memory.
 - **Settings:** system prompt and generation parameters (temperature, `num_ctx`, `top_p`, seed and others), set globally, per model or per chat.
 - **History:** chats grouped by date, with pinning, archiving, renaming, generated titles and full-text search (⌘K).
 - **Markdown** with syntax highlighting and math (KaTeX).
@@ -105,6 +105,8 @@ bun run build      # type-check and production build
 ollama pull qwen3-vl:2b && ollama pull qwen3:0.6b
 OLLAMA_REAL=1 bun run test:e2e real-ollama
 ```
+
+The model search uses a snapshot of the Ollama library in `src/data/model-catalog.json`, built with [ollama-library-scraper](https://github.com/HelgeSverre/ollama-library-scraper). Refresh it with `bun run catalog:update`. The app itself never contacts ollama.com.
 
 See `CLAUDE.md` for an overview of the code structure.
 

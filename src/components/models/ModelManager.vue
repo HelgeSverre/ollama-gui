@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-  IconChevronRight,
-  IconDownload,
-  IconPlayerEject,
-  IconTrash,
-  IconX,
-} from '@tabler/icons-vue'
+import { IconChevronRight, IconPlayerEject, IconTrash, IconX } from '@tabler/icons-vue'
 import { computed, ref, watch } from 'vue'
 import { useChats } from '../../composables/useChats'
 import { confirmAction } from '../../composables/useConfirm'
@@ -16,24 +10,14 @@ import { closeModal, modal } from '../../composables/useUi'
 import { formatBytes, relativeTime } from '../../domain/format'
 import CapabilityBadges from '../composer/CapabilityBadges.vue'
 import Modal from '../ui/Modal.vue'
+import PullCombobox from './PullCombobox.vue'
 
 const models = useModels()
 const chats = useChats()
 
 const tab = ref<'installed' | 'running'>('installed')
-const pullName = ref('')
 const expanded = ref<string | null>(null)
 const open = computed(() => modal.value === 'models')
-
-const SUGGESTED = [
-  'llama3.2',
-  'qwen3',
-  'gemma3',
-  'gpt-oss:20b',
-  'deepseek-r1',
-  'mistral-small3.2',
-  'qwen2.5-coder',
-]
 
 watch(open, (value) => {
   if (!value) return
@@ -53,10 +37,8 @@ const bytes = (n: number) => formatBytes(n, locale.value)
 const percent = (completed: number, total: number) =>
   total ? Math.floor((completed / total) * 100) : 0
 
-function pull(name = pullName.value) {
-  if (!name.trim()) return
+function pull(name: string) {
   void models.pull(name)
-  pullName.value = ''
 }
 
 async function remove(name: string) {
@@ -115,46 +97,15 @@ function details(name: string) {
   <Modal :open="open" title="Models" width="620px" @close="closeModal('models')">
     <div class="space-y-5 p-4">
       <section>
-        <form class="flex gap-2" @submit.prevent="pull()">
-          <input
-            v-model="pullName"
-            placeholder="Pull a model, e.g. llama3.2 or qwen3:8b"
-            class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent min-w-0 flex-1 rounded-lg border px-3 py-1.5 text-[13px] outline-none"
-            data-testid="pull-input"
-          />
-          <button
-            type="submit"
-            :disabled="!pullName.trim()"
-            class="bg-accent flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12.5px] font-semibold text-white hover:opacity-90 disabled:opacity-40"
-          >
-            <IconDownload :size="15" />
-            Pull
-          </button>
-        </form>
-        <div class="mt-2 flex flex-wrap gap-1.5">
-          <button
-            v-for="name in SUGGESTED.filter(
-              (s) =>
-                !models.models.value.some(
-                  (m) => m.name.split(':')[0] === s.split(':')[0],
-                ),
-            )"
-            :key="name"
-            type="button"
-            class="border-border text-text-secondary hover:bg-hover rounded-full border px-2.5 py-0.5 text-[11.5px]"
-            @click="pull(name)"
-          >
-            {{ name }}
-          </button>
-          <a
-            href="https://ollama.com/search"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-accent px-1 py-0.5 text-[11.5px] hover:underline"
-          >
-            Browse library ↗
-          </a>
-        </div>
+        <PullCombobox :installed="models.models.value.map((m) => m.name)" @pull="pull" />
+        <a
+          href="https://ollama.com/search"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-accent mt-1.5 inline-block text-[11.5px] hover:underline"
+        >
+          Browse the full library on ollama.com ↗
+        </a>
 
         <div
           v-for="job in models.pulls.values()"

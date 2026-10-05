@@ -95,3 +95,18 @@ test('a text-only model refuses image attachments', async ({ page }) => {
   await expect(page.getByTestId('toast')).toContainText("can't read images")
   await expect(page.getByTestId('attachment-chip')).toHaveCount(0)
 })
+
+test('model search pulls a chosen size through Ollama', async ({ page }) => {
+  await start(page, TEXT_MODEL)
+  await page.getByTestId('models-btn').click()
+  const input = page.getByTestId('pull-input')
+  await input.fill('qwen3')
+  await expect(page.getByTestId('pull-suggestion').first()).toContainText('qwen3')
+  await page.screenshot({ path: 'test-results/real-pull-autocomplete.png' })
+  // Already installed, so Ollama only verifies the layers; the job appears and then clears
+  await page.getByTestId('pull-size-qwen3-0.6b').click()
+  await expect(page.getByTestId('pull-job')).toHaveCount(0, { timeout: 120_000 })
+  await expect(
+    page.getByTestId('installed-model').filter({ hasText: 'qwen3:0.6b' }),
+  ).toBeVisible()
+})

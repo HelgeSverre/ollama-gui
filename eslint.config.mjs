@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
+import prettier from 'eslint-config-prettier/flat'
 
 export default tseslint.config(
   js.configs.recommended,
@@ -60,6 +61,8 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-expressions': 'warn',
     },
   },
+  // Prettier owns formatting; turn off the stylistic rules that disagree with it
+  prettier,
   {
     ignores: ['dist/', 'node_modules/', '*.config.*', 'e2e/', 'vitest.config.ts'],
   },

@@ -16,6 +16,7 @@ bun run lint         # ESLint
 bun run test         # Vitest (unit + integration; fake-indexeddb, mocked fetch)
 bun run test:e2e     # Playwright on :5180 against a mocked Ollama (e2e/*.spec.ts)
 bun run test:coverage
+bun run catalog:update  # refresh src/data/model-catalog.json from ollama.com (ollama-library-scraper)
 bun run build        # vue-tsc -b + vite build → dist/
 docker compose up -d # Ollama + GUI; nginx proxies /api (see nginx/default.conf.template)
 ```
@@ -32,6 +33,7 @@ src/
     parts.ts       Streaming event reducer (applyEvent), ThinkTagSplitter, legacy content parsing
     settings.ts    Layered settings resolution: global → model → chat
     format.ts      Locale resolution, relative time, bytes, date groups
+    catalog.ts     Ollama library catalog: normalising scraper output, search ranking, popular models
     legacy.ts      v1/v2.0 flat chats → message tree (used by DB migration and JSON import)
   db/            Dexie schema (v11 legacy → v12 tree → v13 drops old tables), plain() proxy unwrapping
   ollama/        HTTP client (fetch + NDJSON), wire types, chat transport, model endpoints
