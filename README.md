@@ -9,6 +9,8 @@
   <a href="https://ollama.com"><img src="https://img.shields.io/badge/Powered%20by-Ollama-blue?style=flat-square" alt="Powered by Ollama"></a>
   <a href="https://github.com/HelgeSverre/ollama-gui/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License"></a>
   <a href="https://ollama-gui.vercel.app"><img src="https://img.shields.io/badge/Demo-Live-success?style=flat-square" alt="Live Demo"></a>
+  <a href="https://github.com/HelgeSverre/ollama-gui/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/HelgeSverre/ollama-gui/ci.yml?branch=main&style=flat-square&label=CI" alt="CI status"></a>
+  <a href="https://github.com/HelgeSverre/ollama-gui/releases/latest"><img src="https://img.shields.io/github/v/release/HelgeSverre/ollama-gui?style=flat-square" alt="Latest release"></a>
 </p>
 
 Ollama GUI is a single-page app that talks directly to the Ollama API from your browser. There is no backend of its own: chats are stored in the browser's IndexedDB and never leave your machine except to reach the Ollama server you point it at.
