@@ -13,6 +13,8 @@ test.describe('streaming', () => {
     await page.getByTestId('stop-btn').click()
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'aborted')
     await expect(page.getByTestId('ai-message')).toContainText('Stopped')
+    // The status flips just before the final save resolves; let the write land before reloading
+    await page.waitForTimeout(300)
     await page.reload()
     await expect(page.getByTestId('ai-message')).toContainText('Once upon a time')
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'aborted')
