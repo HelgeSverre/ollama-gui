@@ -1,7 +1,7 @@
 import type { ChatEvent } from '../domain/parts'
 import { isImage, ThinkTagSplitter } from '../domain/parts'
 import type { GenerationSettings, MessageNode, Part } from '../domain/types'
-import { streamJson } from './client'
+import { OllamaError, streamJson } from './client'
 import type { ChatChunk, ChatRequest, WireMessage } from './types'
 
 export interface ChatInput {
@@ -63,8 +63,11 @@ export function decodeBase64(data: string): string {
   return new TextDecoder().decode(bytes)
 }
 
-export function startChat(input: ChatInput): ChatStream {
+/** Starts a streamed chat. Pass a signal to tie it to an existing controller. */
+export function startChat(input: ChatInput, signal?: AbortSignal): ChatStream {
   const controller = new AbortController()
+  signal?.addEventListener('abort', () => controller.abort(signal.reason), { once: true })
+  if (signal?.aborted) controller.abort(signal.reason)
   return {
     events: chatEvents(buildChatRequest(input), controller.signal),
     abort: () => controller.abort(),
@@ -74,6 +77,7 @@ export function startChat(input: ChatInput): ChatStream {
 /** Maps Ollama chat chunks to provider-neutral events. */
 export async function* chatEvents(request: ChatRequest, signal?: AbortSignal): AsyncGenerator<ChatEvent> {
   const splitter = new ThinkTagSplitter()
+  let finished = false
   for await (const chunk of streamJson<ChatChunk>('chat', request, signal)) {
     const message = chunk.message
     if (message?.thinking) yield { type: 'reasoning', text: message.thinking }
@@ -82,6 +86,7 @@ export async function* chatEvents(request: ChatRequest, signal?: AbortSignal): A
       yield { type: 'tool-call', name: call.function.name, args: call.function.arguments }
     }
     if (chunk.done) {
+      finished = true
       yield* splitter.flush()
       yield {
         type: 'finish',
@@ -97,6 +102,8 @@ export async function* chatEvents(request: ChatRequest, signal?: AbortSignal): A
       }
     }
   }
+  // A dropped connection ends the body without a final `done` chunk
+  if (!finished) throw new OllamaError('The response ended unexpectedly. Ollama may have stopped or the connection dropped.')
 }
 
 const nsToMs = (ns?: number) => (ns === undefined ? undefined : ns / 1e6)

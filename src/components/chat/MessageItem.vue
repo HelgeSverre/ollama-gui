@@ -16,6 +16,7 @@ import { siblings, switchSibling, type ThreadIndex } from '../../domain/thread'
 import type { MessageNode } from '../../domain/types'
 import { useChats } from '../../composables/useChats'
 import { confirmAction } from '../../composables/useConfirm'
+import { toast } from '../../composables/useToasts'
 import { useGeneration } from '../../composables/useGeneration'
 import { avatarUrl, enableMarkdown, locale } from '../../composables/useSettings'
 import { editingNodeId } from '../../composables/useUi'
@@ -97,8 +98,16 @@ function cancelEdit() {
 async function submitEdit() {
   const value = draft.value.trim()
   if (!value) return
+  if (value === text.value.trim()) {
+    editingNodeId.value = null
+    return
+  }
+  if (busy.value) {
+    toast('Wait for the current reply to finish, or stop it, before sending an edit', 'error')
+    return
+  }
   editingNodeId.value = null
-  if (value !== text.value.trim()) await generation.edit(props.node.chatId, props.node.id, value)
+  await generation.edit(props.node.chatId, props.node.id, value)
 }
 function onEditKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {

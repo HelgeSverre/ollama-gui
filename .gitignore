@@ -41,3 +41,5 @@ vite.config.js
 
 # Ollama
 ollama_data/
+# Coverage reports
+coverage/

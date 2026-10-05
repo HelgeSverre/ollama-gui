@@ -122,7 +122,7 @@ const sectionStart = (i: number) => i === 0 || items.value[i - 1].section !== it
   <Modal
     :open="open"
     width="580px"
-    @close="closeModal"
+    @close="closeModal('palette')"
   >
     <div data-testid="command-palette">
       <div class="border-border flex items-center gap-2.5 border-b px-4 py-3">

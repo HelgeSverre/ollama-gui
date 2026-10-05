@@ -2,7 +2,7 @@ import { db } from '../db/schema'
 import { convertLegacyChat, toDate, type LegacyChat, type LegacyMessage } from '../domain/legacy'
 import { textOf } from '../domain/parts'
 import { activePath, indexNodes } from '../domain/thread'
-import type { Chat, MessageNode } from '../domain/types'
+import type { Chat, MessageNode, Part } from '../domain/types'
 import { useChats } from './useChats'
 
 const FORMAT = 'ollama-gui'
@@ -43,10 +43,13 @@ export async function importData(data: unknown): Promise<number> {
       converted.push(convertLegacyChat(legacy, Array.isArray(legacy.messages) ? legacy.messages : []))
     }
   } else if (isExportFile(data)) {
-    for (const entry of data.chats) converted.push(reId(entry))
+    for (const entry of data.chats) {
+      if (entry && typeof entry === 'object') converted.push(reId(entry))
+    }
   } else {
     throw new Error('Unrecognised file. Expected an Ollama GUI export.')
   }
+  if (!converted.length) throw new Error('The file contains no chats.')
 
   await db.transaction('rw', db.conversations, db.nodes, async () => {
     await db.conversations.bulkAdd(converted.map((c) => c.chat))
@@ -64,13 +67,20 @@ function isExportFile(data: unknown): data is ExportFile {
 function reId(entry: Chat & { nodes?: MessageNode[] }): { chat: Chat; nodes: MessageNode[] } {
   const chatId = crypto.randomUUID()
   const ids = new Map<string, string>()
-  const source = Array.isArray(entry.nodes) ? entry.nodes : []
+  const source = (Array.isArray(entry.nodes) ? entry.nodes : []).filter(
+    (node): node is MessageNode =>
+      !!node && typeof node === 'object' && typeof node.id === 'string' && ROLES.includes(node.role),
+  )
   for (const node of source) ids.set(node.id, crypto.randomUUID())
-  const nodes = source.map((node) => ({
-    ...node,
+  const nodes = source.map((node): MessageNode => ({
     id: ids.get(node.id)!,
     chatId,
     parentId: node.parentId ? (ids.get(node.parentId) ?? null) : null,
+    role: node.role,
+    parts: (Array.isArray(node.parts) ? node.parts : []).map(normalizePart).filter((p): p is Part => !!p),
+    // A reply that was streaming when exported is incomplete
+    status: STATUSES.includes(node.status) && node.status !== 'streaming' ? node.status : 'aborted',
+    meta: node.meta && typeof node.meta === 'object' ? node.meta : undefined,
     createdAt: toDate(node.createdAt),
   }))
   const rest: Partial<Chat> & { nodes?: unknown } = { ...entry }
@@ -85,6 +95,32 @@ function reId(entry: Chat & { nodes?: MessageNode[] }): { chat: Chat; nodes: Mes
     activeLeafId: rest.activeLeafId ? (ids.get(rest.activeLeafId) ?? null) : null,
   }
   return { chat, nodes }
+}
+
+const ROLES: MessageNode['role'][] = ['user', 'assistant', 'system', 'tool']
+const STATUSES: MessageNode['status'][] = ['streaming', 'done', 'aborted', 'error']
+
+/** Keeps only well-formed parts, so a hand-edited or corrupted file can't break rendering. */
+function normalizePart(raw: unknown): Part | null {
+  if (!raw || typeof raw !== 'object') return null
+  const p = raw as Record<string, unknown>
+  const str = (v: unknown) => (typeof v === 'string' ? v : '')
+  switch (p.type) {
+    case 'text':
+      return { type: 'text', text: str(p.text) }
+    case 'reasoning':
+      return { type: 'reasoning', text: str(p.text), durationMs: typeof p.durationMs === 'number' ? p.durationMs : 0 }
+    case 'file':
+      return typeof p.data === 'string'
+        ? { type: 'file', mediaType: str(p.mediaType) || 'application/octet-stream', name: str(p.name) || 'file', data: p.data }
+        : null
+    case 'tool-call':
+      return { type: 'tool-call', name: str(p.name), args: p.args, result: p.result, state: p.state === 'error' ? 'error' : 'done' }
+    case 'error':
+      return { type: 'error', message: str(p.message) }
+    default:
+      return null
+  }
 }
 
 /** Markdown of the visible branch of a chat. */

@@ -48,6 +48,11 @@ describe('resolveHost', () => {
     expect(resolveHost('', '/', false, 'http://ui:8080')).toBe('http://ui:8080')
     expect(resolveHost('', 'http://gpu:11434', false, 'http://ui')).toBe('http://gpu:11434')
   })
+  it('adds http:// when the scheme is missing', () => {
+    expect(resolveHost('localhost:11434', undefined, false, 'http://ui')).toBe('http://localhost:11434')
+    expect(resolveHost('192.168.1.5:11434/api', undefined, false, 'http://ui')).toBe('http://192.168.1.5:11434')
+    expect(resolveHost('https://ollama.example.com', undefined, false, 'http://ui')).toBe('https://ollama.example.com')
+  })
   it('uses the dev proxy in dev and localhost otherwise', () => {
     expect(resolveHost('', undefined, true, 'http://lan-ip:5173')).toBe('http://lan-ip:5173')
     expect(resolveHost('', undefined, false, 'http://ui')).toBe('http://localhost:11434')
@@ -126,6 +131,13 @@ describe('chatEvents', () => {
 
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ error: 'does not support thinking' }), { status: 400 })))
     await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow('does not support thinking')
+  })
+
+  it('throws when the stream ends without a done chunk', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () =>
+      ndjsonResponse([{ model: 'm', message: { role: 'assistant', content: 'half' }, done: false }]),
+    ))
+    await expect(collect(chatEvents({ model: 'm', messages: [] }))).rejects.toThrow('ended unexpectedly')
   })
 
   it('reports an unreachable server with the host', async () => {

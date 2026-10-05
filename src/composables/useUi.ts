@@ -12,8 +12,9 @@ export function openModal(name: Exclude<Modal, null>) {
   modal.value = name
 }
 
-export function closeModal() {
-  modal.value = null
+/** Closes the open modal; with a name, only if that modal is the one open. */
+export function closeModal(name?: Exclude<Modal, null>) {
+  if (!name || modal.value === name) modal.value = null
 }
 
 export function toggleModal(name: Exclude<Modal, null>) {

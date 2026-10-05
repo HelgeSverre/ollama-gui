@@ -19,6 +19,12 @@ function sync() {
 watch(() => props.open, () => nextTick(sync))
 onMounted(sync)
 
+// The native close event also fires after a programmatic close (prop went false). Only report
+// closes the user started; otherwise opening dialog B from dialog A would close B immediately.
+function onNativeClose() {
+  if (props.open) emit('close')
+}
+
 function onBackdrop(event: MouseEvent) {
   if (event.target === dialog.value) emit('close')
 }
@@ -30,7 +36,7 @@ function onBackdrop(event: MouseEvent) {
     class="bg-panel text-text border-border-strong m-auto max-h-[85vh] w-[calc(100vw-2rem)] overflow-hidden rounded-xl border p-0 shadow-2xl backdrop:bg-black/50"
     :style="{ maxWidth: width }"
     :aria-label="title"
-    @close="emit('close')"
+    @close="onNativeClose"
     @cancel.prevent="emit('close')"
     @click="onBackdrop"
   >

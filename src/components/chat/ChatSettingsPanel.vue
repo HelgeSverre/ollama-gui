@@ -49,15 +49,39 @@ interface Form {
   options: Record<string, string>
 }
 const form = reactive<Form>({ systemPrompt: '', think: '', keepAlive: '', options: {} })
+/** Stored values as of the last load/sync; a form field that differs from it has been edited. */
+let baseline: Form = toForm(undefined)
+
+function toForm(s: GenerationSettings | undefined): Form {
+  return {
+    systemPrompt: s?.systemPrompt ?? '',
+    think: s?.think === undefined ? '' : (String(s.think) as Form['think']),
+    keepAlive: s?.keepAlive ?? '',
+    options: Object.fromEntries(NUMBER_FIELDS.map((f) => [f.key, s?.options?.[f.key]?.toString() ?? ''])),
+  }
+}
 
 function load() {
-  const s = stored(scope.value) ?? {}
-  form.systemPrompt = s.systemPrompt ?? ''
-  form.think = s.think === undefined ? '' : (String(s.think) as Form['think'])
-  form.keepAlive = s.keepAlive ?? ''
-  form.options = Object.fromEntries(NUMBER_FIELDS.map((f) => [f.key, s.options?.[f.key]?.toString() ?? '']))
+  baseline = toForm(stored(scope.value))
+  Object.assign(form, structuredClone(baseline))
 }
 watch([scope, chatSettingsOpen, () => chats.activeChatId.value, model], load, { immediate: true })
+
+// Settings can change elsewhere while the panel is open (e.g. the composer's Think toggle).
+// Pull those changes into fields the user hasn't edited, so Save doesn't write stale values back.
+watch(
+  () => JSON.stringify(stored(scope.value) ?? {}),
+  () => {
+    const next = toForm(stored(scope.value))
+    for (const key of ['systemPrompt', 'think', 'keepAlive'] as const) {
+      if (String(form[key]) === baseline[key]) (form as Record<string, unknown>)[key] = next[key]
+    }
+    for (const f of NUMBER_FIELDS) {
+      if (String(form.options[f.key] ?? '') === baseline.options[f.key]) form.options[f.key] = next.options[f.key]
+    }
+    baseline = next
+  },
+)
 
 const info = computed(() => models.info.get(model.value))
 const thinkOptions = computed(() => {
@@ -86,6 +110,7 @@ async function save() {
   const settings = compactSettings(toSettings())
   if (scope.value === 'chat') await chats.setActiveSettings(settings)
   else await presets.savePreset(scope.value === 'global' ? GLOBAL_SCOPE : model.value, settings ?? {})
+  load()
   toast('Settings saved', 'success')
 }
 

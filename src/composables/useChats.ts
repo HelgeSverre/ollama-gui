@@ -28,12 +28,39 @@ const activeThread = computed(() => activePath(activeIndex.value, activeChat.val
 /** Model for the next message: the active chat's model, or the global pick for a draft. */
 const activeModel = computed(() => activeChat.value?.model || currentModel.value)
 
+type DeleteHook = (chatId: string | null) => void
+const deleteHooks: DeleteHook[] = []
+/** Called before a chat (or, with null, every chat) is deleted. Generation uses it to stop streams. */
+function onBeforeDelete(hook: DeleteHook) {
+  deleteHooks.push(hook)
+}
+
 async function init() {
+  await repairInterrupted()
   const rows = await db.conversations.toArray()
   chats.value = rows
   if (activeChatId.value && !rows.some((c) => c.id === activeChatId.value)) activeChatId.value = ''
   if (activeChatId.value) await ensureNodes(activeChatId.value)
   loaded.value = true
+}
+
+/**
+ * Replies still marked `streaming` at startup were cut off by a reload or closed tab. Mark them
+ * aborted so they get their action bar back and can be regenerated.
+ */
+async function repairInterrupted() {
+  const stuck = await db.nodes.filter((n) => n.status === 'streaming').toArray()
+  if (!stuck.length) return
+  for (const node of stuck) {
+    node.status = 'aborted'
+    for (const part of node.parts) {
+      if (part.type === 'reasoning' && part.durationMs === undefined) {
+        part.durationMs = 0
+        delete part.startedAt
+      }
+    }
+  }
+  await db.nodes.bulkPut(stuck)
 }
 
 async function ensureNodes(chatId: string) {
@@ -52,6 +79,11 @@ function chatIndex(chatId: string): ThreadIndex {
   return indexNodes(nodes ? nodes.values() : [])
 }
 
+/** Root-to-leaf path currently shown for a chat. */
+function chatPath(chatId: string) {
+  return activePath(chatIndex(chatId), getChat(chatId)?.activeLeafId ?? null)
+}
+
 /** Live (reactive) node from the cache. */
 function getNode(chatId: string, nodeId: string) {
   return nodeCache.get(chatId)?.get(nodeId)
@@ -59,12 +91,14 @@ function getNode(chatId: string, nodeId: string) {
 
 async function openChat(chatId: string) {
   await ensureNodes(chatId)
+  draftSettings.value = undefined
   activeChatId.value = chatId
   const chat = getChat(chatId)
   if (chat?.model) currentModel.value = chat.model
 }
 
 function newChat() {
+  if (activeChatId.value) draftSettings.value = undefined
   activeChatId.value = ''
 }
 
@@ -109,24 +143,28 @@ async function toggleArchive(chatId: string) {
   if (chat.archived && activeChatId.value === chatId) newChat()
 }
 
+// In-memory state goes first: a generation that is finishing checks getChat() before saving,
+// so it can't write rows back after the database delete.
 async function deleteChat(chatId: string) {
+  for (const hook of deleteHooks) hook(chatId)
+  chats.value = chats.value.filter((c) => c.id !== chatId)
+  nodeCache.delete(chatId)
+  if (activeChatId.value === chatId) newChat()
   await db.transaction('rw', db.conversations, db.nodes, async () => {
     await db.nodes.where('chatId').equals(chatId).delete()
     await db.conversations.delete(chatId)
   })
-  chats.value = chats.value.filter((c) => c.id !== chatId)
-  nodeCache.delete(chatId)
-  if (activeChatId.value === chatId) newChat()
 }
 
 async function deleteAllChats() {
+  for (const hook of deleteHooks) hook(null)
+  chats.value = []
+  nodeCache.clear()
+  newChat()
   await db.transaction('rw', db.conversations, db.nodes, async () => {
     await db.nodes.clear()
     await db.conversations.clear()
   })
-  chats.value = []
-  nodeCache.clear()
-  newChat()
 }
 
 async function setModel(model: string) {
@@ -246,6 +284,8 @@ export function useChats() {
     draftSettings,
     setActiveSettings,
     init,
+    onBeforeDelete,
+    activePath: chatPath,
     ensureNodes,
     getChat,
     getNode,

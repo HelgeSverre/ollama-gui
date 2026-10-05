@@ -34,7 +34,6 @@ const models = useModels()
 
 const filter = ref('')
 const showArchived = ref(false)
-const menuFor = ref<string | null>(null)
 const renaming = ref<string | null>(null)
 const renameValue = ref('')
 const renameInput = ref<HTMLInputElement[]>()
@@ -198,15 +197,13 @@ async function remove(chat: Chat) {
             </button>
             <Menu
               v-if="renaming !== chat.id"
-              :open="menuFor === chat.id"
               class="flex-none"
-              @update:open="(v) => (menuFor = v ? chat.id : null)"
             >
-              <template #trigger="{ toggle }">
+              <template #trigger="{ toggle, open: menuOpen }">
                 <button
                   type="button"
                   class="text-text-muted hover:text-text mr-1 rounded p-1 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
-                  :class="{ 'opacity-100': menuFor === chat.id }"
+                  :class="{ 'opacity-100': menuOpen }"
                   :aria-label="`Actions for ${chat.title}`"
                   @click="toggle"
                 >

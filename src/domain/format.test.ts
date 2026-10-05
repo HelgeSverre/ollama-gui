@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dateGroup, formatDuration, relativeTime, resolveLocale } from './format'
+import { dateGroup, dateGroupLabel, formatBytes, formatDuration, relativeTime, resolveLocale } from './format'
 
 describe('resolveLocale', () => {
   it('falls back for empty or invalid tags', () => {
@@ -36,5 +36,21 @@ describe('formatDuration', () => {
     expect(formatDuration(450)).toBe('450ms')
     expect(formatDuration(2500)).toBe('2.5s')
     expect(formatDuration(75_000)).toBe('1m 15s')
+  })
+})
+
+describe('formatBytes', () => {
+  it('uses decimal units and the locale', () => {
+    expect(formatBytes(512, 'en-US')).toBe('512 B')
+    expect(formatBytes(4_700_000_000, 'en-US')).toBe('4.7 GB')
+    expect(formatBytes(4_700_000_000, 'de-DE')).toBe('4,7 GB')
+  })
+})
+
+describe('dateGroupLabel', () => {
+  it('names fixed groups and formats month groups in the locale', () => {
+    expect(dateGroupLabel('week', 'en-US')).toBe('Previous 7 days')
+    expect(dateGroupLabel('2020-03', 'en-US')).toBe('March 2020')
+    expect(dateGroupLabel('2020-03', 'de-DE')).toBe('März 2020')
   })
 })

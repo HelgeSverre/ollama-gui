@@ -97,7 +97,8 @@ async function addFiles(list: FileList | File[] | null | undefined) {
 
 function onPaste(event: ClipboardEvent) {
   const pasted = [...(event.clipboardData?.files ?? [])]
-  if (!pasted.length) return
+  // Spreadsheets and rich editors put text and an image preview on the clipboard; keep the text
+  if (!pasted.length || event.clipboardData?.types.includes('text/plain')) return
   event.preventDefault()
   void addFiles(pasted)
 }

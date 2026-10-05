@@ -96,7 +96,7 @@ function details(name: string) {
     :open="open"
     title="Models"
     width="620px"
-    @close="closeModal"
+    @close="closeModal('models')"
   >
     <div class="space-y-5 p-4">
       <section>

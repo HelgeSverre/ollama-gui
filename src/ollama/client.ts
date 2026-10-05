@@ -15,7 +15,9 @@ export function resolveHost(
 ): string {
   const pick = setting?.trim() || env?.trim() || (dev ? '/' : FALLBACK_HOST)
   if (pick === '/') return origin
-  return pick.replace(/\/+$/, '').replace(/\/api$/, '')
+  // "localhost:11434" or "192.168.1.5:11434" would otherwise be fetched as a relative path
+  const withScheme = /^[a-z][a-z\d+.-]*:\/\//i.test(pick) ? pick : `http://${pick}`
+  return withScheme.replace(/\/+$/, '').replace(/\/api$/, '')
 }
 
 export class OllamaError extends Error {

@@ -59,7 +59,7 @@ const displayName = (tag: string) => {
 }
 const systemLocale = resolveLocale('')
 watch(localeChoice, (value) => {
-  if (value !== 'custom') dateLocale.value = value
+  dateLocale.value = value === 'custom' ? customLocale.value.trim() : value
 })
 watch(customLocale, (value) => {
   if (localeChoice.value === 'custom') dateLocale.value = value.trim()
@@ -127,7 +127,7 @@ const origin = location.origin
     :open="open"
     title="Settings"
     width="560px"
-    @close="closeModal"
+    @close="closeModal('settings')"
   >
     <div class="divide-border divide-y">
       <section class="space-y-2 p-4">

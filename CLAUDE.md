@@ -14,7 +14,8 @@ bun run dev          # Vite on :5173 (strictPort), proxies /api → localhost:11
 bun run dev --host   # also reachable from the LAN (UI and API through the proxy)
 bun run lint         # ESLint
 bun run test         # Vitest (unit + integration; fake-indexeddb, mocked fetch)
-bun run test:e2e     # Playwright on :5180 against a mocked Ollama (e2e/chat.spec.ts)
+bun run test:e2e     # Playwright on :5180 against a mocked Ollama (e2e/*.spec.ts)
+bun run test:coverage
 bun run build        # vue-tsc -b + vite build → dist/
 docker compose up -d # Ollama + GUI; nginx proxies /api (see nginx/default.conf.template)
 ```
@@ -53,6 +54,11 @@ src/
 - **Thinking** uses Ollama's native `message.thinking`. `think` is only sent to models whose `/api/show` capabilities include `thinking`. Inline `<think>` tags in content are also split out (ThinkTagSplitter).
 - **Images** are sent as `messages[].images` (base64 without the data-URL prefix). Text files are inlined into the content as fenced blocks.
 - **Settings** resolve global → model → chat; empty fields inherit.
+
+### Testing
+
+- Unit and integration tests sit next to the code (`*.test.ts`) and use fake-indexeddb with a stubbed `fetch`.
+- `e2e/helpers.ts` mocks the Ollama API with `page.route`. `manualStreams()` swaps `/api/chat` streaming for streams a test pushes chunk by chunk, so behaviour mid-reply can be tested: stop, reload, switching chats, deleting, dropped connections.
 
 ### Conventions
 

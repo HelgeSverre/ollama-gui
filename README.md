@@ -33,7 +33,7 @@ Ollama GUI is a single-page app that talks directly to the Ollama API from your 
 | `⌘/Ctrl ⇧ O` | New chat |
 | `⌘/Ctrl ⇧ ⌫` | Delete the current chat |
 | `Enter` / `⇧ Enter` | Send / new line |
-| `Esc` (in the message box) | Stop generating |
+| `Esc` | Stop generating |
 | `↑` (in an empty message box) | Edit your last message |
 
 ## Getting started

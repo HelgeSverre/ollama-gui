@@ -35,10 +35,12 @@ async function onClick(event: MouseEvent) {
 </script>
 
 <template>
-  <!-- eslint-disable-next-line vue/no-v-html -- markdown-it runs with html: false, so input HTML is escaped -->
+  <!-- markdown-it runs with html: false, so model output can't inject markup (see markdown.test.ts) -->
+  <!-- eslint-disable vue/no-v-html -->
   <div
     class="message-content"
     @click="onClick"
     v-html="html"
   />
+  <!-- eslint-enable vue/no-v-html -->
 </template>

@@ -14,6 +14,7 @@ import ConfirmDialog from './components/ui/ConfirmDialog.vue'
 import ToastHost from './components/ui/ToastHost.vue'
 import { useChats } from './composables/useChats'
 import { confirmAction } from './composables/useConfirm'
+import { useGeneration } from './composables/useGeneration'
 import { useModels } from './composables/useModels'
 import { usePresets } from './composables/usePresets'
 import { applyTheme, currentModel } from './composables/useSettings'
@@ -21,6 +22,7 @@ import { errorMessage, toast } from './composables/useToasts'
 import { modal, toggleModal } from './composables/useUi'
 
 const chats = useChats()
+const generation = useGeneration()
 const models = useModels()
 const presets = usePresets()
 const composer = ref<InstanceType<typeof Composer>>()
@@ -57,6 +59,13 @@ useIntervalFn(() => {
 useEventListener(window, 'focus', () => void models.refresh())
 
 useEventListener(window, 'keydown', async (event: KeyboardEvent) => {
+  // Esc stops the active chat's reply from anywhere, unless something else already handled it
+  // (closing a dialog or menu, cancelling an inline edit)
+  const menuOpen = !!document.querySelector('[role="menu"]')
+  if (event.key === 'Escape' && !event.defaultPrevented && !modal.value && !menuOpen && generation.isGenerating(chats.activeChat.value?.id)) {
+    generation.stop(chats.activeChat.value?.id)
+    return
+  }
   const mod = event.metaKey || event.ctrlKey
   if (!mod) return
   const key = event.key.toLowerCase()
@@ -67,7 +76,7 @@ useEventListener(window, 'keydown', async (event: KeyboardEvent) => {
     event.preventDefault()
     modal.value = null
     chats.newChat()
-  } else if (key === 'backspace' && event.shiftKey && chats.activeChat.value) {
+  } else if (key === 'backspace' && event.shiftKey && chats.activeChat.value && !modal.value) {
     event.preventDefault()
     const chat = chats.activeChat.value
     const ok = await confirmAction({ title: 'Delete chat?', message: `"${chat.title}" will be deleted.`, confirmLabel: 'Delete', danger: true })

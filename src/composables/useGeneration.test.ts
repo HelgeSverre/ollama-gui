@@ -1,13 +1,16 @@
 import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { db } from '../db/schema'
+import type { MessageNode } from '../domain/types'
 import { textOf } from '../domain/parts'
 import { siblings } from '../domain/thread'
 import { useChats } from './useChats'
 import { cleanTitle, useGeneration } from './useGeneration'
 import { autoTitle, currentModel } from './useSettings'
 
-type Script = { chunks: string[]; hold?: Promise<void> }
+type Script = { chunks: string[]; hold?: Promise<void>; noDone?: boolean }
+/** Delays /api/show (the model-info lookup that happens before streaming starts). */
+let showHold: Promise<void> | undefined
 let scripts: Script[] = []
 const requests: any[] = []
 
@@ -21,6 +24,7 @@ function streamFor(script: Script, signal?: AbortSignal) {
       }
       await script.hold
       if (signal?.aborted) return
+      if (script.noDone) return controller.close()
       controller.enqueue(encoder.encode(JSON.stringify({ model: 'm', done: true, eval_count: 2 }) + '\n'))
       controller.close()
     },
@@ -29,7 +33,10 @@ function streamFor(script: Script, signal?: AbortSignal) {
 
 vi.stubGlobal('fetch', vi.fn(async (url: string, init: RequestInit) => {
   const path = new URL(url).pathname
-  if (path === '/api/show') return new Response(JSON.stringify({ capabilities: ['completion'] }))
+  if (path === '/api/show') {
+    await showHold
+    return new Response(JSON.stringify({ capabilities: ['completion'] }))
+  }
   if (path === '/api/chat') {
     const body = JSON.parse(String(init.body))
     requests.push(body)
@@ -53,6 +60,7 @@ beforeEach(async () => {
   await chats.deleteAllChats()
   await chats.init()
   scripts = []
+  showHold = undefined
   requests.length = 0
   currentModel.value = 'm'
   autoTitle.value = false
@@ -130,6 +138,99 @@ describe('generation', () => {
   it('auto-titles after the first exchange', async () => {
     autoTitle.value = true
     await gen.send(text('Hello!'))
+    await tick()
+    expect(chats.activeChat.value?.title).toBe('Greeting Chat')
+  })
+})
+
+describe('generation edge cases', () => {
+  const streamRequests = () => requests.filter((r) => r.stream !== false)
+
+  it('ignores a second send while the first is still starting up', async () => {
+    const show = deferred()
+    showHold = show.promise
+    currentModel.value = 'slow-model'
+    const first = gen.send(text('one'))
+    await tick()
+    expect(gen.isGenerating(chats.activeChatId.value)).toBe(true)
+    expect(await gen.send(text('two'))).toBe(false)
+    show.resolve()
+    await first
+    expect(streamRequests()).toHaveLength(1)
+    expect(chats.activeThread.value.map((n) => textOf(n.parts))).toEqual(['one', 'ok'])
+  })
+
+  it('blocks a draft double-send before the chat row exists', async () => {
+    const first = gen.send(text('a'))
+    expect(gen.isGenerating(undefined)).toBe(true)
+    expect(await gen.send(text('b'))).toBe(false)
+    await first
+    expect(chats.chats.value).toHaveLength(1)
+  })
+
+  it('can be stopped before streaming starts', async () => {
+    const show = deferred()
+    showHold = show.promise
+    currentModel.value = 'slow-model-2'
+    const sending = gen.send(text('stop me'))
+    await tick()
+    gen.stop(chats.activeChatId.value)
+    show.resolve()
+    await sending
+    expect(streamRequests()).toHaveLength(0)
+    expect(chats.activeThread.value.at(-1)?.status).toBe('aborted')
+  })
+
+  it('stops and leaves no rows behind when the chat is deleted mid-stream', async () => {
+    const hold = deferred()
+    scripts.push({ chunks: ['partial'], hold: hold.promise })
+    const sending = gen.send(text('doomed'))
+    await tick()
+    const chatId = chats.activeChatId.value
+    await chats.deleteChat(chatId)
+    hold.resolve()
+    await sending
+    await tick()
+    expect(await db.nodes.where('chatId').equals(chatId).count()).toBe(0)
+    expect(gen.isGenerating(chatId)).toBe(false)
+  })
+
+  it('marks a stream that ends without done as an error', async () => {
+    scripts.push({ chunks: ['cut'], noDone: true })
+    await gen.send(text('hi'))
+    const reply = chats.activeThread.value.at(-1)!
+    expect(reply.status).toBe('error')
+    expect(reply.parts.at(-1)).toMatchObject({ type: 'error', message: expect.stringContaining('ended unexpectedly') })
+    expect(textOf(reply.parts)).toBe('cut')
+  })
+
+  it('repairs replies left streaming by a reload', async () => {
+    await gen.send(text('hi'))
+    const reply = chats.activeThread.value.at(-1)!
+    await db.nodes.update(reply.id, { status: 'streaming', parts: [{ type: 'reasoning', text: 'x', startedAt: 1 }] } as Partial<MessageNode>)
+    await chats.init()
+    const stored = await db.nodes.get(reply.id)
+    expect(stored?.status).toBe('aborted')
+    expect(stored?.parts[0]).toMatchObject({ durationMs: 0 })
+  })
+
+  it('does not carry draft settings into the next new chat', async () => {
+    await chats.setActiveSettings({ think: false })
+    await gen.send(text('first'))
+    expect(chats.activeChat.value?.settings).toEqual({ think: false })
+    chats.newChat()
+    await chats.setActiveSettings({ systemPrompt: 'temp' })
+    await chats.openChat(chats.chats.value[0].id)
+    chats.newChat()
+    expect(chats.draftSettings.value).toBeUndefined()
+  })
+
+  it('auto-titles even if an earlier reply in the chat was not the first exchange', async () => {
+    autoTitle.value = true
+    scripts.push({ chunks: ['x'], noDone: true })
+    await gen.send(text('first'))
+    expect(chats.activeChat.value?.titleGenerated).toBeFalsy()
+    await gen.send(text('second'))
     await tick()
     expect(chats.activeChat.value?.title).toBe('Greeting Chat')
   })
