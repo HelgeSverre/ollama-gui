@@ -1,170 +1,219 @@
-import { test, expect } from '@playwright/test'
+import { expect, test, type Page, type Route } from '@playwright/test'
 
-const AI_RESPONSE_TIMEOUT = 30000
+/**
+ * UI tests against a mocked Ollama API. Requests are recorded so tests can assert on the
+ * wire format (images, think, options).
+ */
+interface Mock {
+  chatRequests: any[]
+  replies: string[]
+}
 
-async function mockOllamaApi(page: import('@playwright/test').Page) {
-  await page.route('**/api/tags', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        models: [
-          { name: 'llama2', modified_at: '2024-01-01T00:00:00Z', size: 1234567890 },
-          { name: 'mistral', modified_at: '2024-01-02T00:00:00Z', size: 9876543210 },
-        ],
-      }),
-    })
+const MODELS = [
+  { name: 'llama3.2', model: 'llama3.2', size: 2_000_000_000, digest: 'a', modified_at: '2026-01-01T00:00:00Z', details: { parameter_size: '3B', quantization_level: 'Q4_K_M' } },
+  { name: 'llava', model: 'llava', size: 4_700_000_000, digest: 'b', modified_at: '2026-01-02T00:00:00Z', details: { parameter_size: '7B' } },
+  { name: 'qwen3', model: 'qwen3', size: 5_200_000_000, digest: 'c', modified_at: '2026-01-03T00:00:00Z', details: { family: 'qwen3' } },
+]
+const CAPS: Record<string, string[]> = {
+  'llama3.2': ['completion', 'tools'],
+  llava: ['completion', 'vision'],
+  qwen3: ['completion', 'thinking', 'tools'],
+}
+
+const ndjson = (lines: object[]) => lines.map((l) => JSON.stringify(l)).join('\n') + '\n'
+
+async function mockOllama(page: Page): Promise<Mock> {
+  const mock: Mock = { chatRequests: [], replies: [] }
+  await page.route('**/api/**', async (route: Route) => {
+    const url = new URL(route.request().url())
+    const body = route.request().postDataJSON?.() ?? null
+    switch (url.pathname) {
+      case '/api/tags':
+        return route.fulfill({ json: { models: MODELS } })
+      case '/api/ps':
+        return route.fulfill({ json: { models: [] } })
+      case '/api/show':
+        return route.fulfill({ json: { capabilities: CAPS[body.model] ?? ['completion'], model_info: { 'llama.context_length': 131072 }, details: {} } })
+      case '/api/chat': {
+        if (body.stream === false) return route.fulfill({ json: { message: { role: 'assistant', content: 'Mock Title' } } })
+        mock.chatRequests.push(body)
+        const reply = mock.replies.shift() ?? 'Hello there!'
+        const lines: object[] = []
+        if (body.think !== false && CAPS[body.model]?.includes('thinking')) lines.push({ model: body.model, message: { role: 'assistant', content: '', thinking: 'Considering the question.' }, done: false })
+        for (const word of reply.split(/(?<= )/)) lines.push({ model: body.model, message: { role: 'assistant', content: word }, done: false })
+        lines.push({ model: body.model, done: true, done_reason: 'stop', total_duration: 1e9, eval_count: 12, eval_duration: 5e8, prompt_eval_count: 20 })
+        return route.fulfill({ status: 200, contentType: 'application/x-ndjson', body: ndjson(lines) })
+      }
+      case '/api/pull':
+        return route.fulfill({
+          contentType: 'application/x-ndjson',
+          body: ndjson([
+            { status: 'pulling manifest' },
+            { status: 'downloading', digest: 'sha256:1', total: 1000, completed: 500 },
+            { status: 'success' },
+          ]),
+        })
+      default:
+        return route.fulfill({ json: {} })
+    }
   })
+  return mock
+}
 
-  await page.route('**/api/chat', async (route) => {
-    const body =
-      [
-        JSON.stringify({
-          model: 'llama2',
-          created_at: '2024-01-01T00:00:00Z',
-          message: { role: 'assistant', content: 'Hello' },
-          done: false,
-        }),
-        JSON.stringify({
-          model: 'llama2',
-          created_at: '2024-01-01T00:00:00Z',
-          message: { role: 'assistant', content: ' there!' },
-          done: false,
-        }),
-        JSON.stringify({
-          model: 'llama2',
-          created_at: '2024-01-01T00:00:00Z',
-          message: { role: 'assistant', content: '' },
-          done: true,
-          total_duration: 1000,
-          load_duration: 100,
-          prompt_eval_count: 5,
-          prompt_eval_duration: 200,
-          eval_count: 10,
-          eval_duration: 700,
-        }),
-      ].join('\n') + '\n'
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/x-ndjson',
-      body,
-    })
+async function freshPage(page: Page) {
+  const mock = await mockOllama(page)
+  await page.goto('/')
+  await page.evaluate(async () => {
+    localStorage.clear()
+    for (const db of await indexedDB.databases()) indexedDB.deleteDatabase(db.name!)
   })
+  await page.reload()
+  await expect(page.getByTestId('chat-textarea')).toBeVisible()
+  return mock
+}
+
+async function send(page: Page, text: string) {
+  await page.getByTestId('chat-textarea').fill(text)
+  await page.getByTestId('chat-textarea').press('Enter')
 }
 
 test.describe('Ollama GUI', () => {
-  test.beforeEach(async ({ page }) => {
-    await mockOllamaApi(page)
-    await page.goto('/')
-    await page.waitForSelector('[data-testid="chat-input-form"]', { timeout: 10000 })
-    await page.evaluate(async () => {
-      const dbs = await indexedDB.databases()
-      await Promise.all(dbs.map((db) => new Promise<void>((resolve) => {
-        const r = indexedDB.deleteDatabase(db.name!)
-        r.onsuccess = () => resolve()
-        r.onerror = () => resolve()
-        r.onblocked = () => resolve()
-      })))
-    })
+  test('sends a message, streams the reply and auto-titles the chat', async ({ page }) => {
+    const mock = await freshPage(page)
+    await send(page, 'Hi')
+    await expect(page.getByTestId('ai-message')).toContainText('Hello there!')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    await expect(page.getByTestId('chat-title')).toHaveText('Mock Title')
+    await expect(page.getByTestId('chat-item')).toHaveCount(1)
+    expect(mock.chatRequests[0].messages).toEqual([{ role: 'user', content: 'Hi' }])
+  })
+
+  test('history survives a reload', async ({ page }) => {
+    await freshPage(page)
+    await send(page, 'Remember me')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
     await page.reload()
-    await page.waitForSelector('[data-testid="chat-input-form"]', { timeout: 10000 })
+    await expect(page.getByTestId('user-message')).toContainText('Remember me')
+    await expect(page.getByTestId('ai-message')).toContainText('Hello there!')
   })
 
-  test('creates a new chat', async ({ page }) => {
-    const initialCount = await page.locator('[data-testid="chat-item"]').count()
+  test('regenerate and edit create versions with arrows', async ({ page }) => {
+    const mock = await freshPage(page)
+    mock.replies.push('First answer', 'Second answer', 'Edited answer')
+    await send(page, 'Question')
+    await expect(page.getByTestId('ai-message')).toContainText('First answer')
 
-    await page.locator('[data-testid="new-chat-btn"]').click()
+    await page.getByTestId('regenerate-btn').click()
+    await expect(page.getByTestId('ai-message')).toContainText('Second answer')
+    const nav = page.getByTestId('ai-message').getByTestId('branch-nav')
+    await expect(nav).toContainText('2/2')
+    await nav.getByRole('button', { name: 'Previous version' }).click()
+    await expect(page.getByTestId('ai-message')).toContainText('First answer')
 
-    await expect(page.locator('[data-testid="chat-input-form"]')).toBeVisible()
-    await expect(page.locator('[data-testid="chat-textarea"]')).toBeVisible()
-    await expect(page.locator('[data-testid="chat-item"]')).toHaveCount(initialCount + 1)
+    await page.getByTestId('user-message').hover()
+    await page.getByTestId('edit-btn').click()
+    await page.getByTestId('edit-textarea').fill('Better question')
+    await page.getByTestId('edit-submit').click()
+    await expect(page.getByTestId('ai-message')).toContainText('Edited answer')
+    await expect(page.getByTestId('user-message').getByTestId('branch-nav')).toContainText('2/2')
+    expect(mock.chatRequests.at(-1).messages).toEqual([{ role: 'user', content: 'Better question' }])
   })
 
-  test('sends a message and receives AI response', async ({ page }) => {
-    await page.locator('[data-testid="chat-textarea"]').fill('Hello, AI!')
-    await page.locator('[data-testid="send-btn"]').click()
-
-    await expect(page.locator('[data-testid="user-message"]').first()).toBeVisible()
-    await expect(page.locator('[data-testid="ai-message"]').first()).toBeVisible({
-      timeout: AI_RESPONSE_TIMEOUT,
-    })
-    await expect(page.locator('[data-testid="ai-message"]').first()).toContainText('Hello there!')
+  test('sends images to vision models as images[]', async ({ page }) => {
+    const mock = await freshPage(page)
+    await page.getByTestId('model-select').click()
+    await page.getByTestId('model-option-llava').click()
+    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64')
+    await page.getByTestId('file-input').setInputFiles({ name: 'dot.png', mimeType: 'image/png', buffer: png })
+    await expect(page.getByTestId('attachment-chip')).toHaveCount(1)
+    await send(page, 'What is this?')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    const message = mock.chatRequests[0].messages[0]
+    expect(message.content).toBe('What is this?')
+    expect(message.images).toEqual([png.toString('base64')])
+    await expect(page.getByTestId('user-message').getByRole('img', { name: 'dot.png' })).toBeVisible()
   })
 
-  test('regenerates response', async ({ page }) => {
-    await page.locator('[data-testid="chat-textarea"]').fill('First message')
-    await page.locator('[data-testid="send-btn"]').click()
-    await expect(page.locator('[data-testid="ai-message"]').first()).toBeVisible({
-      timeout: AI_RESPONSE_TIMEOUT,
-    })
-    await expect(page.locator('[data-testid="ai-message"]').first()).toContainText('Hello there!')
-
-    await expect(page.locator('[data-testid="regenerate-btn"]')).toBeVisible()
-    await page.locator('[data-testid="regenerate-btn"]').click()
-
-    await expect(page.locator('[data-testid="ai-message"]').first()).toBeVisible({
-      timeout: AI_RESPONSE_TIMEOUT,
-    })
-    await expect(page.locator('[data-testid="ai-message"]').first()).toContainText('Hello there!')
+  test('rejects images for non-vision models', async ({ page }) => {
+    await freshPage(page)
+    await page.getByTestId('model-select').click()
+    await page.getByTestId('model-option-llama3.2').click()
+    await page.getByTestId('file-input').setInputFiles({ name: 'a.png', mimeType: 'image/png', buffer: Buffer.from('x') })
+    await expect(page.getByTestId('toast')).toContainText("can't read images")
+    await expect(page.getByTestId('attachment-chip')).toHaveCount(0)
   })
 
-  test('switches between chats', async ({ page }) => {
-    await page.locator('[data-testid="new-chat-btn"]').click()
-    await expect(page.locator('[data-testid="chat-item"]')).toHaveCount(2)
+  test('thinking models stream a reasoning block', async ({ page }) => {
+    const mock = await freshPage(page)
+    await page.getByTestId('model-select').click()
+    await page.getByTestId('model-option-qwen3').click()
+    await expect(page.getByTestId('think-toggle')).toBeVisible()
+    await send(page, 'Think about it')
+    await expect(page.getByTestId('reasoning')).toContainText(/Thought for|Thoughts/)
+    expect(mock.chatRequests[0].think).toBeUndefined()
 
-    await page.locator('[data-testid="chat-textarea"]').fill('Message in chat 2')
-    await page.locator('[data-testid="send-btn"]').click()
-    await expect(page.locator('[data-testid="ai-message"]').first()).toBeVisible({
-      timeout: AI_RESPONSE_TIMEOUT,
-    })
-
-    await page.locator('[data-testid="chat-item"]').nth(1).click()
-    await expect(page.locator('[data-testid="user-message"]').first()).not.toBeVisible()
-    await expect(page.locator('[data-testid="ai-message"]').first()).not.toBeVisible()
-
-    await page.locator('[data-testid="chat-item"]').nth(0).click()
-    await expect(page.locator('[data-testid="user-message"]').first()).toBeVisible()
-    await expect(page.locator('[data-testid="ai-message"]').first()).toBeVisible()
+    await page.getByTestId('think-toggle').click()
+    await send(page, 'Now without thinking')
+    await expect(page.getByTestId('ai-message').nth(1)).toHaveAttribute('data-status', 'done')
+    expect(mock.chatRequests[1].think).toBe(false)
   })
 
-  test('deletes a chat via context menu', async ({ page }) => {
-    await page.locator('[data-testid="new-chat-btn"]').click()
-    await expect(page.locator('[data-testid="chat-item"]')).toHaveCount(2)
-
-    await page.locator('[data-testid="chat-item"]').first().click({ button: 'right' })
-
-    await expect(page.locator('[data-testid="delete-chat-btn"]')).toBeVisible()
-
-    await page.locator('[data-testid="delete-chat-btn"]').click()
-
-    await expect(page.locator('[data-testid="chat-item"]')).toHaveCount(1)
+  test('system prompt from chat settings is sent first', async ({ page }) => {
+    const mock = await freshPage(page)
+    await page.getByTestId('chat-settings-btn').click()
+    await page.getByTestId('system-prompt-input').fill('Answer like a pirate')
+    await page.getByTestId('save-chat-settings').click()
+    await send(page, 'Hello')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    expect(mock.chatRequests[0].messages[0]).toEqual({ role: 'system', content: 'Answer like a pirate' })
   })
 
-  test('opens and closes settings overlay', async ({ page }) => {
-    await page.locator('[data-testid="settings-btn"]').click()
-
-    await expect(page.locator('[data-testid="settings-overlay"]')).toBeVisible()
-    await expect(page.locator('[data-testid="settings-close"]')).toBeVisible()
-
-    await page.locator('[data-testid="settings-close"]').click()
-    await expect(page.locator('[data-testid="settings-overlay"]')).not.toBeVisible()
-
-    await page.locator('[data-testid="settings-btn"]').click()
-    await expect(page.locator('[data-testid="settings-overlay"]')).toBeVisible()
-
-    await page.locator('[data-testid="settings-backdrop"]').click({ position: { x: 10, y: 10 } })
-    await expect(page.locator('[data-testid="settings-overlay"]')).not.toBeVisible()
+  test('deletes a chat after confirmation', async ({ page }) => {
+    await freshPage(page)
+    await send(page, 'Delete me')
+    await expect(page.getByTestId('chat-item')).toHaveCount(1)
+    await page.getByTestId('chat-item').hover()
+    await page.getByRole('button', { name: /Actions for/ }).click()
+    await page.getByTestId('delete-chat-btn').click()
+    await page.getByTestId('confirm-btn').click()
+    await expect(page.getByTestId('chat-item')).toHaveCount(0)
   })
 
-  test('model selector works', async ({ page }) => {
-    const select = page.locator('[data-testid="model-select"]')
-    await expect(select).toBeVisible()
+  test('command palette finds messages by content', async ({ page }) => {
+    await freshPage(page)
+    await send(page, 'The secret word is pineapple')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    await page.getByTestId('new-chat-btn').click()
+    await page.getByTestId('chat-textarea').press('ControlOrMeta+k')
+    await page.getByPlaceholder('Search chats, messages and commands…').fill('pineapple')
+    await page.getByRole('option', { name: /pineapple/ }).click()
+    await expect(page.getByTestId('user-message')).toContainText('pineapple')
+  })
 
-    await select.selectOption('mistral')
-    await expect(select).toHaveValue('mistral')
+  test('pulls a model with progress', async ({ page }) => {
+    await freshPage(page)
+    await page.getByTestId('models-btn').click()
+    await page.getByTestId('pull-input').fill('tinyllama')
+    await page.getByTestId('pull-input').press('Enter')
+    await expect(page.getByTestId('pull-job')).toHaveCount(0)
+    await expect(page.getByTestId('installed-model')).toHaveCount(3)
+  })
 
-    await select.selectOption('llama2')
-    await expect(select).toHaveValue('llama2')
+  test('theme and locale settings apply', async ({ page }) => {
+    await freshPage(page)
+    await page.getByTestId('settings-btn').click()
+    await page.getByTestId('theme-light').click()
+    await expect(page.locator('html')).not.toHaveClass(/dark/)
+    await page.getByTestId('theme-dark').click()
+    await expect(page.locator('html')).toHaveClass(/dark/)
+    await page.getByTestId('locale-select').selectOption('de-DE')
+    await expect(page.getByTestId('locale-preview')).toContainText('1.234.567,89')
+    await expect(page.getByTestId('locale-preview')).toContainText('vorgestern')
+  })
+
+  test('shows a connection banner when Ollama is unreachable', async ({ page }) => {
+    await page.route('**/api/**', (route) => route.abort())
+    await page.goto('/')
+    await expect(page.getByTestId('connection-banner')).toContainText("Can't reach Ollama")
   })
 })

@@ -1,152 +1,63 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository.
 
-## Project Overview
+## Project
 
-Ollama GUI is a Vue.js 3 web interface for interacting with local LLMs through Ollama. It's a privacy-focused chat application where all processing happens locally.
+Ollama GUI: a Vue 3 + TypeScript web UI for chatting with local LLMs through Ollama. Local-first: chats live in the browser's IndexedDB; the only network peer is the Ollama API.
 
-## Development Commands
+## Commands
 
 ```bash
-# Install dependencies
-yarn install
-
-# Start development server
-yarn dev
-
-# Start dev server with network access
-yarn dev --host
-
-# Build for production (includes TypeScript checking)
-yarn build
-
-# Preview production build
-yarn preview
-
-# Format code with Prettier
-yarn format
-
-# Run Ollama with CORS for hosted version
-OLLAMA_ORIGINS=https://ollama-gui.vercel.app ollama serve
-
-# Docker commands
-docker compose up -d  # Start both Ollama and GUI
-docker build -t ollama-gui .  # Build production image
+bun install
+bun run dev          # Vite on :5173 (strictPort), proxies /api → localhost:11434
+bun run dev --host   # also reachable from the LAN (UI and API through the proxy)
+bun run lint         # ESLint
+bun run test         # Vitest (unit + integration; fake-indexeddb, mocked fetch)
+bun run test:e2e     # Playwright on :5180 against a mocked Ollama (e2e/chat.spec.ts)
+bun run build        # vue-tsc -b + vite build → dist/
+docker compose up -d # Ollama + GUI; nginx proxies /api (see nginx/default.conf.template)
 ```
 
-### Development Proxy
-The development server includes an automatic proxy that forwards `/api` requests to `http://localhost:11434`. This allows:
-- Seamless local development without CORS issues
-- Network access when using `yarn dev --host` - other devices can access both UI and API
-- Zero configuration required
+`VITE_NO_PROXY=true` disables the dev proxy. `VITE_OLLAMA_URL` sets the build-time default Ollama URL ("/" = same origin, used by the Docker image).
 
-To disable the proxy (e.g., when using a custom Ollama endpoint):
-```bash
-VITE_NO_PROXY=true yarn dev
-```
-
-## Architecture Overview
-
-### Component-Based Architecture
-- **Presentation Layer**: Vue 3 components with Composition API
-- **Service Layer**: Business logic in composables (`/services/*.ts`)
-- **Data Layer**: IndexedDB via Dexie for local storage
-- **API Layer**: HTTP client for Ollama integration
-
-### Key Services
-- `services/chat.ts`: Central chat management and state
-- `services/api.ts`: Ollama API client with streaming support
-- `services/database.ts`: Dexie schema for chats, messages, and configs
-- `services/appConfig.ts`: App settings and configuration
-- `services/useAI.ts`: AI generation orchestration
-
-### Data Flow Pattern
-1. User input → Component → Service composable
-2. Service updates reactive state and persists to IndexedDB
-3. API calls to Ollama (with streaming for AI responses)
-4. Reactive updates propagate to UI components
-
-### State Management
-- Uses Vue 3 composables pattern (no Vuex/Pinia)
-- Shared state via exported composables
-- Settings in localStorage via `@vueuse/core`
-- Chat data in IndexedDB
-
-## Component Structure
+## Architecture
 
 ```
-App.vue (Root layout)
-├── Sidebar.vue (Navigation, chat list)
-├── ChatMessages.vue (Message display container)
-│   └── ChatMessage.vue (Message wrapper)
-│       ├── UserMessage.vue
-│       ├── AiMessage.vue
-│       └── SystemMessage.vue
-├── ChatInput.vue (User input, regeneration)
-├── ModelSelector.vue (Model switching)
-├── SystemPrompt.vue (System message config)
-└── Settings.vue (App configuration)
+src/
+  domain/        Pure, framework-free logic. Unit-tested.
+    types.ts       Chat, MessageNode, Part, GenerationSettings, Preset
+    thread.ts      Message tree → active path, siblings, branch switching
+    parts.ts       Streaming event reducer (applyEvent), ThinkTagSplitter, legacy content parsing
+    settings.ts    Layered settings resolution: global → model → chat
+    format.ts      Locale resolution, relative time, bytes, date groups
+    legacy.ts      v1/v2.0 flat chats → message tree (used by DB migration and JSON import)
+  db/            Dexie schema (v11 legacy → v12 tree → v13 drops old tables), plain() proxy unwrapping
+  ollama/        HTTP client (fetch + NDJSON), wire types, chat transport, model endpoints
+  markdown/      Shared markdown-it instance, highlight.js (common languages), lazy KaTeX
+  composables/   Module-level singleton state (no Pinia)
+    useChats       Chat list, active chat, node cache per chat, CRUD, search, branching
+    useGeneration  send / regenerate / edit / stop; one AbortController per chat; auto-title
+    useModels      Model list, connection state, /api/show cache (capabilities), pulls, ps
+    usePresets     Model and global generation defaults (Dexie `presets`)
+    useSettings    localStorage UI prefs (URL, theme, locale, markdown…), applyTheme
+    useTransfer    JSON export/import (v2 format + v1 arrays), Markdown export
+    useUi / useToasts / useConfirm   Overlay state, toasts, promise-based confirm dialog
+  components/    chat/, composer/, sidebar/, models/, settings/, ui/ (Modal on native <dialog>, Menu, Toggle…)
 ```
 
-## TypeScript Considerations
-- Strict mode enabled
-- Full type coverage across the codebase
-- Key interfaces in `services/database.ts`
-- Vue components use `<script setup lang="ts">`
+### Core model
 
-## Styling Guidelines
-- Tailwind CSS with dark mode support (class-based)
-- Typography plugin for markdown content
-- JetBrains Mono font for code blocks
-- Responsive design patterns using Tailwind utilities
+- A **message** (`MessageNode`) has `parts[]` (text, reasoning, file, tool-call, error), modelled on Vercel AI SDK's UIMessage, and a `parentId`. A chat is a tree; `chat.activeLeafId` picks the visible path. Edit and regenerate add a sibling; `‹ n/m ›` switches leaves.
+- **Generation** writes into the cached reactive node by id, never into "the active chat", so switching chats mid-stream is safe. Partial output is persisted every ~500 ms and on stop or error.
+- **Thinking** uses Ollama's native `message.thinking`. `think` is only sent to models whose `/api/show` capabilities include `thinking`. Inline `<think>` tags in content are also split out (ThinkTagSplitter).
+- **Images** are sent as `messages[].images` (base64 without the data-URL prefix). Text files are inlined into the content as fenced blocks.
+- **Settings** resolve global → model → chat; empty fields inherit.
 
-## API Integration
-- Ollama API endpoints: `/api/chat`, `/api/tags`, `/api/embeddings`
-- Streaming responses handled via fetch with reader
-- Abort controller for canceling requests
-- CORS configuration required for hosted deployments
+### Conventions
 
-## Testing
-No testing framework is currently configured. Manual testing recommended for:
-- Chat creation and deletion
-- Message streaming and cancellation
-- Import/export functionality
-- Model switching
-- Dark mode toggle
-
-## Build Process
-- TypeScript checking runs before build (`vue-tsc --build --force`)
-- Vite handles bundling and optimization
-- Production build outputs to `dist/` directory
-- Chunk size warning limit set to 1500KB
-
-## Common Development Tasks
-
-### Adding a New Feature
-1. Create component in appropriate directory
-2. Add service logic to relevant composable
-3. Update database schema if needed (increment version)
-4. Follow existing patterns for state management
-
-### Modifying Chat Logic
-- Primary logic in `services/chat.ts`
-- Database operations abstracted through service layer
-- Maintain reactive state consistency
-
-### Working with Ollama API
-- All API calls through `services/api.ts`
-- Support streaming by default
-- Handle errors gracefully with user feedback
-
-## Important Notes
-- All data stored locally in browser (privacy-first)
-- No authentication or user management
-- Ollama must be running locally or accessible via network
-- Docker deployment includes both Ollama and GUI services
-
-## Key File Locations
-- Type definitions: `services/database.ts` (Chat, Message, OllamaConfig interfaces)
-- Markdown rendering: `services/markdown.ts` (highlight.js integration)
-- Error handling: Services return error states, components show user feedback
-- Environment: No .env files - all configuration via UI or Docker compose
+- New streaming behaviour: add a `ChatEvent` in `domain/parts.ts`, map it in `ollama/transport.ts`, render it in `components/chat/MessageItem.vue`.
+- Schema changes: add a new Dexie version in `db/schema.ts` with an upgrade function and a test in `db/schema.test.ts`. Never change an existing version.
+- Values written to Dexie go through `plain()`, because Vue proxies can't be structured-cloned.
+- Use `confirmAction()` for destructive actions and `toast()` for feedback; never `alert` or `confirm`.
+- Styling: Tailwind v4, CSS-first (`src/style.css`). Colors are CSS variables swapped by `.dark` on `<html>`; use the semantic tokens (`bg-panel`, `text-text-muted`, `border-border`…), not raw colors.

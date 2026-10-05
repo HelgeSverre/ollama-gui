@@ -1,25 +1,28 @@
 import { defineConfig } from '@playwright/test'
 
-const PORT = process.env.CI ? 4173 : 5173
+// Dedicated port so e2e runs alongside a normal `bun run dev` on 5173
+const PORT = 5180
 
 export default defineConfig({
   testDir: '.',
-  timeout: 120_000,
-  expect: { timeout: 30_000 },
+  testMatch: '*.spec.ts',
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
   fullyParallel: false,
-  retries: 1,
+  retries: process.env.CI ? 1 : 0,
   workers: 1,
   reporter: 'list',
   use: {
     baseURL: `http://localhost:${PORT}`,
     browserName: 'chromium',
     headless: true,
-    viewport: { width: 1280, height: 720 },
-    actionTimeout: 15_000,
+    viewport: { width: 1280, height: 800 },
+    actionTimeout: 10_000,
   },
   webServer: {
-    command: 'yarn dev',
-    port: 5173,
+    command: `bunx vite --port ${PORT} --strictPort`,
+    cwd: '..',
+    port: PORT,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
   },

@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'Ollama GUI',
         short_name: 'OllamaGUI',
         description: 'Local LLM chat interface for Ollama',
-        theme_color: '#0b0c0f',
+        theme_color: '#15171c',
         background_color: '#0b0c0f',
         display: 'standalone',
         icons: [
@@ -28,8 +28,23 @@ export default defineConfig({
       },
     }),
   ],
-  build: { chunkSizeWarningLimit: 1500 },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Separate long-lived vendor code from app code so updates don't bust the whole cache
+        codeSplitting: {
+          groups: [
+            { name: 'highlight', test: /node_modules[\\/]highlight\.js/ },
+            { name: 'vendor', test: /node_modules[\\/](vue|@vue|dexie|markdown-it|@vueuse|@tabler)/ },
+          ],
+        },
+      },
+    },
+  },
   server: {
+    // IndexedDB is per origin: a port change looks like lost history (#58)
+    port: 5173,
+    strictPort: true,
     proxy: process.env.VITE_NO_PROXY
       ? {}
       : {

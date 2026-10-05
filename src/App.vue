@@ -1,109 +1,95 @@
 <script setup lang="ts">
-import Sidebar from './components/Sidebar.vue'
-import ChatInput from './components/ChatInput.vue'
-import ChatMessages from './components/ChatMessages.vue'
-import SystemPrompt from './components/SystemPrompt.vue'
-import ModelSelector from './components/ModelSelector.vue'
-import { currentModel, isSystemPromptOpen } from './services/appConfig.ts'
-import { nextTick, onMounted, ref } from 'vue'
-import { useAI } from './services/useAI.ts'
-import { useChats } from './services/chat.ts'
-import Settings from './components/Settings.vue'
+import { useEventListener, useIntervalFn } from '@vueuse/core'
+import { nextTick, onMounted, ref, watch } from 'vue'
+import ChatHeader from './components/chat/ChatHeader.vue'
+import ChatSettingsPanel from './components/chat/ChatSettingsPanel.vue'
+import Thread from './components/chat/Thread.vue'
 import CommandPalette from './components/CommandPalette.vue'
-import ModelManager from './components/ModelManager.vue'
+import Composer from './components/composer/Composer.vue'
+import ConnectionBanner from './components/ConnectionBanner.vue'
+import ModelManager from './components/models/ModelManager.vue'
+import Settings from './components/settings/Settings.vue'
+import Sidebar from './components/sidebar/Sidebar.vue'
+import ConfirmDialog from './components/ui/ConfirmDialog.vue'
+import ToastHost from './components/ui/ToastHost.vue'
+import { useChats } from './composables/useChats'
+import { confirmAction } from './composables/useConfirm'
+import { useModels } from './composables/useModels'
+import { usePresets } from './composables/usePresets'
+import { applyTheme, currentModel } from './composables/useSettings'
+import { errorMessage, toast } from './composables/useToasts'
+import { modal, toggleModal } from './composables/useUi'
 
-const { refreshModels, availableModels } = useAI()
-const { activeChat, renameChat, switchModel, initialize } = useChats()
-const isEditingChatName = ref(false)
-const editedChatName = ref('')
-const chatNameInput = ref()
+const chats = useChats()
+const models = useModels()
+const presets = usePresets()
+const composer = ref<InstanceType<typeof Composer>>()
 
-const startEditing = () => {
-  isEditingChatName.value = true
-  editedChatName.value = activeChat.value?.name || ''
-  nextTick(() => chatNameInput.value?.focus())
+applyTheme()
+
+async function connect() {
+  await models.refresh()
+  const names = models.models.value.map((m) => m.name)
+  if (names.length && !names.includes(currentModel.value)) currentModel.value = names[0]
 }
 
-const cancelEditing = () => {
-  isEditingChatName.value = false
-  editedChatName.value = ''
-}
-
-const confirmRename = () => {
-  if (activeChat.value && editedChatName.value.trim()) {
-    renameChat(editedChatName.value.trim())
-    isEditingChatName.value = false
+onMounted(async () => {
+  try {
+    await Promise.all([chats.init(), presets.loadPresets()])
+  } catch (error) {
+    toast(`Could not open local storage: ${errorMessage(error)}`, 'error')
   }
-}
+  await connect()
+  composer.value?.focus()
+})
 
-onMounted(() => {
-  refreshModels().then(async () => {
-    await initialize()
-    await switchModel(currentModel.value ?? availableModels.value[0]?.name ?? 'none')
-  })
+// Return focus to the composer when a dialog closes, rather than to the button that opened it
+watch(modal, async (value, previous) => {
+  if (value || !previous) return
+  await nextTick()
+  composer.value?.focus()
+})
+
+// Keep retrying quietly while Ollama is unreachable, and re-check when the tab regains focus.
+useIntervalFn(() => {
+  if (models.connection.value === 'error') void connect()
+}, 10_000)
+useEventListener(window, 'focus', () => void models.refresh())
+
+useEventListener(window, 'keydown', async (event: KeyboardEvent) => {
+  const mod = event.metaKey || event.ctrlKey
+  if (!mod) return
+  const key = event.key.toLowerCase()
+  if (key === 'k' && !event.shiftKey) {
+    event.preventDefault()
+    toggleModal('palette')
+  } else if (key === 'o' && event.shiftKey) {
+    event.preventDefault()
+    modal.value = null
+    chats.newChat()
+  } else if (key === 'backspace' && event.shiftKey && chats.activeChat.value) {
+    event.preventDefault()
+    const chat = chats.activeChat.value
+    const ok = await confirmAction({ title: 'Delete chat?', message: `"${chat.title}" will be deleted.`, confirmLabel: 'Delete', danger: true })
+    if (ok) await chats.deleteChat(chat.id)
+  }
 })
 </script>
 
 <template>
-  <main class="bg-page flex h-screen w-full flex-row">
+  <div class="bg-page text-text flex h-dvh w-full overflow-hidden">
     <Sidebar />
-
-    <div class="bg-list flex min-w-0 flex-1 flex-col">
-      <div
-        class="border-border bg-panel flex h-[38px] flex-none items-center gap-3 border-b px-3"
-      >
-        <div
-          v-if="activeChat"
-          class="mr-auto flex min-w-0 items-center gap-2"
-        >
-          <div
-            v-if="isEditingChatName"
-            class="flex items-center gap-1.5"
-          >
-            <input
-              ref="chatNameInput"
-              v-model="editedChatName"
-              class="border-border bg-list text-text focus:border-accent w-[180px] rounded-[4px] border px-2 py-0.5 text-[12px] outline-none"
-              @keyup.enter="confirmRename"
-              @keyup.esc="cancelEditing"
-              @blur="cancelEditing"
-            >
-          </div>
-          <button
-            v-else
-            class="text-text hover:border-border truncate rounded-[3px] border border-transparent px-1.5 py-0.5 text-[12.5px] font-semibold"
-            @click="startEditing"
-          >
-            {{ activeChat.name }}
-          </button>
-          <span class="text-text-muted font-mono text-[10px]">
-            {{ activeChat.model }}
-          </span>
-        </div>
-        <div
-          v-else
-          class="text-text-muted mr-auto text-[12px]"
-        >
-          No chat selected
-        </div>
-        <ModelSelector />
-      </div>
-
-      <div
-        v-if="isSystemPromptOpen"
-        class="flex min-h-0 flex-1 flex-col"
-      >
-        <SystemPrompt />
-      </div>
-
-      <template v-else>
-        <ChatMessages />
-        <ChatInput />
-      </template>
-    </div>
-
+    <main class="flex min-w-0 flex-1 flex-col">
+      <ChatHeader />
+      <ConnectionBanner />
+      <Thread />
+      <Composer ref="composer" />
+    </main>
+    <ChatSettingsPanel />
     <Settings />
-    <CommandPalette />
     <ModelManager />
-  </main>
+    <CommandPalette />
+    <ConfirmDialog />
+    <ToastHost />
+  </div>
 </template>

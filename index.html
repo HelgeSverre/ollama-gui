@@ -28,6 +28,14 @@
     <meta name="theme-color" content="#0b0c0f" />
 
     <title>Ollama GUI</title>
+    <script>
+      // Apply the theme before first paint to avoid a flash; useSettings.applyTheme takes over after mount
+      try {
+        const t = localStorage.getItem('ollama-gui:theme') || 'system'
+        if (t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches))
+          document.documentElement.classList.add('dark')
+      } catch {}
+    </script>
   </head>
   <body
     class="h-full bg-page font-sans text-text antialiased"
