@@ -1,21 +1,20 @@
 # Build stage
-FROM node:20-alpine as build-stage
+# Node runs the toolchain (vue-tsc needs it); bun installs from bun.lock
+FROM node:22-alpine AS build
+RUN npm install -g bun
 WORKDIR /app
-
-# Copy package.json and yarn.lock to install dependencies
-COPY package.json ./
-COPY yarn.lock ./
-
-RUN yarn install
-
-# Copy the rest of the files
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 COPY . .
+# "/" = talk to Ollama through this container's /api proxy (same origin, no CORS setup needed)
+ARG VITE_OLLAMA_URL=/
+ENV VITE_OLLAMA_URL=$VITE_OLLAMA_URL
+RUN bun run build
 
-# Build the app
-RUN yarn run build
-
-# Production stage
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+# Runtime stage
+FROM nginx:stable-alpine
+# Where nginx forwards /api. Override with -e OLLAMA_URL=http://my-gpu-box:11434
+ENV OLLAMA_URL=http://host.docker.internal:11434
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80

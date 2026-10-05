@@ -1,0 +1,8 @@
+node_modules
+dist
+ollama_data
+test-results
+.git
+.vercel
+e2e
+*.tsbuildinfo

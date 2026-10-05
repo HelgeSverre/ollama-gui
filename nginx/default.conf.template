@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+
+    # Ollama API, proxied so the browser talks to one origin
+    location /api/ {
+        proxy_pass ${OLLAMA_URL};
+        proxy_http_version 1.1;
+        # Ollama rejects unknown Origin headers; the request is same-origin from its point of view
+        proxy_set_header Host localhost:11434;
+        proxy_set_header Origin "";
+        # Stream tokens as they arrive
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 1h;
+        proxy_send_timeout 1h;
+        client_max_body_size 100m;
+    }
+
+    location = /sw.js {
+        add_header Cache-Control "no-cache";
+    }
+
+    location /assets/ {
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -29,4 +29,17 @@ package-lock.json
 .vercel
 .aider*
 
+# Test output
+test-results/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite generated
+vite.config.d.ts
+vite.config.js
+
+# Ollama
 ollama_data/
+# Coverage reports
+coverage/
