@@ -28,7 +28,11 @@ const icons = { info: IconInfoCircle, success: IconCheck, error: IconAlertTriang
           :is="icons[t.kind]"
           :size="16"
           class="mt-px flex-none"
-          :class="{ 'text-red': t.kind === 'error', 'text-green': t.kind === 'success', 'text-accent': t.kind === 'info' }"
+          :class="{
+            'text-red': t.kind === 'error',
+            'text-green': t.kind === 'success',
+            'text-accent': t.kind === 'info',
+          }"
         />
         <span class="min-w-0 flex-1 break-words">{{ t.message }}</span>
         <button

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { dateGroup, dateGroupLabel, formatBytes, formatDuration, relativeTime, resolveLocale } from './format'
+import {
+  dateGroup,
+  dateGroupLabel,
+  formatBytes,
+  formatDuration,
+  relativeTime,
+  resolveLocale,
+} from './format'
 
 describe('resolveLocale', () => {
   it('falls back for empty or invalid tags', () => {

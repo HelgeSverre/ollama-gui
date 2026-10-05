@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { IconChevronRight, IconDownload, IconPlayerEject, IconTrash, IconX } from '@tabler/icons-vue'
+import {
+  IconChevronRight,
+  IconDownload,
+  IconPlayerEject,
+  IconTrash,
+  IconX,
+} from '@tabler/icons-vue'
 import { computed, ref, watch } from 'vue'
 import { useChats } from '../../composables/useChats'
 import { confirmAction } from '../../composables/useConfirm'
@@ -19,7 +25,15 @@ const pullName = ref('')
 const expanded = ref<string | null>(null)
 const open = computed(() => modal.value === 'models')
 
-const SUGGESTED = ['llama3.2', 'qwen3', 'gemma3', 'gpt-oss:20b', 'deepseek-r1', 'mistral-small3.2', 'qwen2.5-coder']
+const SUGGESTED = [
+  'llama3.2',
+  'qwen3',
+  'gemma3',
+  'gpt-oss:20b',
+  'deepseek-r1',
+  'mistral-small3.2',
+  'qwen2.5-coder',
+]
 
 watch(open, (value) => {
   if (!value) return
@@ -36,7 +50,8 @@ watch(tab, (value) => {
 })
 
 const bytes = (n: number) => formatBytes(n, locale.value)
-const percent = (completed: number, total: number) => (total ? Math.floor((completed / total) * 100) : 0)
+const percent = (completed: number, total: number) =>
+  total ? Math.floor((completed / total) * 100) : 0
 
 function pull(name = pullName.value) {
   if (!name.trim()) return
@@ -85,31 +100,28 @@ function details(name: string) {
     ['Family', m?.details?.family],
     ['Parameters', m?.details?.parameter_size],
     ['Quantization', m?.details?.quantization_level],
-    ['Context length', info?.contextLength ? new Intl.NumberFormat(locale.value).format(info.contextLength) : undefined],
+    [
+      'Context length',
+      info?.contextLength
+        ? new Intl.NumberFormat(locale.value).format(info.contextLength)
+        : undefined,
+    ],
     ['Capabilities', info?.capabilities.join(', ')],
   ].filter((row): row is [string, string] => !!row[1])
 }
 </script>
 
 <template>
-  <Modal
-    :open="open"
-    title="Models"
-    width="620px"
-    @close="closeModal('models')"
-  >
+  <Modal :open="open" title="Models" width="620px" @close="closeModal('models')">
     <div class="space-y-5 p-4">
       <section>
-        <form
-          class="flex gap-2"
-          @submit.prevent="pull()"
-        >
+        <form class="flex gap-2" @submit.prevent="pull()">
           <input
             v-model="pullName"
             placeholder="Pull a model, e.g. llama3.2 or qwen3:8b"
             class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent min-w-0 flex-1 rounded-lg border px-3 py-1.5 text-[13px] outline-none"
             data-testid="pull-input"
-          >
+          />
           <button
             type="submit"
             :disabled="!pullName.trim()"
@@ -121,7 +133,12 @@ function details(name: string) {
         </form>
         <div class="mt-2 flex flex-wrap gap-1.5">
           <button
-            v-for="name in SUGGESTED.filter((s) => !models.models.value.some((m) => m.name.split(':')[0] === s.split(':')[0]))"
+            v-for="name in SUGGESTED.filter(
+              (s) =>
+                !models.models.value.some(
+                  (m) => m.name.split(':')[0] === s.split(':')[0],
+                ),
+            )"
             :key="name"
             type="button"
             class="border-border text-text-secondary hover:bg-hover rounded-full border px-2.5 py-0.5 text-[11.5px]"
@@ -134,7 +151,9 @@ function details(name: string) {
             target="_blank"
             rel="noopener noreferrer"
             class="text-accent px-1 py-0.5 text-[11.5px] hover:underline"
-          >Browse library ↗</a>
+          >
+            Browse library ↗
+          </a>
         </div>
 
         <div
@@ -148,7 +167,9 @@ function details(name: string) {
             <span
               class="text-text-muted truncate text-[11.5px]"
               :class="{ 'text-red': job.error }"
-            >{{ job.error ?? job.status }}</span>
+            >
+              {{ job.error ?? job.status }}
+            </span>
             <button
               type="button"
               class="text-text-muted hover:text-text ml-auto rounded p-0.5"
@@ -158,10 +179,7 @@ function details(name: string) {
               <IconX :size="14" />
             </button>
           </div>
-          <div
-            v-if="!job.error"
-            class="mt-2 flex items-center gap-2"
-          >
+          <div v-if="!job.error" class="mt-2 flex items-center gap-2">
             <div class="bg-hover h-1.5 flex-1 overflow-hidden rounded-full">
               <div
                 class="bg-accent h-full rounded-full transition-[width]"
@@ -178,14 +196,22 @@ function details(name: string) {
       <section>
         <div class="border-border mb-2 flex gap-4 border-b text-[12.5px]">
           <button
-            v-for="t in (['installed', 'running'] as const)"
+            v-for="t in ['installed', 'running'] as const"
             :key="t"
             type="button"
             class="-mb-px border-b-2 pb-1.5"
-            :class="tab === t ? 'border-accent text-text font-semibold' : 'text-text-secondary border-transparent'"
+            :class="
+              tab === t
+                ? 'border-accent text-text font-semibold'
+                : 'text-text-secondary border-transparent'
+            "
             @click="tab = t"
           >
-            {{ t === 'installed' ? `Installed (${models.models.value.length})` : `Loaded (${models.running.value.length})` }}
+            {{
+              t === 'installed'
+                ? `Installed (${models.models.value.length})`
+                : `Loaded (${models.running.value.length})`
+            }}
           </button>
         </div>
 
@@ -215,9 +241,12 @@ function details(name: string) {
                   :class="{ 'rotate-90': expanded === m.name }"
                 />
                 <span class="min-w-0">
-                  <span class="text-text block truncate text-[13px] font-medium">{{ m.name }}</span>
+                  <span class="text-text block truncate text-[13px] font-medium">
+                    {{ m.name }}
+                  </span>
                   <span class="text-text-muted block text-[11.5px]">
-                    {{ bytes(m.size) }} · updated {{ relativeTime(new Date(m.modified_at), locale) }}
+                    {{ bytes(m.size) }} · updated
+                    {{ relativeTime(new Date(m.modified_at), locale) }}
                   </span>
                 </span>
               </button>
@@ -242,10 +271,7 @@ function details(name: string) {
               v-if="expanded === m.name"
               class="mb-3 ml-6 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-[12px]"
             >
-              <template
-                v-for="[label, value] in details(m.name)"
-                :key="label"
-              >
+              <template v-for="[label, value] in details(m.name)" :key="label">
                 <dt class="text-text-muted">
                   {{ label }}
                 </dt>
@@ -254,15 +280,13 @@ function details(name: string) {
                 </dd>
               </template>
               <template v-if="models.info.get(m.name)?.raw.license">
-                <dt class="text-text-muted">
-                  License
-                </dt>
+                <dt class="text-text-muted">License</dt>
                 <dd>
                   <details>
-                    <summary class="text-accent cursor-pointer">
-                      Show
-                    </summary>
-                    <pre class="bg-list mt-1 max-h-48 overflow-auto rounded p-2 text-[11px] whitespace-pre-wrap">{{ models.info.get(m.name)?.raw.license }}</pre>
+                    <summary class="text-accent cursor-pointer">Show</summary>
+                    <pre
+                      class="bg-list mt-1 max-h-48 overflow-auto rounded p-2 text-[11px] whitespace-pre-wrap"
+                      >{{ models.info.get(m.name)?.raw.license }}</pre>
                   </details>
                 </dd>
               </template>
@@ -283,10 +307,12 @@ function details(name: string) {
             class="border-border flex items-center gap-3 border-b py-2 last:border-b-0"
           >
             <span class="min-w-0 flex-1">
-              <span class="text-text block truncate text-[13px] font-medium">{{ m.name }}</span>
+              <span class="text-text block truncate text-[13px] font-medium">
+                {{ m.name }}
+              </span>
               <span class="text-text-muted block text-[11.5px]">
                 {{ bytes(m.size_vram) }} VRAM of {{ bytes(m.size) }}
-                <template v-if="m.context_length"> · ctx {{ m.context_length }}</template>
+                <template v-if="m.context_length">· ctx {{ m.context_length }}</template>
                 · unloads {{ relativeTime(new Date(m.expires_at), locale) }}
               </span>
             </span>

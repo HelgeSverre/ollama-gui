@@ -25,9 +25,9 @@ async function copy() {
 <template>
   <div class="text-text-secondary space-y-1.5 text-[12px] leading-relaxed">
     <p>
-      Check that Ollama is running<template v-if="crossOrigin">
-        and allows requests from this page
-      </template>:
+      Check that Ollama is running
+      <template v-if="crossOrigin">and allows requests from this page</template>
+      :
     </p>
     <div
       v-if="crossOrigin"
@@ -40,18 +40,14 @@ async function copy() {
         :aria-label="copied ? 'Copied' : 'Copy command'"
         @click="copy"
       >
-        <IconCheck
-          v-if="copied"
-          :size="14"
-        />
-        <IconCopy
-          v-else
-          :size="14"
-        />
+        <IconCheck v-if="copied" :size="14" />
+        <IconCopy v-else :size="14" />
       </button>
     </div>
     <p v-else>
-      Start it with <code class="bg-hover rounded px-1">ollama serve</code>, or check the proxy in front of this page.
+      Start it with
+      <code class="bg-hover rounded px-1">ollama serve</code>
+      , or check the proxy in front of this page.
     </p>
   </div>
 </template>

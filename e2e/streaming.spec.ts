@@ -20,7 +20,9 @@ test.describe('streaming', () => {
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'aborted')
   })
 
-  test('a reply cut off by a reload is repaired and can be regenerated', async ({ page }) => {
+  test('a reply cut off by a reload is repaired and can be regenerated', async ({
+    page,
+  }) => {
     const streams = await manualStreams(page)
     await freshPage(page)
     await send(page, 'Long answer please')
@@ -36,7 +38,9 @@ test.describe('streaming', () => {
     await expect(page.getByTestId('regenerate-btn')).toBeVisible()
   })
 
-  test('Esc stops the reply even when focus is outside the message box', async ({ page }) => {
+  test('Esc stops the reply even when focus is outside the message box', async ({
+    page,
+  }) => {
     const streams = await manualStreams(page)
     await freshPage(page)
     await send(page, 'Go')
@@ -47,7 +51,9 @@ test.describe('streaming', () => {
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'aborted')
   })
 
-  test('a background reply keeps writing to its own chat after switching', async ({ page }) => {
+  test('a background reply keeps writing to its own chat after switching', async ({
+    page,
+  }) => {
     const streams = await manualStreams(page)
     await freshPage(page)
     await send(page, 'Chat A question')
@@ -73,7 +79,9 @@ test.describe('streaming', () => {
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
   })
 
-  test('deleting a chat mid-reply stops it and leaves no rows behind', async ({ page }) => {
+  test('deleting a chat mid-reply stops it and leaves no rows behind', async ({
+    page,
+  }) => {
     const streams = await manualStreams(page)
     await freshPage(page)
     await send(page, 'Doomed')
@@ -90,7 +98,9 @@ test.describe('streaming', () => {
     expect(await countRows(page, 'conversations')).toBe(0)
   })
 
-  test('regenerate cannot start a second reply while one is running', async ({ page }) => {
+  test('regenerate cannot start a second reply while one is running', async ({
+    page,
+  }) => {
     const streams = await manualStreams(page)
     await freshPage(page)
     await send(page, 'Q')
@@ -123,7 +133,9 @@ test.describe('streaming', () => {
     await expect(page.getByTestId('ai-message')).toContainText('Full answer')
   })
 
-  test('chat settings keep a Think toggle made while the panel is open', async ({ page }) => {
+  test('chat settings keep a Think toggle made while the panel is open', async ({
+    page,
+  }) => {
     await freshPage(page)
     await page.getByTestId('model-select').click()
     await page.getByTestId('model-option-qwen3').click()

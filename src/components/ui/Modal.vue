@@ -2,10 +2,13 @@
 import { nextTick, onMounted, ref, watch } from 'vue'
 import { IconX } from '@tabler/icons-vue'
 
-const props = withDefaults(defineProps<{ open: boolean; title?: string; width?: string }>(), {
-  title: undefined,
-  width: '540px',
-})
+const props = withDefaults(
+  defineProps<{ open: boolean; title?: string; width?: string }>(),
+  {
+    title: undefined,
+    width: '540px',
+  },
+)
 const emit = defineEmits<{ close: [] }>()
 const dialog = ref<HTMLDialogElement>()
 
@@ -16,7 +19,10 @@ function sync() {
   if (props.open && !el.open) el.showModal()
   else if (!props.open && el.open) el.close()
 }
-watch(() => props.open, () => nextTick(sync))
+watch(
+  () => props.open,
+  () => nextTick(sync),
+)
 onMounted(sync)
 
 // The native close event also fires after a programmatic close (prop went false). Only report
@@ -40,10 +46,7 @@ function onBackdrop(event: MouseEvent) {
     @cancel.prevent="emit('close')"
     @click="onBackdrop"
   >
-    <div
-      v-if="open"
-      class="flex max-h-[85vh] flex-col"
-    >
+    <div v-if="open" class="flex max-h-[85vh] flex-col">
       <header
         v-if="title || $slots.header"
         class="border-border flex flex-none items-center gap-2 border-b px-4 py-2.5"

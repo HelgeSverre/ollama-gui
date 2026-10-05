@@ -15,10 +15,7 @@ const models = useModels()
     data-testid="connection-banner"
   >
     <div class="flex items-start gap-2.5">
-      <IconPlugConnectedX
-        :size="18"
-        class="text-red mt-0.5 flex-none"
-      />
+      <IconPlugConnectedX :size="18" class="text-red mt-0.5 flex-none" />
       <div class="min-w-0 flex-1 space-y-2">
         <p class="text-text text-[13px] font-semibold">
           {{ models.connectionError.value }}

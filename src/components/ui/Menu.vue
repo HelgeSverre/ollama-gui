@@ -3,10 +3,13 @@ import { onClickOutside, onKeyStroke } from '@vueuse/core'
 import { nextTick, ref, watch } from 'vue'
 
 const open = defineModel<boolean>('open', { default: false })
-const props = withDefaults(defineProps<{ align?: 'left' | 'right'; placement?: 'below' | 'above' }>(), {
-  align: 'right',
-  placement: 'below',
-})
+const props = withDefaults(
+  defineProps<{ align?: 'left' | 'right'; placement?: 'below' | 'above' }>(),
+  {
+    align: 'right',
+    placement: 'below',
+  },
+)
 const root = ref<HTMLElement>()
 const panel = ref<HTMLElement>()
 
@@ -24,23 +27,19 @@ watch(open, async (value) => {
 function onKeydown(event: KeyboardEvent) {
   if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return
   event.preventDefault()
-  const items = [...(panel.value?.querySelectorAll<HTMLElement>('button:not([disabled])') ?? [])]
+  const items = [
+    ...(panel.value?.querySelectorAll<HTMLElement>('button:not([disabled])') ?? []),
+  ]
   const i = items.indexOf(document.activeElement as HTMLElement)
-  const next = items[(i + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length]
+  const next =
+    items[(i + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length]
   next?.focus()
 }
 </script>
 
 <template>
-  <div
-    ref="root"
-    class="relative"
-  >
-    <slot
-      name="trigger"
-      :toggle="() => (open = !open)"
-      :open="open"
-    />
+  <div ref="root" class="relative">
+    <slot name="trigger" :toggle="() => (open = !open)" :open="open" />
     <div
       v-if="open"
       ref="panel"

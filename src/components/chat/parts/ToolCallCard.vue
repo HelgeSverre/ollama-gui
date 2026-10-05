@@ -24,30 +24,23 @@ const stateClass = {
       :aria-expanded="open"
       @click="open = !open"
     >
-      <IconTool
-        :size="14"
-        class="text-text-muted"
-      />
+      <IconTool :size="14" class="text-text-muted" />
       <span class="font-mono">{{ part.name }}</span>
-      <span
-        class="ml-auto text-[11px]"
-        :class="stateClass[part.state]"
-      >{{ part.state }}</span>
+      <span class="ml-auto text-[11px]" :class="stateClass[part.state]">
+        {{ part.state }}
+      </span>
       <IconChevronRight
         :size="13"
         class="text-text-muted transition-transform"
         :class="{ 'rotate-90': open }"
       />
     </button>
-    <div
-      v-if="open"
-      class="border-border space-y-2 border-t px-3 py-2"
-    >
+    <div v-if="open" class="border-border space-y-2 border-t px-3 py-2">
       <pre class="font-mono text-[11.5px] whitespace-pre-wrap">{{ args }}</pre>
       <pre
         v-if="result"
-        class="border-border font-mono text-[11.5px] whitespace-pre-wrap border-t pt-2"
-      >{{ result }}</pre>
+        class="border-border border-t pt-2 font-mono text-[11.5px] whitespace-pre-wrap"
+        >{{ result }}</pre>
     </div>
   </div>
 </template>

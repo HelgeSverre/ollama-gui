@@ -54,7 +54,12 @@ function nextTimestamp() {
   return new Date(lastTimestamp)
 }
 
-function newNode(chat: Chat, parentId: string | null, role: MessageNode['role'], parts: Part[]): MessageNode {
+function newNode(
+  chat: Chat,
+  parentId: string | null,
+  role: MessageNode['role'],
+  parts: Part[],
+): MessageNode {
   return {
     id: crypto.randomUUID(),
     chatId: chat.id,
@@ -118,8 +123,18 @@ async function edit(chatId: string, nodeId: string, text: string): Promise<boole
   const controller = claim(chatId)
   if (!controller) return false
   try {
-    const parts: Part[] = [...node.parts.filter((p) => p.type === 'file'), { type: 'text', text }]
-    const edited = await chats.addNode(newNode(chat, node.parentId, 'user', parts.map((p) => ({ ...p }))))
+    const parts: Part[] = [
+      ...node.parts.filter((p) => p.type === 'file'),
+      { type: 'text', text },
+    ]
+    const edited = await chats.addNode(
+      newNode(
+        chat,
+        node.parentId,
+        'user',
+        parts.map((p) => ({ ...p })),
+      ),
+    )
     await generate(chat, edited.id, controller)
   } finally {
     running.delete(chatId)
@@ -128,7 +143,11 @@ async function edit(chatId: string, nodeId: string, text: string): Promise<boole
 }
 
 /** Streams a reply below `parentId`. The caller owns the running slot and its controller. */
-async function generate(chat: Chat, parentId: string | null, controller: AbortController) {
+async function generate(
+  chat: Chat,
+  parentId: string | null,
+  controller: AbortController,
+) {
   const model = chat.model || chats.activeModel.value
   const history = activePath(chats.chatIndex(chat.id), parentId)
   const draft = newNode(chat, parentId, 'assistant', [])
@@ -145,9 +164,18 @@ async function generate(chat: Chat, parentId: string | null, controller: AbortCo
   try {
     const info = await models.loadInfo(model)
     controller.signal.throwIfAborted()
-    const settings = resolveSettings(presets.globalPreset(), presets.modelPreset(model), chat.settings)
+    const settings = resolveSettings(
+      presets.globalPreset(),
+      presets.modelPreset(model),
+      chat.settings,
+    )
     const stream = startChat(
-      { model, history, settings, supportsThinking: info?.capabilities.includes('thinking') ?? false },
+      {
+        model,
+        history,
+        settings,
+        supportsThinking: info?.capabilities.includes('thinking') ?? false,
+      },
       controller.signal,
     )
     for await (const event of stream.events) {
@@ -176,7 +204,10 @@ async function generate(chat: Chat, parentId: string | null, controller: AbortCo
 }
 
 function isAbort(error: unknown) {
-  return error instanceof DOMException && (error.name === 'AbortError' || error.name === 'TimeoutError')
+  return (
+    error instanceof DOMException &&
+    (error.name === 'AbortError' || error.name === 'TimeoutError')
+  )
 }
 
 function draftTitle(parts: Part[]) {
@@ -197,7 +228,12 @@ async function generateTitle(chat: Chat, user: MessageNode, reply: MessageNode) 
     history: [
       {
         ...user,
-        parts: [{ type: 'text', text: `${TITLE_PROMPT}\n\nUser: ${excerpt(user)}\n\nAssistant: ${excerpt(reply)}` }],
+        parts: [
+          {
+            type: 'text',
+            text: `${TITLE_PROMPT}\n\nUser: ${excerpt(user)}\n\nAssistant: ${excerpt(reply)}`,
+          },
+        ],
       },
     ],
     settings: { think: false },
@@ -219,14 +255,16 @@ async function generateTitle(chat: Chat, user: MessageNode, reply: MessageNode) 
 }
 
 export function cleanTitle(raw: string) {
-  return raw
-    .replace(/<think>[\s\S]*?<\/think>/g, '')
-    .split('\n')
-    .map((l) => l.trim())
-    .find(Boolean)
-    ?.replace(/^["'*#\s]+|["'*.\s]+$/g, '')
-    .replace(/^title:\s*/i, '')
-    .slice(0, 60) ?? ''
+  return (
+    raw
+      .replace(/<think>[\s\S]*?<\/think>/g, '')
+      .split('\n')
+      .map((l) => l.trim())
+      .find(Boolean)
+      ?.replace(/^["'*#\s]+|["'*.\s]+$/g, '')
+      .replace(/^title:\s*/i, '')
+      .slice(0, 60) ?? ''
+  )
 }
 
 export function useGeneration() {

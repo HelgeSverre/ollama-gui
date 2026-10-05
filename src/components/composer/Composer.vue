@@ -37,7 +37,9 @@ const composing = ref(false)
 
 const chatId = computed(() => chats.activeChat.value?.id)
 const busy = computed(() => generation.isGenerating(chatId.value))
-const canSend = computed(() => !!(input.value.trim() || files.value.length) && !!chats.activeModel.value)
+const canSend = computed(
+  () => !!(input.value.trim() || files.value.length) && !!chats.activeModel.value,
+)
 
 const info = computed(() => models.info.get(chats.activeModel.value))
 watch(
@@ -65,7 +67,9 @@ const thinkLabel = computed(() => {
 })
 const thinkActive = computed(() => settings.value.think !== false)
 async function setThink(value: ThinkLevel) {
-  const current = chats.activeChat.value ? chats.activeChat.value.settings : chats.draftSettings.value
+  const current = chats.activeChat.value
+    ? chats.activeChat.value.settings
+    : chats.draftSettings.value
   await chats.setActiveSettings({ ...(current ?? {}), think: value })
 }
 function onThinkClick() {
@@ -75,7 +79,9 @@ function onThinkClick() {
 
 // Context usage of the latest reply against num_ctx
 const contextUsage = computed(() => {
-  const last = [...chats.activeThread.value].reverse().find((n) => n.role === 'assistant' && n.meta?.promptTokens)
+  const last = [...chats.activeThread.value]
+    .reverse()
+    .find((n) => n.role === 'assistant' && n.meta?.promptTokens)
   if (!last?.meta) return null
   const used = (last.meta.promptTokens ?? 0) + (last.meta.evalTokens ?? 0)
   const limit = settings.value.options?.num_ctx
@@ -126,14 +132,21 @@ async function submit() {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Enter' && !event.shiftKey && !composing.value && !event.isComposing) {
+  if (
+    event.key === 'Enter' &&
+    !event.shiftKey &&
+    !composing.value &&
+    !event.isComposing
+  ) {
     event.preventDefault()
     void submit()
   } else if (event.key === 'Escape' && busy.value) {
     event.preventDefault()
     generation.stop(chatId.value)
   } else if (event.key === 'ArrowUp' && !input.value && !files.value.length) {
-    const lastUser = [...chats.activeThread.value].reverse().find((n) => n.role === 'user')
+    const lastUser = [...chats.activeThread.value]
+      .reverse()
+      .find((n) => n.role === 'user')
     if (lastUser && !busy.value) {
       event.preventDefault()
       editingNodeId.value = lastUser.id
@@ -164,10 +177,7 @@ defineExpose({ focus })
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
     >
-      <div
-        v-if="files.length"
-        class="flex flex-wrap gap-2 px-3 pt-3"
-      >
+      <div v-if="files.length" class="flex flex-wrap gap-2 px-3 pt-3">
         <div
           v-for="(file, i) in files"
           :key="i"
@@ -179,15 +189,9 @@ defineExpose({ focus })
             :src="`data:${file.mediaType};base64,${file.data}`"
             :alt="file.name"
             class="h-14 w-14 rounded-lg object-cover"
-          >
-          <span
-            v-else
-            class="flex items-center gap-1.5 px-2.5 py-2"
-          >
-            <IconFileText
-              :size="15"
-              class="text-text-muted"
-            />
+          />
+          <span v-else class="flex items-center gap-1.5 px-2.5 py-2">
+            <IconFileText :size="15" class="text-text-muted" />
             <span class="max-w-[160px] truncate">{{ file.name }}</span>
           </span>
           <button
@@ -206,7 +210,11 @@ defineExpose({ focus })
         v-model="input"
         rows="1"
         class="text-text placeholder:text-text-muted block max-h-[40vh] min-h-[52px] w-full resize-none bg-transparent px-4 pt-3.5 pb-1 text-[14px] leading-relaxed outline-none"
-        :placeholder="chats.activeModel.value ? `Message ${chats.activeModel.value}` : 'Select a model to start'"
+        :placeholder="
+          chats.activeModel.value
+            ? `Message ${chats.activeModel.value}`
+            : 'Select a model to start'
+        "
         aria-label="Message"
         data-testid="chat-textarea"
         @keydown="onKeydown"
@@ -224,7 +232,7 @@ defineExpose({ focus })
           class="hidden"
           data-testid="file-input"
           @change="onFilePicked"
-        >
+        />
         <button
           type="button"
           class="hover:bg-hover text-text-secondary rounded-md p-1.5"
@@ -247,7 +255,11 @@ defineExpose({ focus })
             <button
               type="button"
               class="flex items-center gap-1 rounded-md px-2 py-1 text-[12.5px]"
-              :class="thinkActive ? 'text-accent bg-accent/10' : 'text-text-secondary hover:bg-hover'"
+              :class="
+                thinkActive
+                  ? 'text-accent bg-accent/10'
+                  : 'text-text-secondary hover:bg-hover'
+              "
               :aria-pressed="thinkActive"
               data-testid="think-toggle"
               @click="onThinkClick"
@@ -263,15 +275,17 @@ defineExpose({ focus })
           >
             {{ level[0].toUpperCase() + level.slice(1) }} effort
           </MenuItem>
-          <MenuItem @click="setThink(false)">
-            Off
-          </MenuItem>
+          <MenuItem @click="setThink(false)">Off</MenuItem>
         </Menu>
 
         <span
           v-if="contextUsage"
           class="text-text-muted ml-auto flex items-center gap-1.5 text-[11px] tabular-nums"
-          :title="contextUsage.limit ? 'Context used by the last reply' : 'Tokens in context after the last reply. Set num_ctx in chat settings to see the limit (Ollama defaults to 4096 unless configured).'"
+          :title="
+            contextUsage.limit
+              ? 'Context used by the last reply'
+              : 'Tokens in context after the last reply. Set num_ctx in chat settings to see the limit (Ollama defaults to 4096 unless configured).'
+          "
           data-testid="context-meter"
         >
           <span
@@ -280,11 +294,18 @@ defineExpose({ focus })
           >
             <span
               class="block h-full rounded-full"
-              :class="contextUsage.ratio > 0.9 ? 'bg-red' : contextUsage.ratio > 0.7 ? 'bg-orange' : 'bg-accent'"
+              :class="
+                contextUsage.ratio > 0.9
+                  ? 'bg-red'
+                  : contextUsage.ratio > 0.7
+                    ? 'bg-orange'
+                    : 'bg-accent'
+              "
               :style="{ width: `${contextUsage.ratio * 100}%` }"
             />
           </span>
-          {{ nf.format(contextUsage.used) }}{{ contextUsage.limit ? ` / ${nf.format(contextUsage.limit)}` : ' tokens' }}
+          {{ nf.format(contextUsage.used)
+          }}{{ contextUsage.limit ? ` / ${nf.format(contextUsage.limit)}` : ' tokens' }}
         </span>
 
         <button

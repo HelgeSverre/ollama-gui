@@ -1,5 +1,10 @@
 import { db } from '../db/schema'
-import { convertLegacyChat, toDate, type LegacyChat, type LegacyMessage } from '../domain/legacy'
+import {
+  convertLegacyChat,
+  toDate,
+  type LegacyChat,
+  type LegacyMessage,
+} from '../domain/legacy'
 import { textOf } from '../domain/parts'
 import { activePath, indexNodes } from '../domain/thread'
 import type { Chat, MessageNode, Part } from '../domain/types'
@@ -40,7 +45,9 @@ export async function importData(data: unknown): Promise<number> {
   if (Array.isArray(data)) {
     for (const legacy of data as (LegacyChat & { messages?: LegacyMessage[] })[]) {
       if (!legacy || typeof legacy !== 'object') continue
-      converted.push(convertLegacyChat(legacy, Array.isArray(legacy.messages) ? legacy.messages : []))
+      converted.push(
+        convertLegacyChat(legacy, Array.isArray(legacy.messages) ? legacy.messages : []),
+      )
     }
   } else if (isExportFile(data)) {
     for (const entry of data.chats) {
@@ -60,16 +67,27 @@ export async function importData(data: unknown): Promise<number> {
 }
 
 function isExportFile(data: unknown): data is ExportFile {
-  return !!data && typeof data === 'object' && (data as ExportFile).format === FORMAT && Array.isArray((data as ExportFile).chats)
+  return (
+    !!data &&
+    typeof data === 'object' &&
+    (data as ExportFile).format === FORMAT &&
+    Array.isArray((data as ExportFile).chats)
+  )
 }
 
 /** Fresh ids so importing the same file twice never collides. */
-function reId(entry: Chat & { nodes?: MessageNode[] }): { chat: Chat; nodes: MessageNode[] } {
+function reId(entry: Chat & { nodes?: MessageNode[] }): {
+  chat: Chat
+  nodes: MessageNode[]
+} {
   const chatId = crypto.randomUUID()
   const ids = new Map<string, string>()
   const source = (Array.isArray(entry.nodes) ? entry.nodes : []).filter(
     (node): node is MessageNode =>
-      !!node && typeof node === 'object' && typeof node.id === 'string' && ROLES.includes(node.role),
+      !!node &&
+      typeof node === 'object' &&
+      typeof node.id === 'string' &&
+      ROLES.includes(node.role),
   )
   for (const node of source) ids.set(node.id, crypto.randomUUID())
   const nodes = source.map((node): MessageNode => ({
@@ -77,9 +95,14 @@ function reId(entry: Chat & { nodes?: MessageNode[] }): { chat: Chat; nodes: Mes
     chatId,
     parentId: node.parentId ? (ids.get(node.parentId) ?? null) : null,
     role: node.role,
-    parts: (Array.isArray(node.parts) ? node.parts : []).map(normalizePart).filter((p): p is Part => !!p),
+    parts: (Array.isArray(node.parts) ? node.parts : [])
+      .map(normalizePart)
+      .filter((p): p is Part => !!p),
     // A reply that was streaming when exported is incomplete
-    status: STATUSES.includes(node.status) && node.status !== 'streaming' ? node.status : 'aborted',
+    status:
+      STATUSES.includes(node.status) && node.status !== 'streaming'
+        ? node.status
+        : 'aborted',
     meta: node.meta && typeof node.meta === 'object' ? node.meta : undefined,
     createdAt: toDate(node.createdAt),
   }))
@@ -109,13 +132,28 @@ function normalizePart(raw: unknown): Part | null {
     case 'text':
       return { type: 'text', text: str(p.text) }
     case 'reasoning':
-      return { type: 'reasoning', text: str(p.text), durationMs: typeof p.durationMs === 'number' ? p.durationMs : 0 }
+      return {
+        type: 'reasoning',
+        text: str(p.text),
+        durationMs: typeof p.durationMs === 'number' ? p.durationMs : 0,
+      }
     case 'file':
       return typeof p.data === 'string'
-        ? { type: 'file', mediaType: str(p.mediaType) || 'application/octet-stream', name: str(p.name) || 'file', data: p.data }
+        ? {
+            type: 'file',
+            mediaType: str(p.mediaType) || 'application/octet-stream',
+            name: str(p.name) || 'file',
+            data: p.data,
+          }
         : null
     case 'tool-call':
-      return { type: 'tool-call', name: str(p.name), args: p.args, result: p.result, state: p.state === 'error' ? 'error' : 'done' }
+      return {
+        type: 'tool-call',
+        name: str(p.name),
+        args: p.args,
+        result: p.result,
+        state: p.state === 'error' ? 'error' : 'done',
+      }
     case 'error':
       return { type: 'error', message: str(p.message) }
     default:
@@ -130,10 +168,21 @@ export async function chatToMarkdown(chatId: string): Promise<string> {
   if (!chat) return ''
   const nodes = await chats.ensureNodes(chatId)
   const path = activePath(indexNodes(nodes.values()), chat.activeLeafId)
-  const lines = [`# ${chat.title}`, '', `Model: \`${chat.model}\` · ${chat.createdAt.toISOString().slice(0, 10)}`, '']
-  if (chat.settings?.systemPrompt) lines.push('**System**', '', chat.settings.systemPrompt, '')
+  const lines = [
+    `# ${chat.title}`,
+    '',
+    `Model: \`${chat.model}\` · ${chat.createdAt.toISOString().slice(0, 10)}`,
+    '',
+  ]
+  if (chat.settings?.systemPrompt)
+    lines.push('**System**', '', chat.settings.systemPrompt, '')
   for (const node of path) {
-    const label = node.role === 'user' ? 'You' : node.role === 'assistant' ? (node.meta?.model ?? 'Assistant') : 'System'
+    const label =
+      node.role === 'user'
+        ? 'You'
+        : node.role === 'assistant'
+          ? (node.meta?.model ?? 'Assistant')
+          : 'System'
     lines.push('---', '', `**${label}**`, '', textOf(node.parts).trim(), '')
   }
   return lines.join('\n')
@@ -149,5 +198,11 @@ export function downloadFile(name: string, content: string, type: string) {
 }
 
 export function safeFileName(title: string) {
-  return title.replace(/[^\p{L}\p{N}\- ]+/gu, '').trim().replace(/\s+/g, '-').slice(0, 60) || 'chat'
+  return (
+    title
+      .replace(/[^\p{L}\p{N}\- ]+/gu, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .slice(0, 60) || 'chat'
+  )
 }

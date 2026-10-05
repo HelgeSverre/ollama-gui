@@ -22,7 +22,9 @@ export function resolveSettings(
 }
 
 /** Drops empty fields so a layer stores only real overrides. */
-export function compactSettings(settings: GenerationSettings): GenerationSettings | undefined {
+export function compactSettings(
+  settings: GenerationSettings,
+): GenerationSettings | undefined {
   const out = resolveSettings(settings)
   return Object.keys(out).length ? out : undefined
 }

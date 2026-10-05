@@ -53,7 +53,8 @@ const groups = computed(() => {
   for (const chat of live.filter((c) => !c.pinned)) {
     const key = dateGroup(chat.updatedAt)
     let group = out.find((g) => g.key === key)
-    if (!group) out.push((group = { key, label: dateGroupLabel(key, locale.value), chats: [] }))
+    if (!group)
+      out.push((group = { key, label: dateGroupLabel(key, locale.value), chats: [] }))
     group.chats.push(chat)
   }
   return out
@@ -81,11 +82,16 @@ async function startRename(chat: Chat) {
 async function commitRename(chat: Chat) {
   if (renaming.value !== chat.id) return
   renaming.value = null
-  if (renameValue.value.trim() && renameValue.value.trim() !== chat.title) await chats.renameChat(chat.id, renameValue.value)
+  if (renameValue.value.trim() && renameValue.value.trim() !== chat.title)
+    await chats.renameChat(chat.id, renameValue.value)
 }
 
 async function exportMarkdown(chat: Chat) {
-  downloadFile(`${safeFileName(chat.title)}.md`, await chatToMarkdown(chat.id), 'text/markdown')
+  downloadFile(
+    `${safeFileName(chat.title)}.md`,
+    await chatToMarkdown(chat.id),
+    'text/markdown',
+  )
 }
 
 async function remove(chat: Chat) {
@@ -149,22 +155,15 @@ async function remove(chat: Chat) {
         placeholder="Filter chats"
         class="border-border bg-panel text-text placeholder:text-text-muted focus:border-accent w-full rounded-md border px-2.5 py-1.5 text-[12.5px] outline-none"
         data-testid="search-chats"
-      >
+      />
     </div>
 
     <nav class="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-      <section
-        v-for="group in groups"
-        :key="group.key"
-        class="mb-3"
-      >
+      <section v-for="group in groups" :key="group.key" class="mb-3">
         <h3 class="text-text-muted px-2 pt-1 pb-1 text-[11px] font-semibold">
           {{ group.label }}
         </h3>
-        <template
-          v-for="chat in group.chats"
-          :key="chat.id"
-        >
+        <template v-for="chat in group.chats" :key="chat.id">
           <div
             class="group relative flex items-center rounded-md"
             :class="chats.activeChatId.value === chat.id ? 'bg-sel' : 'hover:bg-hover'"
@@ -179,7 +178,7 @@ async function remove(chat: Chat) {
               @keydown.enter="commitRename(chat)"
               @keydown.esc="renaming = null"
               @blur="commitRename(chat)"
-            >
+            />
             <button
               v-else
               type="button"
@@ -195,10 +194,7 @@ async function remove(chat: Chat) {
               />
               {{ chat.title }}
             </button>
-            <Menu
-              v-if="renaming !== chat.id"
-              class="flex-none"
-            >
+            <Menu v-if="renaming !== chat.id" class="flex-none">
               <template #trigger="{ toggle, open: menuOpen }">
                 <button
                   type="button"
@@ -210,28 +206,17 @@ async function remove(chat: Chat) {
                   <IconDots :size="15" />
                 </button>
               </template>
-              <MenuItem
-                :icon="IconPencil"
-                @click="startRename(chat)"
-              >
-                Rename
-              </MenuItem>
+              <MenuItem :icon="IconPencil" @click="startRename(chat)">Rename</MenuItem>
               <MenuItem
                 :icon="chat.pinned ? IconPinnedOff : IconPinned"
                 @click="chats.togglePin(chat.id)"
               >
                 {{ chat.pinned ? 'Unpin' : 'Pin' }}
               </MenuItem>
-              <MenuItem
-                :icon="IconArchive"
-                @click="chats.toggleArchive(chat.id)"
-              >
+              <MenuItem :icon="IconArchive" @click="chats.toggleArchive(chat.id)">
                 Archive
               </MenuItem>
-              <MenuItem
-                :icon="IconFileDownload"
-                @click="exportMarkdown(chat)"
-              >
+              <MenuItem :icon="IconFileDownload" @click="exportMarkdown(chat)">
                 Export as Markdown
               </MenuItem>
               <div class="border-border my-1 border-t" />
@@ -248,10 +233,7 @@ async function remove(chat: Chat) {
         </template>
       </section>
 
-      <p
-        v-if="!groups.length"
-        class="text-text-muted px-2 py-3 text-[12px]"
-      >
+      <p v-if="!groups.length" class="text-text-muted px-2 py-3 text-[12px]">
         {{ filter ? 'No chats match.' : 'No chats yet.' }}
       </p>
 
@@ -302,12 +284,11 @@ async function remove(chat: Chat) {
         data-testid="models-btn"
         @click="openModal('models')"
       >
-        <IconBox
-          :size="16"
-          class="text-text-muted"
-        />
+        <IconBox :size="16" class="text-text-muted" />
         Models
-        <span class="text-text-muted ml-auto text-[11px]">{{ models.models.value.length }}</span>
+        <span class="text-text-muted ml-auto text-[11px]">
+          {{ models.models.value.length }}
+        </span>
       </button>
       <button
         type="button"
@@ -315,10 +296,7 @@ async function remove(chat: Chat) {
         data-testid="settings-btn"
         @click="openModal('settings')"
       >
-        <IconSettings
-          :size="16"
-          class="text-text-muted"
-        />
+        <IconSettings :size="16" class="text-text-muted" />
         Settings
         <span
           class="ml-auto h-2 w-2 rounded-full"
@@ -327,7 +305,11 @@ async function remove(chat: Chat) {
             'bg-red': models.connection.value === 'error',
             'bg-text-muted': models.connection.value === 'unknown',
           }"
-          :title="models.connection.value === 'ok' ? `Connected to ${models.host()}` : (models.connectionError.value ?? 'Connecting…')"
+          :title="
+            models.connection.value === 'ok'
+              ? `Connected to ${models.host()}`
+              : (models.connectionError.value ?? 'Connecting…')
+          "
         />
       </button>
     </div>

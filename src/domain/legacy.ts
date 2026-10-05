@@ -30,12 +30,15 @@ export function convertLegacyChat(
   const chatId = crypto.randomUUID()
   const model = String(old.model ?? '')
   const sorted = [...messages].sort(
-    (a, b) => toDate(a.createdAt).getTime() - toDate(b.createdAt).getTime() || (a.id ?? 0) - (b.id ?? 0),
+    (a, b) =>
+      toDate(a.createdAt).getTime() - toDate(b.createdAt).getTime() ||
+      (a.id ?? 0) - (b.id ?? 0),
   )
   const createdAt = toDate(old.createdAt ?? sorted[0]?.createdAt)
 
   const leadingSystem: string[] = []
-  while (sorted[0]?.role === 'system') leadingSystem.push(String(sorted.shift()!.content ?? ''))
+  while (sorted[0]?.role === 'system')
+    leadingSystem.push(String(sorted.shift()!.content ?? ''))
 
   const nodes: MessageNode[] = []
   let parentId: string | null = null
@@ -47,7 +50,10 @@ export function convertLegacyChat(
       chatId,
       parentId,
       role: m.role,
-      parts: m.role === 'system' ? [{ type: 'text', text: content }] : partsFromLegacyContent(content),
+      parts:
+        m.role === 'system'
+          ? [{ type: 'text', text: content }]
+          : partsFromLegacyContent(content),
       status: 'done',
       createdAt: toDate(m.createdAt),
     }

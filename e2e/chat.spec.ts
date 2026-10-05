@@ -2,7 +2,9 @@ import { expect, test } from '@playwright/test'
 import { freshPage, send } from './helpers'
 
 test.describe('Ollama GUI', () => {
-  test('sends a message, streams the reply and auto-titles the chat', async ({ page }) => {
+  test('sends a message, streams the reply and auto-titles the chat', async ({
+    page,
+  }) => {
     const mock = await freshPage(page)
     await send(page, 'Hi')
     await expect(page.getByTestId('ai-message')).toContainText('Hello there!')
@@ -39,30 +41,43 @@ test.describe('Ollama GUI', () => {
     await page.getByTestId('edit-textarea').fill('Better question')
     await page.getByTestId('edit-submit').click()
     await expect(page.getByTestId('ai-message')).toContainText('Edited answer')
-    await expect(page.getByTestId('user-message').getByTestId('branch-nav')).toContainText('2/2')
-    expect(mock.chatRequests.at(-1).messages).toEqual([{ role: 'user', content: 'Better question' }])
+    await expect(
+      page.getByTestId('user-message').getByTestId('branch-nav'),
+    ).toContainText('2/2')
+    expect(mock.chatRequests.at(-1).messages).toEqual([
+      { role: 'user', content: 'Better question' },
+    ])
   })
 
   test('sends images to vision models as images[]', async ({ page }) => {
     const mock = await freshPage(page)
     await page.getByTestId('model-select').click()
     await page.getByTestId('model-option-llava').click()
-    const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', 'base64')
-    await page.getByTestId('file-input').setInputFiles({ name: 'dot.png', mimeType: 'image/png', buffer: png })
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      'base64',
+    )
+    await page
+      .getByTestId('file-input')
+      .setInputFiles({ name: 'dot.png', mimeType: 'image/png', buffer: png })
     await expect(page.getByTestId('attachment-chip')).toHaveCount(1)
     await send(page, 'What is this?')
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
     const message = mock.chatRequests[0].messages[0]
     expect(message.content).toBe('What is this?')
     expect(message.images).toEqual([png.toString('base64')])
-    await expect(page.getByTestId('user-message').getByRole('img', { name: 'dot.png' })).toBeVisible()
+    await expect(
+      page.getByTestId('user-message').getByRole('img', { name: 'dot.png' }),
+    ).toBeVisible()
   })
 
   test('rejects images for non-vision models', async ({ page }) => {
     await freshPage(page)
     await page.getByTestId('model-select').click()
     await page.getByTestId('model-option-llama3.2').click()
-    await page.getByTestId('file-input').setInputFiles({ name: 'a.png', mimeType: 'image/png', buffer: Buffer.from('x') })
+    await page
+      .getByTestId('file-input')
+      .setInputFiles({ name: 'a.png', mimeType: 'image/png', buffer: Buffer.from('x') })
     await expect(page.getByTestId('toast')).toContainText("can't read images")
     await expect(page.getByTestId('attachment-chip')).toHaveCount(0)
   })
@@ -78,7 +93,10 @@ test.describe('Ollama GUI', () => {
 
     await page.getByTestId('think-toggle').click()
     await send(page, 'Now without thinking')
-    await expect(page.getByTestId('ai-message').nth(1)).toHaveAttribute('data-status', 'done')
+    await expect(page.getByTestId('ai-message').nth(1)).toHaveAttribute(
+      'data-status',
+      'done',
+    )
     expect(mock.chatRequests[1].think).toBe(false)
   })
 
@@ -89,7 +107,10 @@ test.describe('Ollama GUI', () => {
     await page.getByTestId('save-chat-settings').click()
     await send(page, 'Hello')
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
-    expect(mock.chatRequests[0].messages[0]).toEqual({ role: 'system', content: 'Answer like a pirate' })
+    expect(mock.chatRequests[0].messages[0]).toEqual({
+      role: 'system',
+      content: 'Answer like a pirate',
+    })
   })
 
   test('deletes a chat after confirmation', async ({ page }) => {
@@ -138,18 +159,26 @@ test.describe('Ollama GUI', () => {
   test('shows a connection banner when Ollama is unreachable', async ({ page }) => {
     await page.route('**/api/**', (route) => route.abort())
     await page.goto('/')
-    await expect(page.getByTestId('connection-banner')).toContainText("Can't reach Ollama")
+    await expect(page.getByTestId('connection-banner')).toContainText(
+      "Can't reach Ollama",
+    )
   })
 })
 
 test.describe('chat management', () => {
   test('command palette opens Settings and Models', async ({ page }) => {
     await freshPage(page)
-    for (const [label, title] of [['Settings', 'Settings'], ['Manage models', 'Models']]) {
+    for (const [label, title] of [
+      ['Settings', 'Settings'],
+      ['Manage models', 'Models'],
+    ]) {
       await page.getByTestId('chat-textarea').press('ControlOrMeta+k')
       await page.getByRole('option', { name: label, exact: true }).click()
       await expect(page.getByRole('dialog', { name: title })).toBeVisible()
-      await page.getByRole('dialog', { name: title }).getByRole('button', { name: 'Close' }).click()
+      await page
+        .getByRole('dialog', { name: title })
+        .getByRole('button', { name: 'Close' })
+        .click()
       await expect(page.getByRole('dialog')).toHaveCount(0)
     }
   })
@@ -170,7 +199,10 @@ test.describe('chat management', () => {
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
     const openMenu = async () => {
       await page.getByTestId('chat-item').first().hover()
-      await page.getByRole('button', { name: /Actions for/ }).first().click()
+      await page
+        .getByRole('button', { name: /Actions for/ })
+        .first()
+        .click()
     }
     await openMenu()
     await page.getByRole('menuitem', { name: 'Pin' }).click()
@@ -196,11 +228,15 @@ test.describe('chat management', () => {
     await expect(page.getByTestId('chat-item')).toHaveCount(0)
     // Settings stays open behind the confirm dialog
     await page.getByTestId('import-input').setInputFiles(path)
-    await expect(page.getByTestId('toast').filter({ hasText: 'Imported 1 chat' })).toBeVisible()
+    await expect(
+      page.getByTestId('toast').filter({ hasText: 'Imported 1 chat' }),
+    ).toBeVisible()
     await expect(page.getByTestId('chat-item')).toHaveCount(1)
   })
 
-  test('a model-level system prompt applies to new chats with that model', async ({ page }) => {
+  test('a model-level system prompt applies to new chats with that model', async ({
+    page,
+  }) => {
     const mock = await freshPage(page)
     await page.getByTestId('chat-settings-btn').click()
     await page.getByRole('tab', { name: 'Model' }).click()
@@ -208,15 +244,24 @@ test.describe('chat management', () => {
     await page.getByTestId('save-chat-settings').click()
     await send(page, 'Who are you?')
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
-    expect(mock.chatRequests[0].messages[0]).toEqual({ role: 'system', content: 'You are a llama' })
+    expect(mock.chatRequests[0].messages[0]).toEqual({
+      role: 'system',
+      content: 'You are a llama',
+    })
   })
 
   test('inlines text file attachments into the message', async ({ page }) => {
     const mock = await freshPage(page)
-    await page.getByTestId('file-input').setInputFiles({ name: 'notes.txt', mimeType: 'text/plain', buffer: Buffer.from('remember the milk') })
+    await page.getByTestId('file-input').setInputFiles({
+      name: 'notes.txt',
+      mimeType: 'text/plain',
+      buffer: Buffer.from('remember the milk'),
+    })
     await send(page, 'Summarise')
     await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
-    expect(mock.chatRequests[0].messages[0].content).toBe('File: notes.txt\n```\nremember the milk\n```\n\nSummarise')
+    expect(mock.chatRequests[0].messages[0].content).toBe(
+      'File: notes.txt\n```\nremember the milk\n```\n\nSummarise',
+    )
   })
 
   test('keyboard: new chat shortcut and ArrowUp to edit', async ({ page }) => {

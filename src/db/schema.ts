@@ -37,7 +37,9 @@ interface LegacyConfig {
 
 export async function migrateV11(tx: Transaction) {
   const chats: (LegacyChat & { id: number })[] = await tx.table('chats').toArray()
-  const messages: (LegacyMessage & { chatId: number })[] = await tx.table('messages').toArray()
+  const messages: (LegacyMessage & { chatId: number })[] = await tx
+    .table('messages')
+    .toArray()
   const configs: LegacyConfig[] = await tx.table('config').toArray()
 
   const byChat = new Map<number, LegacyMessage[]>()

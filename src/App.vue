@@ -62,7 +62,13 @@ useEventListener(window, 'keydown', async (event: KeyboardEvent) => {
   // Esc stops the active chat's reply from anywhere, unless something else already handled it
   // (closing a dialog or menu, cancelling an inline edit)
   const menuOpen = !!document.querySelector('[role="menu"]')
-  if (event.key === 'Escape' && !event.defaultPrevented && !modal.value && !menuOpen && generation.isGenerating(chats.activeChat.value?.id)) {
+  if (
+    event.key === 'Escape' &&
+    !event.defaultPrevented &&
+    !modal.value &&
+    !menuOpen &&
+    generation.isGenerating(chats.activeChat.value?.id)
+  ) {
     generation.stop(chats.activeChat.value?.id)
     return
   }
@@ -76,10 +82,20 @@ useEventListener(window, 'keydown', async (event: KeyboardEvent) => {
     event.preventDefault()
     modal.value = null
     chats.newChat()
-  } else if (key === 'backspace' && event.shiftKey && chats.activeChat.value && !modal.value) {
+  } else if (
+    key === 'backspace' &&
+    event.shiftKey &&
+    chats.activeChat.value &&
+    !modal.value
+  ) {
     event.preventDefault()
     const chat = chats.activeChat.value
-    const ok = await confirmAction({ title: 'Delete chat?', message: `"${chat.title}" will be deleted.`, confirmLabel: 'Delete', danger: true })
+    const ok = await confirmAction({
+      title: 'Delete chat?',
+      message: `"${chat.title}" will be deleted.`,
+      confirmLabel: 'Delete',
+      danger: true,
+    })
     if (ok) await chats.deleteChat(chat.id)
   }
 })

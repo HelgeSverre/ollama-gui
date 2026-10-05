@@ -21,15 +21,18 @@ export interface ChatStream {
 export function buildChatRequest(input: ChatInput): ChatRequest {
   const { settings } = input
   const messages: WireMessage[] = []
-  if (settings.systemPrompt?.trim()) messages.push({ role: 'system', content: settings.systemPrompt })
+  if (settings.systemPrompt?.trim())
+    messages.push({ role: 'system', content: settings.systemPrompt })
   for (const node of input.history) {
     const wire = toWireMessage(node)
     if (wire) messages.push(wire)
   }
   const request: ChatRequest = { model: input.model, messages, stream: true }
-  if (input.supportsThinking && settings.think !== undefined) request.think = settings.think
+  if (input.supportsThinking && settings.think !== undefined)
+    request.think = settings.think
   if (settings.keepAlive) request.keep_alive = settings.keepAlive
-  if (settings.options && Object.keys(settings.options).length) request.options = { ...settings.options }
+  if (settings.options && Object.keys(settings.options).length)
+    request.options = { ...settings.options }
   return request
 }
 
@@ -43,7 +46,12 @@ function toWireMessage(node: MessageNode): WireMessage | null {
       if (isImage(part)) images.push(part.data)
       else text.push(fileAsText(part))
     } else if (part.type === 'tool-call') {
-      toolCalls.push({ function: { name: part.name, arguments: (part.args ?? {}) as Record<string, unknown> } })
+      toolCalls.push({
+        function: {
+          name: part.name,
+          arguments: (part.args ?? {}) as Record<string, unknown>,
+        },
+      })
     }
   }
   const content = text.join('\n\n').trim()
@@ -75,7 +83,10 @@ export function startChat(input: ChatInput, signal?: AbortSignal): ChatStream {
 }
 
 /** Maps Ollama chat chunks to provider-neutral events. */
-export async function* chatEvents(request: ChatRequest, signal?: AbortSignal): AsyncGenerator<ChatEvent> {
+export async function* chatEvents(
+  request: ChatRequest,
+  signal?: AbortSignal,
+): AsyncGenerator<ChatEvent> {
   const splitter = new ThinkTagSplitter()
   let finished = false
   for await (const chunk of streamJson<ChatChunk>('chat', request, signal)) {
@@ -103,7 +114,10 @@ export async function* chatEvents(request: ChatRequest, signal?: AbortSignal): A
     }
   }
   // A dropped connection ends the body without a final `done` chunk
-  if (!finished) throw new OllamaError('The response ended unexpectedly. Ollama may have stopped or the connection dropped.')
+  if (!finished)
+    throw new OllamaError(
+      'The response ended unexpectedly. Ollama may have stopped or the connection dropped.',
+    )
 }
 
 const nsToMs = (ns?: number) => (ns === undefined ? undefined : ns / 1e6)

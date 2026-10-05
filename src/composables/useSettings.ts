@@ -41,8 +41,13 @@ watch(
       avatarUrl.value = null
       return
     }
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalized))
-    const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('')
+    const digest = await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(normalized),
+    )
+    const hex = [...new Uint8Array(digest)]
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
     avatarUrl.value = `https://gravatar.com/avatar/${hex}?s=96&d=mp`
   },
   { immediate: true },
@@ -54,9 +59,11 @@ watch(
  */
 function migrateLegacySettings() {
   try {
-    for (const key of ['settingsPanelOpen', 'systemPromptOpen', 'historyMessageLength']) localStorage.removeItem(key)
+    for (const key of ['settingsPanelOpen', 'systemPromptOpen', 'historyMessageLength'])
+      localStorage.removeItem(key)
     // v1 stored the placeholder "none" when no model was picked
-    if (localStorage.getItem('currentModel') === 'none') localStorage.removeItem('currentModel')
+    if (localStorage.getItem('currentModel') === 'none')
+      localStorage.removeItem('currentModel')
     // v1 had a dark-mode switch (default on); keep the user's choice instead of jumping to "system"
     const darkMode = localStorage.getItem('darkMode')
     if (darkMode !== null) {

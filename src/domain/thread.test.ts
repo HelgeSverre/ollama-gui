@@ -1,9 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import { activePath, indexNodes, newestLeaf, siblings, subtreeIds, switchSibling } from './thread'
+import {
+  activePath,
+  indexNodes,
+  newestLeaf,
+  siblings,
+  subtreeIds,
+  switchSibling,
+} from './thread'
 import type { MessageNode } from './types'
 
 let t = 0
-const node = (id: string, parentId: string | null, role: MessageNode['role'] = 'user'): MessageNode => ({
+const node = (
+  id: string,
+  parentId: string | null,
+  role: MessageNode['role'] = 'user',
+): MessageNode => ({
   id,
   chatId: 'c',
   parentId,

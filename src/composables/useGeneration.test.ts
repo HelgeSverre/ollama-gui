@@ -18,33 +18,51 @@ function streamFor(script: Script, signal?: AbortSignal) {
   const encoder = new TextEncoder()
   return new ReadableStream<Uint8Array>({
     async start(controller) {
-      signal?.addEventListener('abort', () => controller.error(new DOMException('aborted', 'AbortError')))
+      signal?.addEventListener('abort', () =>
+        controller.error(new DOMException('aborted', 'AbortError')),
+      )
       for (const text of script.chunks) {
-        controller.enqueue(encoder.encode(JSON.stringify({ model: 'm', message: { role: 'assistant', content: text }, done: false }) + '\n'))
+        controller.enqueue(
+          encoder.encode(
+            JSON.stringify({
+              model: 'm',
+              message: { role: 'assistant', content: text },
+              done: false,
+            }) + '\n',
+          ),
+        )
       }
       await script.hold
       if (signal?.aborted) return
       if (script.noDone) return controller.close()
-      controller.enqueue(encoder.encode(JSON.stringify({ model: 'm', done: true, eval_count: 2 }) + '\n'))
+      controller.enqueue(
+        encoder.encode(JSON.stringify({ model: 'm', done: true, eval_count: 2 }) + '\n'),
+      )
       controller.close()
     },
   })
 }
 
-vi.stubGlobal('fetch', vi.fn(async (url: string, init: RequestInit) => {
-  const path = new URL(url).pathname
-  if (path === '/api/show') {
-    await showHold
-    return new Response(JSON.stringify({ capabilities: ['completion'] }))
-  }
-  if (path === '/api/chat') {
-    const body = JSON.parse(String(init.body))
-    requests.push(body)
-    if (body.stream === false) return new Response(JSON.stringify({ message: { content: '"Greeting Chat".' } }))
-    return new Response(streamFor(scripts.shift() ?? { chunks: ['ok'] }, init.signal ?? undefined))
-  }
-  return new Response('{}')
-}))
+vi.stubGlobal(
+  'fetch',
+  vi.fn(async (url: string, init: RequestInit) => {
+    const path = new URL(url).pathname
+    if (path === '/api/show') {
+      await showHold
+      return new Response(JSON.stringify({ capabilities: ['completion'] }))
+    }
+    if (path === '/api/chat') {
+      const body = JSON.parse(String(init.body))
+      requests.push(body)
+      if (body.stream === false)
+        return new Response(JSON.stringify({ message: { content: '"Greeting Chat".' } }))
+      return new Response(
+        streamFor(scripts.shift() ?? { chunks: ['ok'] }, init.signal ?? undefined),
+      )
+    }
+    return new Response('{}')
+  }),
+)
 
 const chats = useChats()
 const gen = useGeneration()
@@ -125,13 +143,19 @@ describe('generation', () => {
     await gen.regenerate(chatId, first.id)
     const second = chats.activeThread.value[1]
     expect(textOf(second.parts)).toBe('two')
-    expect(siblings(chats.activeIndex.value, second)).toMatchObject({ index: 1, count: 2 })
+    expect(siblings(chats.activeIndex.value, second)).toMatchObject({
+      index: 1,
+      count: 2,
+    })
 
     await gen.edit(chatId, user.id, 'Q edited')
     const [editedUser, third] = chats.activeThread.value
     expect(textOf(editedUser.parts)).toBe('Q edited')
     expect(textOf(third.parts)).toBe('three')
-    expect(siblings(chats.activeIndex.value, editedUser)).toMatchObject({ index: 1, count: 2 })
+    expect(siblings(chats.activeIndex.value, editedUser)).toMatchObject({
+      index: 1,
+      count: 2,
+    })
     expect(requests.at(-1).messages).toEqual([{ role: 'user', content: 'Q edited' }])
   })
 
@@ -200,14 +224,20 @@ describe('generation edge cases', () => {
     await gen.send(text('hi'))
     const reply = chats.activeThread.value.at(-1)!
     expect(reply.status).toBe('error')
-    expect(reply.parts.at(-1)).toMatchObject({ type: 'error', message: expect.stringContaining('ended unexpectedly') })
+    expect(reply.parts.at(-1)).toMatchObject({
+      type: 'error',
+      message: expect.stringContaining('ended unexpectedly'),
+    })
     expect(textOf(reply.parts)).toBe('cut')
   })
 
   it('repairs replies left streaming by a reload', async () => {
     await gen.send(text('hi'))
     const reply = chats.activeThread.value.at(-1)!
-    await db.nodes.update(reply.id, { status: 'streaming', parts: [{ type: 'reasoning', text: 'x', startedAt: 1 }] } as Partial<MessageNode>)
+    await db.nodes.update(reply.id, {
+      status: 'streaming',
+      parts: [{ type: 'reasoning', text: 'x', startedAt: 1 }],
+    } as Partial<MessageNode>)
     await chats.init()
     const stored = await db.nodes.get(reply.id)
     expect(stored?.status).toBe('aborted')
@@ -238,6 +268,8 @@ describe('generation edge cases', () => {
 
 describe('cleanTitle', () => {
   it('strips quotes, think blocks and prefixes', () => {
-    expect(cleanTitle('<think>x</think>\n"Title: Paris Trip Plans."')).toBe('Paris Trip Plans')
+    expect(cleanTitle('<think>x</think>\n"Title: Paris Trip Plans."')).toBe(
+      'Paris Trip Plans',
+    )
   })
 })

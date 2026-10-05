@@ -80,10 +80,7 @@ watch(
       aria-label="Chat messages"
       @scroll.passive="onScroll"
     >
-      <div
-        ref="content"
-        class="mx-auto max-w-[46rem] px-4 pt-4 pb-8"
-      >
+      <div ref="content" class="mx-auto max-w-[46rem] px-4 pt-4 pb-8">
         <button
           v-if="systemPrompt && showSystem"
           type="button"
@@ -99,15 +96,14 @@ watch(
           v-if="!visible.length"
           class="flex flex-col items-center justify-center py-[18vh] text-center"
         >
-          <OllamaAvatar
-            :size="56"
-            class="mb-4"
-          />
-          <p class="text-text text-[20px] font-semibold">
-            How can I help?
-          </p>
+          <OllamaAvatar :size="56" class="mb-4" />
+          <p class="text-text text-[20px] font-semibold">How can I help?</p>
           <p class="text-text-muted mt-1 text-[13px]">
-            {{ chats.activeModel.value ? `Chatting with ${chats.activeModel.value}` : 'Pick a model below to start' }}
+            {{
+              chats.activeModel.value
+                ? `Chatting with ${chats.activeModel.value}`
+                : 'Pick a model below to start'
+            }}
           </p>
         </div>
 

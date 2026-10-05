@@ -4,7 +4,10 @@ import { db } from '../db/schema'
 import { useChats } from './useChats'
 import { chatToMarkdown, exportAll, importData } from './useTransfer'
 
-vi.stubGlobal('fetch', vi.fn(async () => new Response('{}')))
+vi.stubGlobal(
+  'fetch',
+  vi.fn(async () => new Response('{}')),
+)
 
 const chats = useChats()
 
@@ -25,8 +28,24 @@ const v2File = (overrides: Record<string, unknown> = {}) => ({
       updatedAt: '2026-01-02T00:00:00Z',
       activeLeafId: 'n2',
       nodes: [
-        { id: 'n1', chatId: 'c1', parentId: null, role: 'user', parts: [{ type: 'text', text: 'Hi' }], status: 'done', createdAt: '2026-01-01T00:00:00Z' },
-        { id: 'n2', chatId: 'c1', parentId: 'n1', role: 'assistant', parts: [{ type: 'text', text: 'Hello' }], status: 'streaming', createdAt: '2026-01-01T00:00:01Z' },
+        {
+          id: 'n1',
+          chatId: 'c1',
+          parentId: null,
+          role: 'user',
+          parts: [{ type: 'text', text: 'Hi' }],
+          status: 'done',
+          createdAt: '2026-01-01T00:00:00Z',
+        },
+        {
+          id: 'n2',
+          chatId: 'c1',
+          parentId: 'n1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'Hello' }],
+          status: 'streaming',
+          createdAt: '2026-01-01T00:00:01Z',
+        },
       ],
       ...overrides,
     },
@@ -63,14 +82,25 @@ describe('import', () => {
         messages: [
           { role: 'system', content: 'Be brief', createdAt: '2024-05-01T00:00:00Z' },
           { role: 'user', content: 'Q', createdAt: '2024-05-01T00:00:01Z' },
-          { role: 'assistant', content: '<think>hm</think>A', createdAt: '2024-05-01T00:00:02Z' },
+          {
+            role: 'assistant',
+            content: '<think>hm</think>A',
+            createdAt: '2024-05-01T00:00:02Z',
+          },
         ],
       },
     ])
     const [chat] = chats.chats.value
-    expect(chat).toMatchObject({ title: 'Old chat', model: 'mistral', settings: { systemPrompt: 'Be brief' } })
+    expect(chat).toMatchObject({
+      title: 'Old chat',
+      model: 'mistral',
+      settings: { systemPrompt: 'Be brief' },
+    })
     const nodes = await db.nodes.where('chatId').equals(chat.id).toArray()
-    expect(nodes.find((n) => n.role === 'assistant')?.parts.map((p) => p.type)).toEqual(['reasoning', 'text'])
+    expect(nodes.find((n) => n.role === 'assistant')?.parts.map((p) => p.type)).toEqual([
+      'reasoning',
+      'text',
+    ])
   })
 
   it('drops malformed nodes and parts instead of failing later in the UI', async () => {
@@ -78,7 +108,18 @@ describe('import', () => {
       nodes: [
         null,
         { id: 'bad-role', role: 'hacker', parts: [] },
-        { id: 'n1', parentId: null, role: 'user', parts: [null, { type: 'text', text: 42 }, { type: 'bogus' }, { type: 'file', name: 'x' }], status: 'weird' },
+        {
+          id: 'n1',
+          parentId: null,
+          role: 'user',
+          parts: [
+            null,
+            { type: 'text', text: 42 },
+            { type: 'bogus' },
+            { type: 'file', name: 'x' },
+          ],
+          status: 'weird',
+        },
       ],
       activeLeafId: 'n1',
     })
@@ -92,7 +133,9 @@ describe('import', () => {
 
   it('rejects files that are not exports', async () => {
     await expect(importData({ hello: 'world' })).rejects.toThrow('Unrecognised file')
-    await expect(importData({ format: 'ollama-gui', version: 2, chats: [] })).rejects.toThrow('no chats')
+    await expect(
+      importData({ format: 'ollama-gui', version: 2, chats: [] }),
+    ).rejects.toThrow('no chats')
   })
 })
 

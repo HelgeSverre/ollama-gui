@@ -7,10 +7,15 @@ const TEXT_EXTENSIONS =
   /\.(txt|md|markdown|csv|tsv|json|jsonl|ya?ml|toml|xml|html?|css|scss|js|jsx|ts|tsx|vue|svelte|py|rb|go|rs|java|kt|swift|c|h|cpp|hpp|cs|php|sh|bash|zsh|sql|ini|env|log|lua|r|dart|ex|exs|clj|hs|ml|scala|pl|graphql|proto|dockerfile|makefile)$/i
 
 export function isTextFile(file: File) {
-  return file.type.startsWith('text/') || /json|xml|yaml|javascript|typescript|sql/.test(file.type) || TEXT_EXTENSIONS.test(file.name)
+  return (
+    file.type.startsWith('text/') ||
+    /json|xml|yaml|javascript|typescript|sql/.test(file.type) ||
+    TEXT_EXTENSIONS.test(file.name)
+  )
 }
 
-export const ACCEPT = 'image/*,text/*,.md,.json,.jsonl,.yaml,.yml,.toml,.csv,.ts,.tsx,.js,.jsx,.vue,.py,.go,.rs,.java,.kt,.swift,.c,.h,.cpp,.cs,.php,.rb,.sh,.sql,.log'
+export const ACCEPT =
+  'image/*,text/*,.md,.json,.jsonl,.yaml,.yml,.toml,.csv,.ts,.tsx,.js,.jsx,.vue,.py,.go,.rs,.java,.kt,.swift,.c,.h,.cpp,.cs,.php,.rb,.sh,.sql,.log'
 
 /** Reads a File into a file part, or returns a reason it was rejected. */
 export async function readAttachment(file: File): Promise<FilePart | string> {

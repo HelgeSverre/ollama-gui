@@ -74,7 +74,13 @@ async function pull(model: string) {
   const name = model.trim()
   if (!name || pulls.has(name)) return
   const controller = new AbortController()
-  pulls.set(name, { model: name, status: 'starting', completed: 0, total: 0, abort: () => controller.abort() })
+  pulls.set(name, {
+    model: name,
+    status: 'starting',
+    completed: 0,
+    total: 0,
+    abort: () => controller.abort(),
+  })
   try {
     for await (const state of pullModel(name, controller.signal)) {
       Object.assign(pulls.get(name)!, state)

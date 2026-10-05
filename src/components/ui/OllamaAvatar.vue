@@ -14,6 +14,6 @@ withDefaults(defineProps<{ size?: number }>(), { size: 24 })
       alt=""
       class="w-auto"
       :style="{ height: `${Math.round(size * 0.62)}px` }"
-    >
+    />
   </span>
 </template>

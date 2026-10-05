@@ -20,8 +20,15 @@ describe('toModelInfo', () => {
   })
 
   it('offers effort levels only for gpt-oss thinking models', () => {
-    expect(toModelInfo('gpt-oss:20b', { capabilities: ['thinking'], details: { family: 'gptoss' } }).thinkLevels).toEqual(['low', 'medium', 'high'])
-    expect(toModelInfo('qwen3', { capabilities: ['thinking'] }).thinkLevels).toBeUndefined()
+    expect(
+      toModelInfo('gpt-oss:20b', {
+        capabilities: ['thinking'],
+        details: { family: 'gptoss' },
+      }).thinkLevels,
+    ).toEqual(['low', 'medium', 'high'])
+    expect(
+      toModelInfo('qwen3', { capabilities: ['thinking'] }).thinkLevels,
+    ).toBeUndefined()
   })
 
   it('tolerates a missing capabilities field (older Ollama)', () => {
@@ -38,10 +45,21 @@ describe('pullModel', () => {
       { status: 'pulling b', digest: 'b', total: 300, completed: 150 },
       { status: 'success' },
     ]
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(lines.map((l) => JSON.stringify(l)).join('\n') + '\n')))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () => new Response(lines.map((l) => JSON.stringify(l)).join('\n') + '\n'),
+      ),
+    )
     const states = []
     for await (const s of pullModel('x')) states.push(s)
-    expect(states.map((s) => [s.completed, s.total])).toEqual([[0, 0], [50, 100], [50, 400], [200, 400], [200, 400]])
+    expect(states.map((s) => [s.completed, s.total])).toEqual([
+      [0, 0],
+      [50, 100],
+      [50, 400],
+      [200, 400],
+      [200, 400],
+    ])
     expect(states.at(-1)?.status).toBe('success')
   })
 })

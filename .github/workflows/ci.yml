@@ -13,5 +13,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - run: bun run format:check
       - run: bun run test
       - run: bun run build

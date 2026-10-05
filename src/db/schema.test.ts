@@ -10,12 +10,25 @@ async function seedV11(name: string) {
     messages: '++id,chatId,role,content,meta,context,createdAt',
     config: '++id,model,systemPrompt,createdAt',
   })
-  const chatId = await old.table('chats').add({ name: 'Trip', model: 'llama3', createdAt: new Date(1000), pinned: true })
+  const chatId = await old
+    .table('chats')
+    .add({ name: 'Trip', model: 'llama3', createdAt: new Date(1000), pinned: true })
   const at = (s: number) => new Date(s * 1000)
   await old.table('messages').bulkAdd([
     { chatId, role: 'system', content: 'Be brief', createdAt: at(2) },
-    { chatId, role: 'user', content: 'Hi ![image](data:image/png;base64,QUJD)', createdAt: at(3) },
-    { chatId, role: 'assistant', content: '<think>greet</think>Hello', createdAt: at(4), meta: { total_duration: 2e9, eval_count: 5, prompt_eval_count: 9 } },
+    {
+      chatId,
+      role: 'user',
+      content: 'Hi ![image](data:image/png;base64,QUJD)',
+      createdAt: at(3),
+    },
+    {
+      chatId,
+      role: 'assistant',
+      content: '<think>greet</think>Hello',
+      createdAt: at(4),
+      meta: { total_duration: 2e9, eval_count: 5, prompt_eval_count: 9 },
+    },
   ])
   await old.table('config').bulkAdd([
     { id: 1, model: 'default', systemPrompt: 'Global', createdAt: new Date() },
@@ -31,10 +44,19 @@ describe('v11 → v13 migration', () => {
     const db = new ChatDatabase(name)
     await db.open()
 
-    expect(db.tables.map((t) => t.name).sort()).toEqual(['conversations', 'nodes', 'presets'])
+    expect(db.tables.map((t) => t.name).sort()).toEqual([
+      'conversations',
+      'nodes',
+      'presets',
+    ])
 
     const [chat] = await db.conversations.toArray()
-    expect(chat).toMatchObject({ title: 'Trip', model: 'llama3', pinned: true, settings: { systemPrompt: 'Be brief' } })
+    expect(chat).toMatchObject({
+      title: 'Trip',
+      model: 'llama3',
+      pinned: true,
+      settings: { systemPrompt: 'Be brief' },
+    })
     expect(chat.updatedAt).toEqual(new Date(4000))
 
     const nodes = await db.nodes.where('chatId').equals(chat.id).toArray()
@@ -50,8 +72,12 @@ describe('v11 → v13 migration', () => {
     expect(ai.parts.map((p) => p.type)).toEqual(['reasoning', 'text'])
     expect(ai.meta).toMatchObject({ totalMs: 2000, evalTokens: 5, promptTokens: 9 })
 
-    expect(await db.presets.get('')).toMatchObject({ settings: { systemPrompt: 'Global' } })
-    expect(await db.presets.get('llama3')).toMatchObject({ settings: { systemPrompt: 'Llama prompt' } })
+    expect(await db.presets.get('')).toMatchObject({
+      settings: { systemPrompt: 'Global' },
+    })
+    expect(await db.presets.get('llama3')).toMatchObject({
+      settings: { systemPrompt: 'Llama prompt' },
+    })
     db.close()
   })
 
@@ -63,10 +89,19 @@ describe('v11 → v13 migration', () => {
       messages: '++id,chatId,role,content,meta,context,createdAt',
       config: '++id,model,systemPrompt,createdAt',
     })
-    const chatId = await old.table('chats').add({ name: 'From main', model: 'mistral', createdAt: new Date(1000) })
+    const chatId = await old
+      .table('chats')
+      .add({ name: 'From main', model: 'mistral', createdAt: new Date(1000) })
     await old.table('messages').bulkAdd([
       { chatId, role: 'user', content: 'Hello', createdAt: new Date(2000) },
-      { chatId, role: 'assistant', content: 'Hi!', context: [1, 2, 3], meta: { eval_count: 4 }, createdAt: new Date(3000) },
+      {
+        chatId,
+        role: 'assistant',
+        content: 'Hi!',
+        context: [1, 2, 3],
+        meta: { eval_count: 4 },
+        createdAt: new Date(3000),
+      },
     ])
     old.close()
 
@@ -76,7 +111,9 @@ describe('v11 → v13 migration', () => {
     expect(chat).toMatchObject({ title: 'From main', model: 'mistral' })
     const nodes = await db.nodes.where('chatId').equals(chat.id).toArray()
     expect(nodes.map((n) => n.role).sort()).toEqual(['assistant', 'user'])
-    expect(nodes.find((n) => n.role === 'assistant')).toMatchObject({ meta: { evalTokens: 4 } })
+    expect(nodes.find((n) => n.role === 'assistant')).toMatchObject({
+      meta: { evalTokens: 4 },
+    })
     db.close()
   })
 

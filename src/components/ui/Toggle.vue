@@ -7,10 +7,9 @@ defineProps<{ label: string; description?: string }>()
   <label class="flex cursor-pointer items-center justify-between gap-4 py-1.5">
     <span class="min-w-0">
       <span class="text-text block text-[12.5px]">{{ label }}</span>
-      <span
-        v-if="description"
-        class="text-text-muted block text-[11.5px]"
-      >{{ description }}</span>
+      <span v-if="description" class="text-text-muted block text-[11.5px]">
+        {{ description }}
+      </span>
     </span>
     <button
       type="button"

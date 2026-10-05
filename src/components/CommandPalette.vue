@@ -52,8 +52,18 @@ watchDebounced(
 const actions: Omit<Item, 'section'>[] = [
   { id: 'new', label: 'New chat', icon: IconPlus, run: () => chats.newChat() },
   { id: 'models', label: 'Manage models', icon: IconBox, run: () => openModal('models') },
-  { id: 'settings', label: 'Settings', icon: IconSettings, run: () => openModal('settings') },
-  { id: 'chat-settings', label: 'Chat settings and system prompt', icon: IconAdjustmentsHorizontal, run: () => (chatSettingsOpen.value = true) },
+  {
+    id: 'settings',
+    label: 'Settings',
+    icon: IconSettings,
+    run: () => openModal('settings'),
+  },
+  {
+    id: 'chat-settings',
+    label: 'Chat settings and system prompt',
+    icon: IconAdjustmentsHorizontal,
+    run: () => (chatSettingsOpen.value = true),
+  },
   {
     id: 'theme',
     label: 'Toggle light / dark theme',
@@ -66,13 +76,24 @@ const items = computed<Item[]>(() => {
   const q = query.value.trim().toLowerCase()
   const out: Item[] = actions
     .filter((a) => !q || a.label.toLowerCase().includes(q))
-    .map((a) => ({ ...a, icon: a.id === 'theme' && isDark.value ? IconSun : a.icon, section: 'Actions' }))
+    .map((a) => ({
+      ...a,
+      icon: a.id === 'theme' && isDark.value ? IconSun : a.icon,
+      section: 'Actions',
+    }))
   const titled = chats.chats.value
     .filter((c) => !q || c.title.toLowerCase().includes(q))
     .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, q ? 20 : 8)
   for (const chat of titled) {
-    out.push({ id: `chat-${chat.id}`, label: chat.title, detail: chat.model, icon: IconMessage, section: 'Chats', run: () => chats.openChat(chat.id) })
+    out.push({
+      id: `chat-${chat.id}`,
+      label: chat.title,
+      detail: chat.model,
+      icon: IconMessage,
+      section: 'Chats',
+      run: () => chats.openChat(chat.id),
+    })
   }
   for (const hit of hits.value) {
     out.push({
@@ -99,7 +120,9 @@ async function move(delta: number) {
   if (!items.value.length) return
   selected.value = (selected.value + delta + items.value.length) % items.value.length
   await nextTick()
-  list.value?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' })
+  list.value
+    ?.querySelector('[aria-selected="true"]')
+    ?.scrollIntoView({ block: 'nearest' })
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -115,21 +138,15 @@ function onKeydown(event: KeyboardEvent) {
   }
 }
 
-const sectionStart = (i: number) => i === 0 || items.value[i - 1].section !== items.value[i].section
+const sectionStart = (i: number) =>
+  i === 0 || items.value[i - 1].section !== items.value[i].section
 </script>
 
 <template>
-  <Modal
-    :open="open"
-    width="580px"
-    @close="closeModal('palette')"
-  >
+  <Modal :open="open" width="580px" @close="closeModal('palette')">
     <div data-testid="command-palette">
       <div class="border-border flex items-center gap-2.5 border-b px-4 py-3">
-        <IconSearch
-          :size="17"
-          class="text-text-muted flex-none"
-        />
+        <IconSearch :size="17" class="text-text-muted flex-none" />
         <input
           ref="input"
           v-model="query"
@@ -140,7 +157,7 @@ const sectionStart = (i: number) => i === 0 || items.value[i - 1].section !== it
           aria-expanded="true"
           aria-controls="palette-list"
           @keydown="onKeydown"
-        >
+        />
       </div>
       <div
         id="palette-list"
@@ -154,10 +171,7 @@ const sectionStart = (i: number) => i === 0 || items.value[i - 1].section !== it
         >
           No results
         </p>
-        <template
-          v-for="(item, i) in items"
-          :key="item.id"
-        >
+        <template v-for="(item, i) in items" :key="item.id">
           <div
             v-if="sectionStart(i)"
             class="text-text-muted px-2.5 pt-2 pb-1 text-[11px] font-semibold"
@@ -172,22 +186,22 @@ const sectionStart = (i: number) => i === 0 || items.value[i - 1].section !== it
             @click="run(item)"
             @mousemove="selected = i"
           >
-            <component
-              :is="item.icon"
-              :size="16"
-              class="text-text-muted flex-none"
-            />
+            <component :is="item.icon" :size="16" class="text-text-muted flex-none" />
             <span class="min-w-0 flex-1">
               <span class="text-text block truncate text-[13px]">{{ item.label }}</span>
               <span
                 v-if="item.detail"
                 class="text-text-muted block truncate text-[11.5px]"
-              >{{ item.detail }}</span>
+              >
+                {{ item.detail }}
+              </span>
             </span>
           </div>
         </template>
       </div>
-      <div class="border-border text-text-muted flex gap-4 border-t px-4 py-2 text-[11px]">
+      <div
+        class="border-border text-text-muted flex gap-4 border-t px-4 py-2 text-[11px]"
+      >
         <span>↑↓ navigate</span>
         <span>↵ open</span>
         <span>esc close</span>

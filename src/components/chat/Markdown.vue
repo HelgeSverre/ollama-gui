@@ -37,10 +37,6 @@ async function onClick(event: MouseEvent) {
 <template>
   <!-- markdown-it runs with html: false, so model output can't inject markup (see markdown.test.ts) -->
   <!-- eslint-disable vue/no-v-html -->
-  <div
-    class="message-content"
-    @click="onClick"
-    v-html="html"
-  />
+  <div class="message-content" @click="onClick" v-html="html" />
   <!-- eslint-enable vue/no-v-html -->
 </template>

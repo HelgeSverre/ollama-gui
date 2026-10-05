@@ -35,13 +35,18 @@ async function commitRename() {
   if (!editing.value) return
   editing.value = false
   const chat = chats.activeChat.value
-  if (chat && title.value.trim() && title.value.trim() !== chat.title) await chats.renameChat(chat.id, title.value)
+  if (chat && title.value.trim() && title.value.trim() !== chat.title)
+    await chats.renameChat(chat.id, title.value)
 }
 
 async function exportMarkdown() {
   const chat = chats.activeChat.value
   if (!chat) return
-  downloadFile(`${safeFileName(chat.title)}.md`, await chatToMarkdown(chat.id), 'text/markdown')
+  downloadFile(
+    `${safeFileName(chat.title)}.md`,
+    await chatToMarkdown(chat.id),
+    'text/markdown',
+  )
 }
 
 async function remove() {
@@ -78,7 +83,7 @@ async function remove() {
         @keydown.enter="commitRename"
         @keydown.esc="editing = false"
         @blur="commitRename"
-      >
+      />
       <button
         v-else-if="chats.activeChat.value"
         type="button"
@@ -89,10 +94,9 @@ async function remove() {
       >
         {{ chats.activeChat.value.title }}
       </button>
-      <span
-        v-else
-        class="text-text-secondary px-2 text-[13.5px] font-semibold"
-      >New chat</span>
+      <span v-else class="text-text-secondary px-2 text-[13.5px] font-semibold">
+        New chat
+      </span>
     </div>
 
     <button
@@ -118,12 +122,7 @@ async function remove() {
           <IconDots :size="18" />
         </button>
       </template>
-      <MenuItem
-        :icon="IconPencil"
-        @click="startRename"
-      >
-        Rename
-      </MenuItem>
+      <MenuItem :icon="IconPencil" @click="startRename">Rename</MenuItem>
       <MenuItem
         :icon="chats.activeChat.value.pinned ? IconPinnedOff : IconPinned"
         @click="chats.togglePin(chats.activeChat.value.id)"
@@ -136,20 +135,11 @@ async function remove() {
       >
         {{ chats.activeChat.value.archived ? 'Unarchive' : 'Archive' }}
       </MenuItem>
-      <MenuItem
-        :icon="IconFileDownload"
-        @click="exportMarkdown"
-      >
+      <MenuItem :icon="IconFileDownload" @click="exportMarkdown">
         Export as Markdown
       </MenuItem>
       <div class="border-border my-1 border-t" />
-      <MenuItem
-        :icon="IconTrash"
-        danger
-        @click="remove"
-      >
-        Delete
-      </MenuItem>
+      <MenuItem :icon="IconTrash" danger @click="remove">Delete</MenuItem>
     </Menu>
   </header>
 </template>

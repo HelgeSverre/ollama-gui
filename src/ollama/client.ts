@@ -62,7 +62,10 @@ async function send(path: string, { method = 'GET', body, signal }: RequestOptio
   return response
 }
 
-export async function requestJson<T>(path: string, options: RequestOptions = {}): Promise<T> {
+export async function requestJson<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
   const response = await send(path, options)
   return (await response.json()) as T
 }

@@ -27,10 +27,7 @@ function toggle() {
 </script>
 
 <template>
-  <div
-    class="my-1.5"
-    data-testid="reasoning"
-  >
+  <div class="my-1.5" data-testid="reasoning">
     <button
       type="button"
       class="text-text-muted hover:text-text-secondary flex items-center gap-1.5 text-[12.5px]"

@@ -12,9 +12,6 @@ defineProps<{ icon: Component; label: string; disabled?: boolean }>()
     :aria-label="label"
     :disabled="disabled"
   >
-    <component
-      :is="icon"
-      :size="15"
-    />
+    <component :is="icon" :size="15" />
   </button>
 </template>

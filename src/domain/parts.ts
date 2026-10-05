@@ -8,11 +8,16 @@ export type ChatEvent =
   | { type: 'finish'; meta: MessageMeta }
 
 /** Applies a streaming event to a message's parts in place. Returns finish meta, if any. */
-export function applyEvent(parts: Part[], event: ChatEvent, now: number): MessageMeta | void {
+export function applyEvent(
+  parts: Part[],
+  event: ChatEvent,
+  now: number,
+): MessageMeta | void {
   const last = parts[parts.length - 1]
   switch (event.type) {
     case 'reasoning':
-      if (last?.type === 'reasoning' && last.durationMs === undefined) last.text += event.text
+      if (last?.type === 'reasoning' && last.durationMs === undefined)
+        last.text += event.text
       else parts.push({ type: 'reasoning', text: event.text, startedAt: now })
       return
     case 'text':
@@ -34,7 +39,8 @@ export function applyEvent(parts: Part[], event: ChatEvent, now: number): Messag
 export function closeReasoning(parts: Part[], now: number) {
   for (const part of parts) {
     if (part.type === 'reasoning' && part.durationMs === undefined) {
-      part.durationMs = part.startedAt === undefined ? 0 : Math.max(0, now - part.startedAt)
+      part.durationMs =
+        part.startedAt === undefined ? 0 : Math.max(0, now - part.startedAt)
       delete part.startedAt
     }
   }
@@ -129,7 +135,8 @@ export function partsFromLegacyContent(content: string): Part[] {
   const events = [...splitter.push(content), ...splitter.flush()]
   let text = ''
   for (const event of events) {
-    if (event.type === 'reasoning') parts.push({ type: 'reasoning', text: event.text, durationMs: 0 })
+    if (event.type === 'reasoning')
+      parts.push({ type: 'reasoning', text: event.text, durationMs: 0 })
     else if (event.type === 'text') text += event.text
   }
   let index = 0

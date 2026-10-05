@@ -15,11 +15,15 @@ function ndjsonResponse(lines: object[], split = 7) {
   // Deliberately split mid-line to exercise buffering
   const body = new ReadableStream<Uint8Array>({
     start(controller) {
-      for (let i = 0; i < text.length; i += split) controller.enqueue(encoder.encode(text.slice(i, i + split)))
+      for (let i = 0; i < text.length; i += split)
+        controller.enqueue(encoder.encode(text.slice(i, i + split)))
       controller.close()
     },
   })
-  return new Response(body, { status: 200, headers: { 'Content-Type': 'application/x-ndjson' } })
+  return new Response(body, {
+    status: 200,
+    headers: { 'Content-Type': 'application/x-ndjson' },
+  })
 }
 
 async function collect(events: AsyncGenerator<ChatEvent>) {
@@ -42,19 +46,31 @@ afterEach(() => vi.unstubAllGlobals())
 
 describe('resolveHost', () => {
   it('prefers the user setting and strips /api', () => {
-    expect(resolveHost('http://box:11434/api/', undefined, false, 'http://ui')).toBe('http://box:11434')
+    expect(resolveHost('http://box:11434/api/', undefined, false, 'http://ui')).toBe(
+      'http://box:11434',
+    )
   })
   it('uses the build-time env, with "/" meaning same origin', () => {
     expect(resolveHost('', '/', false, 'http://ui:8080')).toBe('http://ui:8080')
-    expect(resolveHost('', 'http://gpu:11434', false, 'http://ui')).toBe('http://gpu:11434')
+    expect(resolveHost('', 'http://gpu:11434', false, 'http://ui')).toBe(
+      'http://gpu:11434',
+    )
   })
   it('adds http:// when the scheme is missing', () => {
-    expect(resolveHost('localhost:11434', undefined, false, 'http://ui')).toBe('http://localhost:11434')
-    expect(resolveHost('192.168.1.5:11434/api', undefined, false, 'http://ui')).toBe('http://192.168.1.5:11434')
-    expect(resolveHost('https://ollama.example.com', undefined, false, 'http://ui')).toBe('https://ollama.example.com')
+    expect(resolveHost('localhost:11434', undefined, false, 'http://ui')).toBe(
+      'http://localhost:11434',
+    )
+    expect(resolveHost('192.168.1.5:11434/api', undefined, false, 'http://ui')).toBe(
+      'http://192.168.1.5:11434',
+    )
+    expect(resolveHost('https://ollama.example.com', undefined, false, 'http://ui')).toBe(
+      'https://ollama.example.com',
+    )
   })
   it('uses the dev proxy in dev and localhost otherwise', () => {
-    expect(resolveHost('', undefined, true, 'http://lan-ip:5173')).toBe('http://lan-ip:5173')
+    expect(resolveHost('', undefined, true, 'http://lan-ip:5173')).toBe(
+      'http://lan-ip:5173',
+    )
     expect(resolveHost('', undefined, false, 'http://ui')).toBe('http://localhost:11434')
   })
 })
@@ -78,7 +94,11 @@ describe('buildChatRequest', () => {
     })
     expect(req.messages).toEqual([
       { role: 'system', content: 'Be brief' },
-      { role: 'user', content: 'File: notes.txt\n```\nhello\n```\n\nWhat is this?', images: ['QUJD'] },
+      {
+        role: 'user',
+        content: 'File: notes.txt\n```\nhello\n```\n\nWhat is this?',
+        images: ['QUJD'],
+      },
       { role: 'assistant', content: 'A cat' },
     ])
     expect(req.think).toBeUndefined()
@@ -86,24 +106,71 @@ describe('buildChatRequest', () => {
   })
 
   it('sends think only to thinking-capable models', () => {
-    const req = buildChatRequest({ model: 'qwen3', history: [], settings: { think: 'high' }, supportsThinking: true })
+    const req = buildChatRequest({
+      model: 'qwen3',
+      history: [],
+      settings: { think: 'high' },
+      supportsThinking: true,
+    })
     expect(req.think).toBe('high')
   })
 })
 
 describe('chatEvents', () => {
   it('maps native thinking, content, tool calls and final stats', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () =>
-      ndjsonResponse([
-        { model: 'qwen3', message: { role: 'assistant', content: '', thinking: 'Let me ' }, done: false },
-        { model: 'qwen3', message: { role: 'assistant', content: '', thinking: 'think' }, done: false },
-        { model: 'qwen3', message: { role: 'assistant', content: 'Hi', tool_calls: [{ function: { name: 'now', arguments: {} } }] }, done: false },
-        { model: 'qwen3', message: { role: 'assistant', content: '' }, done: true, done_reason: 'stop', total_duration: 3e9, eval_count: 12, prompt_eval_count: 30, eval_duration: 1e9 },
-      ]),
-    ))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        ndjsonResponse([
+          {
+            model: 'qwen3',
+            message: { role: 'assistant', content: '', thinking: 'Let me ' },
+            done: false,
+          },
+          {
+            model: 'qwen3',
+            message: { role: 'assistant', content: '', thinking: 'think' },
+            done: false,
+          },
+          {
+            model: 'qwen3',
+            message: {
+              role: 'assistant',
+              content: 'Hi',
+              tool_calls: [{ function: { name: 'now', arguments: {} } }],
+            },
+            done: false,
+          },
+          {
+            model: 'qwen3',
+            message: { role: 'assistant', content: '' },
+            done: true,
+            done_reason: 'stop',
+            total_duration: 3e9,
+            eval_count: 12,
+            prompt_eval_count: 30,
+            eval_duration: 1e9,
+          },
+        ]),
+      ),
+    )
     const events = await collect(chatEvents({ model: 'qwen3', messages: [] }))
-    expect(events.map((e) => e.type)).toEqual(['reasoning', 'reasoning', 'text', 'tool-call', 'finish'])
-    expect(events.at(-1)).toMatchObject({ meta: { totalMs: 3000, evalTokens: 12, promptTokens: 30, evalMs: 1000, doneReason: 'stop' } })
+    expect(events.map((e) => e.type)).toEqual([
+      'reasoning',
+      'reasoning',
+      'text',
+      'tool-call',
+      'finish',
+    ])
+    expect(events.at(-1)).toMatchObject({
+      meta: {
+        totalMs: 3000,
+        evalTokens: 12,
+        promptTokens: 30,
+        evalMs: 1000,
+        doneReason: 'stop',
+      },
+    })
 
     const parts: Part[] = []
     events.forEach((e) => applyEvent(parts, e, 0))
@@ -111,13 +178,27 @@ describe('chatEvents', () => {
   })
 
   it('splits inline <think> tags from content', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () =>
-      ndjsonResponse([
-        { model: 'r1', message: { role: 'assistant', content: '<think>abc</think>' }, done: false },
-        { model: 'r1', message: { role: 'assistant', content: 'Answer' }, done: false },
-        { model: 'r1', done: true },
-      ], 3),
-    ))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        ndjsonResponse(
+          [
+            {
+              model: 'r1',
+              message: { role: 'assistant', content: '<think>abc</think>' },
+              done: false,
+            },
+            {
+              model: 'r1',
+              message: { role: 'assistant', content: 'Answer' },
+              done: false,
+            },
+            { model: 'r1', done: true },
+          ],
+          3,
+        ),
+      ),
+    )
     const events = await collect(chatEvents({ model: 'r1', messages: [] }))
     expect(events.slice(0, 2)).toEqual([
       { type: 'reasoning', text: 'abc' },
@@ -126,22 +207,51 @@ describe('chatEvents', () => {
   })
 
   it('throws Ollama error lines and HTTP errors as messages', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => ndjsonResponse([{ error: 'model "x" not found' }])))
-    await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow('model "x" not found')
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ndjsonResponse([{ error: 'model "x" not found' }])),
+    )
+    await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow(
+      'model "x" not found',
+    )
 
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ error: 'does not support thinking' }), { status: 400 })))
-    await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow('does not support thinking')
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(JSON.stringify({ error: 'does not support thinking' }), {
+            status: 400,
+          }),
+      ),
+    )
+    await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow(
+      'does not support thinking',
+    )
   })
 
   it('throws when the stream ends without a done chunk', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () =>
-      ndjsonResponse([{ model: 'm', message: { role: 'assistant', content: 'half' }, done: false }]),
-    ))
-    await expect(collect(chatEvents({ model: 'm', messages: [] }))).rejects.toThrow('ended unexpectedly')
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        ndjsonResponse([
+          { model: 'm', message: { role: 'assistant', content: 'half' }, done: false },
+        ]),
+      ),
+    )
+    await expect(collect(chatEvents({ model: 'm', messages: [] }))).rejects.toThrow(
+      'ended unexpectedly',
+    )
   })
 
   it('reports an unreachable server with the host', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('Failed to fetch') }))
-    await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow("Can't reach Ollama at http://ollama.test:11434")
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('Failed to fetch')
+      }),
+    )
+    await expect(collect(chatEvents({ model: 'x', messages: [] }))).rejects.toThrow(
+      "Can't reach Ollama at http://ollama.test:11434",
+    )
   })
 })

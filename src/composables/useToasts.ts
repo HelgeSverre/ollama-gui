@@ -9,7 +9,11 @@ export interface Toast {
 const toasts = reactive<Toast[]>([])
 let nextId = 1
 
-export function toast(message: string, kind: Toast['kind'] = 'info', ttl = kind === 'error' ? 8000 : 3500) {
+export function toast(
+  message: string,
+  kind: Toast['kind'] = 'info',
+  ttl = kind === 'error' ? 8000 : 3500,
+) {
   const id = nextId++
   toasts.push({ id, kind, message })
   setTimeout(() => dismiss(id), ttl)

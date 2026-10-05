@@ -3,7 +3,13 @@ import { computed, reactive, ref } from 'vue'
 import { plain } from '../db/plain'
 import { db } from '../db/schema'
 import { textOf } from '../domain/parts'
-import { activePath, indexNodes, newestLeaf, subtreeIds, type ThreadIndex } from '../domain/thread'
+import {
+  activePath,
+  indexNodes,
+  newestLeaf,
+  subtreeIds,
+  type ThreadIndex,
+} from '../domain/thread'
 import type { Chat, GenerationSettings, MessageNode } from '../domain/types'
 import { currentModel } from './useSettings'
 
@@ -16,14 +22,18 @@ const loaded = ref(false)
 /** Settings picked in the composer before the draft chat exists (e.g. the think toggle). */
 const draftSettings = ref<GenerationSettings | undefined>()
 
-const activeChat = computed(() => chats.value.find((c) => c.id === activeChatId.value) ?? null)
+const activeChat = computed(
+  () => chats.value.find((c) => c.id === activeChatId.value) ?? null,
+)
 
 const activeIndex = computed<ThreadIndex>(() => {
   const nodes = nodeCache.get(activeChatId.value)
   return indexNodes(nodes ? nodes.values() : [])
 })
 
-const activeThread = computed(() => activePath(activeIndex.value, activeChat.value?.activeLeafId ?? null))
+const activeThread = computed(() =>
+  activePath(activeIndex.value, activeChat.value?.activeLeafId ?? null),
+)
 
 /** Model for the next message: the active chat's model, or the global pick for a draft. */
 const activeModel = computed(() => activeChat.value?.model || currentModel.value)
@@ -39,7 +49,8 @@ async function init() {
   await repairInterrupted()
   const rows = await db.conversations.toArray()
   chats.value = rows
-  if (activeChatId.value && !rows.some((c) => c.id === activeChatId.value)) activeChatId.value = ''
+  if (activeChatId.value && !rows.some((c) => c.id === activeChatId.value))
+    activeChatId.value = ''
   if (activeChatId.value) await ensureNodes(activeChatId.value)
   loaded.value = true
 }
@@ -133,7 +144,8 @@ const renameChat = (chatId: string, title: string) =>
 
 async function togglePin(chatId: string) {
   const chat = getChat(chatId)
-  if (chat) await updateChat(chatId, { pinned: !chat.pinned || undefined, archived: undefined })
+  if (chat)
+    await updateChat(chatId, { pinned: !chat.pinned || undefined, archived: undefined })
 }
 
 async function toggleArchive(chatId: string) {
@@ -221,7 +233,12 @@ async function branchToNewChat(chatId: string, nodeId: string) {
   draftSettings.value = pending
   let parentId: string | null = null
   const nodes = path.map((n) => {
-    const copy: MessageNode = { ...plain(n), id: crypto.randomUUID(), chatId: chat.id, parentId }
+    const copy: MessageNode = {
+      ...plain(n),
+      id: crypto.randomUUID(),
+      chatId: chat.id,
+      parentId,
+    }
     parentId = copy.id
     return copy
   })
@@ -254,7 +271,12 @@ async function searchMessages(query: string, limit = 30): Promise<SearchHit[]> {
     .each((n) => {
       const chat = getChat(n.chatId)
       if (!chat) return
-      hits.push({ chatId: n.chatId, nodeId: n.id, title: chat.title, snippet: snippet(textOf(n.parts), q) })
+      hits.push({
+        chatId: n.chatId,
+        nodeId: n.id,
+        title: chat.title,
+        snippet: snippet(textOf(n.parts), q),
+      })
     })
   return hits
 }
@@ -263,7 +285,11 @@ function snippet(text: string, q: string, radius = 60) {
   const at = text.toLowerCase().indexOf(q)
   const start = Math.max(0, at - radius)
   const end = Math.min(text.length, at + q.length + radius)
-  return (start ? '…' : '') + text.slice(start, end).replace(/\s+/g, ' ') + (end < text.length ? '…' : '')
+  return (
+    (start ? '…' : '') +
+    text.slice(start, end).replace(/\s+/g, ' ') +
+    (end < text.length ? '…' : '')
+  )
 }
 
 /** Opens a chat with the branch containing `nodeId` visible. */

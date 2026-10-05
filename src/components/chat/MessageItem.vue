@@ -47,7 +47,9 @@ const stats = computed(() => {
   if (meta.model) bits.push(meta.model)
   if (meta.evalTokens && meta.evalMs) {
     const rate = meta.evalTokens / (meta.evalMs / 1000)
-    bits.push(`${new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 }).format(rate)} tok/s`)
+    bits.push(
+      `${new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 }).format(rate)} tok/s`,
+    )
   }
   if (meta.evalTokens) bits.push(`${meta.evalTokens} tokens`)
   if (meta.totalMs) bits.push(formatDuration(meta.totalMs))
@@ -103,7 +105,10 @@ async function submitEdit() {
     return
   }
   if (busy.value) {
-    toast('Wait for the current reply to finish, or stop it, before sending an edit', 'error')
+    toast(
+      'Wait for the current reply to finish, or stop it, before sending an edit',
+      'error',
+    )
     return
   }
   editingNodeId.value = null
@@ -168,12 +173,7 @@ function onEditKeydown(event: KeyboardEvent) {
       v-if="!editing"
       class="flex items-center gap-0.5 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
     >
-      <img
-        v-if="avatarUrl"
-        :src="avatarUrl"
-        alt=""
-        class="mr-1 h-5 w-5 rounded-full"
-      >
+      <img v-if="avatarUrl" :src="avatarUrl" alt="" class="mr-1 h-5 w-5 rounded-full" />
       <BranchNav
         :index="sibling.index"
         :count="sibling.count"
@@ -209,22 +209,9 @@ function onEditKeydown(event: KeyboardEvent) {
   </div>
 
   <!-- Assistant / tool -->
-  <div
-    v-else
-    class="group py-3"
-    data-testid="ai-message"
-    :data-status="node.status"
-  >
-    <div
-      v-if="waiting"
-      class="shimmer text-[13px]"
-    >
-      Thinking…
-    </div>
-    <template
-      v-for="(part, i) in node.parts"
-      :key="i"
-    >
+  <div v-else class="group py-3" data-testid="ai-message" :data-status="node.status">
+    <div v-if="waiting" class="shimmer text-[13px]">Thinking…</div>
+    <template v-for="(part, i) in node.parts" :key="i">
       <ReasoningBlock
         v-if="part.type === 'reasoning'"
         :part="part"
@@ -237,26 +224,17 @@ function onEditKeydown(event: KeyboardEvent) {
           :source="part.text"
           :streaming="streaming"
         />
-        <div
-          v-else
-          class="text-text text-[14px] leading-relaxed whitespace-pre-wrap"
-        >
+        <div v-else class="text-text text-[14px] leading-relaxed whitespace-pre-wrap">
           {{ part.text }}
         </div>
       </template>
-      <ToolCallCard
-        v-else-if="part.type === 'tool-call'"
-        :part="part"
-      />
+      <ToolCallCard v-else-if="part.type === 'tool-call'" :part="part" />
       <div
         v-else-if="part.type === 'error'"
         class="border-red/40 bg-red/10 text-text my-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-[12.5px]"
         data-testid="message-error"
       >
-        <IconAlertTriangle
-          :size="15"
-          class="text-red mt-px flex-none"
-        />
+        <IconAlertTriangle :size="15" class="text-red mt-px flex-none" />
         <span class="min-w-0 flex-1 break-words">{{ part.message }}</span>
         <button
           type="button"
@@ -268,10 +246,7 @@ function onEditKeydown(event: KeyboardEvent) {
         </button>
       </div>
     </template>
-    <span
-      v-if="streaming && lastPart?.type === 'text'"
-      class="typing-cursor"
-    />
+    <span v-if="streaming && lastPart?.type === 'text'" class="typing-cursor" />
     <div
       v-if="node.status === 'aborted'"
       class="text-text-muted mt-1 text-[11.5px] italic"
@@ -282,7 +257,9 @@ function onEditKeydown(event: KeyboardEvent) {
     <div
       v-if="!streaming"
       class="mt-1 -ml-1.5 flex items-center gap-0.5 transition-opacity"
-      :class="isLast ? '' : 'opacity-0 group-focus-within:opacity-100 group-hover:opacity-100'"
+      :class="
+        isLast ? '' : 'opacity-0 group-focus-within:opacity-100 group-hover:opacity-100'
+      "
     >
       <ActionButton
         :icon="copied ? IconCheck : IconCopy"
@@ -298,17 +275,8 @@ function onEditKeydown(event: KeyboardEvent) {
         data-testid="regenerate-btn"
         @click="regenerate"
       />
-      <ActionButton
-        :icon="IconGitBranch"
-        label="Branch in new chat"
-        @click="branch"
-      />
-      <ActionButton
-        :icon="IconTrash"
-        label="Delete"
-        :disabled="busy"
-        @click="remove"
-      />
+      <ActionButton :icon="IconGitBranch" label="Branch in new chat" @click="branch" />
+      <ActionButton :icon="IconTrash" label="Delete" :disabled="busy" @click="remove" />
       <BranchNav
         :index="sibling.index"
         :count="sibling.count"
@@ -319,7 +287,9 @@ function onEditKeydown(event: KeyboardEvent) {
         v-if="stats"
         class="text-text-muted ml-2 truncate text-[11px] opacity-0 transition-opacity group-hover:opacity-100"
         data-testid="message-stats"
-      >{{ stats }}</span>
+      >
+        {{ stats }}
+      </span>
     </div>
   </div>
 </template>

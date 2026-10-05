@@ -7,7 +7,12 @@ import { usePresets } from '../../composables/usePresets'
 import { toast } from '../../composables/useToasts'
 import { chatSettingsOpen } from '../../composables/useUi'
 import { compactSettings, resolveSettings } from '../../domain/settings'
-import { GLOBAL_SCOPE, type GenerationSettings, type ModelOptions, type ThinkLevel } from '../../domain/types'
+import {
+  GLOBAL_SCOPE,
+  type GenerationSettings,
+  type ModelOptions,
+  type ThinkLevel,
+} from '../../domain/types'
 
 type Scope = 'chat' | 'model' | 'global'
 
@@ -18,13 +23,45 @@ const presets = usePresets()
 const scope = ref<Scope>('chat')
 const model = computed(() => chats.activeModel.value)
 
-const NUMBER_FIELDS: { key: keyof ModelOptions; label: string; step: number; min?: number; max?: number; hint: string }[] = [
-  { key: 'temperature', label: 'Temperature', step: 0.05, min: 0, max: 2, hint: 'Higher is more creative' },
+const NUMBER_FIELDS: {
+  key: keyof ModelOptions
+  label: string
+  step: number
+  min?: number
+  max?: number
+  hint: string
+}[] = [
+  {
+    key: 'temperature',
+    label: 'Temperature',
+    step: 0.05,
+    min: 0,
+    max: 2,
+    hint: 'Higher is more creative',
+  },
   { key: 'top_p', label: 'Top P', step: 0.05, min: 0, max: 1, hint: 'Nucleus sampling' },
   { key: 'top_k', label: 'Top K', step: 1, min: 0, hint: 'Limit sampling to K tokens' },
-  { key: 'num_ctx', label: 'Context length (num_ctx)', step: 1024, min: 512, hint: 'Tokens of context' },
-  { key: 'num_predict', label: 'Max tokens (num_predict)', step: 64, min: -1, hint: '-1 for unlimited' },
-  { key: 'repeat_penalty', label: 'Repeat penalty', step: 0.05, min: 0, hint: 'Discourages repetition' },
+  {
+    key: 'num_ctx',
+    label: 'Context length (num_ctx)',
+    step: 1024,
+    min: 512,
+    hint: 'Tokens of context',
+  },
+  {
+    key: 'num_predict',
+    label: 'Max tokens (num_predict)',
+    step: 64,
+    min: -1,
+    hint: '-1 for unlimited',
+  },
+  {
+    key: 'repeat_penalty',
+    label: 'Repeat penalty',
+    step: 0.05,
+    min: 0,
+    hint: 'Discourages repetition',
+  },
   { key: 'seed', label: 'Seed', step: 1, hint: 'Fixed seed for reproducible output' },
 ]
 
@@ -32,7 +69,9 @@ const NUMBER_FIELDS: { key: keyof ModelOptions; label: string; step: number; min
 function stored(which: Scope): GenerationSettings | undefined {
   if (which === 'global') return presets.globalPreset()
   if (which === 'model') return presets.modelPreset(model.value)
-  return chats.activeChat.value ? chats.activeChat.value.settings : chats.draftSettings.value
+  return chats.activeChat.value
+    ? chats.activeChat.value.settings
+    : chats.draftSettings.value
 }
 
 /** What this scope inherits from the layers below it, shown as placeholders. */
@@ -57,7 +96,9 @@ function toForm(s: GenerationSettings | undefined): Form {
     systemPrompt: s?.systemPrompt ?? '',
     think: s?.think === undefined ? '' : (String(s.think) as Form['think']),
     keepAlive: s?.keepAlive ?? '',
-    options: Object.fromEntries(NUMBER_FIELDS.map((f) => [f.key, s?.options?.[f.key]?.toString() ?? ''])),
+    options: Object.fromEntries(
+      NUMBER_FIELDS.map((f) => [f.key, s?.options?.[f.key]?.toString() ?? '']),
+    ),
   }
 }
 
@@ -65,7 +106,9 @@ function load() {
   baseline = toForm(stored(scope.value))
   Object.assign(form, structuredClone(baseline))
 }
-watch([scope, chatSettingsOpen, () => chats.activeChatId.value, model], load, { immediate: true })
+watch([scope, chatSettingsOpen, () => chats.activeChatId.value, model], load, {
+  immediate: true,
+})
 
 // Settings can change elsewhere while the panel is open (e.g. the composer's Think toggle).
 // Pull those changes into fields the user hasn't edited, so Save doesn't write stale values back.
@@ -74,10 +117,12 @@ watch(
   () => {
     const next = toForm(stored(scope.value))
     for (const key of ['systemPrompt', 'think', 'keepAlive'] as const) {
-      if (String(form[key]) === baseline[key]) (form as Record<string, unknown>)[key] = next[key]
+      if (String(form[key]) === baseline[key])
+        (form as Record<string, unknown>)[key] = next[key]
     }
     for (const f of NUMBER_FIELDS) {
-      if (String(form.options[f.key] ?? '') === baseline.options[f.key]) form.options[f.key] = next.options[f.key]
+      if (String(form.options[f.key] ?? '') === baseline.options[f.key])
+        form.options[f.key] = next.options[f.key]
     }
     baseline = next
   },
@@ -89,7 +134,8 @@ const thinkOptions = computed(() => {
     { value: 'true', label: 'On' },
     { value: 'false', label: 'Off' },
   ]
-  for (const level of info.value?.thinkLevels ?? []) opts.push({ value: level, label: `${level} effort` })
+  for (const level of info.value?.thinkLevels ?? [])
+    opts.push({ value: level, label: `${level} effort` })
   return opts
 })
 
@@ -109,7 +155,11 @@ function toSettings(): GenerationSettings {
 async function save() {
   const settings = compactSettings(toSettings())
   if (scope.value === 'chat') await chats.setActiveSettings(settings)
-  else await presets.savePreset(scope.value === 'global' ? GLOBAL_SCOPE : model.value, settings ?? {})
+  else
+    await presets.savePreset(
+      scope.value === 'global' ? GLOBAL_SCOPE : model.value,
+      settings ?? {},
+    )
   load()
   toast('Settings saved', 'success')
 }
@@ -124,13 +174,19 @@ async function reset() {
 
 const scopes = computed(() => [
   { value: 'chat' as const, label: 'This chat' },
-  { value: 'model' as const, label: model.value ? `Model` : 'Model', disabled: !model.value },
+  {
+    value: 'model' as const,
+    label: model.value ? `Model` : 'Model',
+    disabled: !model.value,
+  },
   { value: 'global' as const, label: 'All chats' },
 ])
 
 const scopeHint = computed(() => {
-  if (scope.value === 'chat') return 'Applies to this conversation only. Empty fields inherit model and global defaults.'
-  if (scope.value === 'model') return `Defaults for every chat using ${model.value}. Empty fields inherit global defaults.`
+  if (scope.value === 'chat')
+    return 'Applies to this conversation only. Empty fields inherit model and global defaults.'
+  if (scope.value === 'model')
+    return `Defaults for every chat using ${model.value}. Empty fields inherit global defaults.`
   return 'Defaults for all chats and models.'
 })
 </script>
@@ -143,9 +199,7 @@ const scopeHint = computed(() => {
     data-testid="chat-settings"
   >
     <header class="border-border flex h-[46px] flex-none items-center border-b px-4">
-      <h2 class="text-[13.5px] font-semibold">
-        Chat settings
-      </h2>
+      <h2 class="text-[13.5px] font-semibold">Chat settings</h2>
       <button
         type="button"
         class="hover:bg-hover text-text-secondary ml-auto rounded-md p-1.5"
@@ -169,7 +223,11 @@ const scopeHint = computed(() => {
           :aria-selected="scope === s.value"
           :disabled="s.disabled"
           class="rounded-md px-2 py-1 text-[12px] disabled:opacity-40"
-          :class="scope === s.value ? 'bg-panel text-text font-semibold shadow-sm' : 'text-text-secondary hover:text-text'"
+          :class="
+            scope === s.value
+              ? 'bg-panel text-text font-semibold shadow-sm'
+              : 'text-text-secondary hover:text-text'
+          "
           @click="scope = s.value"
         >
           {{ s.label }}
@@ -185,7 +243,11 @@ const scopeHint = computed(() => {
           v-model="form.systemPrompt"
           rows="6"
           class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent block w-full resize-y rounded-lg border p-2.5 text-[12.5px] leading-relaxed outline-none"
-          :placeholder="inherited.systemPrompt ? `Inherited: ${inherited.systemPrompt}` : 'You are a helpful assistant…'"
+          :placeholder="
+            inherited.systemPrompt
+              ? `Inherited: ${inherited.systemPrompt}`
+              : 'You are a helpful assistant…'
+          "
           data-testid="system-prompt-input"
         />
       </label>
@@ -197,27 +259,26 @@ const scopeHint = computed(() => {
           class="border-border bg-list text-text focus:border-accent block w-full rounded-lg border px-2.5 py-1.5 text-[12.5px] outline-none"
         >
           <option value="">
-            Inherit{{ inherited.think !== undefined ? ` (${inherited.think === true ? 'on' : inherited.think === false ? 'off' : inherited.think})` : ' (model default)' }}
+            Inherit{{
+              inherited.think !== undefined
+                ? ` (${inherited.think === true ? 'on' : inherited.think === false ? 'off' : inherited.think})`
+                : ' (model default)'
+            }}
           </option>
-          <option
-            v-for="o in thinkOptions"
-            :key="o.value"
-            :value="o.value"
-          >
+          <option v-for="o in thinkOptions" :key="o.value" :value="o.value">
             {{ o.label }}
           </option>
         </select>
-        <span class="text-text-muted mt-1 block text-[11px]">Only sent to models with the thinking capability.</span>
+        <span class="text-text-muted mt-1 block text-[11px]">
+          Only sent to models with the thinking capability.
+        </span>
       </label>
 
       <div class="grid grid-cols-2 gap-3">
-        <label
-          v-for="f in NUMBER_FIELDS"
-          :key="f.key"
-          class="block"
-          :title="f.hint"
-        >
-          <span class="text-text mb-1 block truncate text-[12px] font-medium">{{ f.label }}</span>
+        <label v-for="f in NUMBER_FIELDS" :key="f.key" class="block" :title="f.hint">
+          <span class="text-text mb-1 block truncate text-[12px] font-medium">
+            {{ f.label }}
+          </span>
           <input
             v-model="form.options[f.key]"
             type="number"
@@ -225,8 +286,13 @@ const scopeHint = computed(() => {
             :min="f.min"
             :max="f.max"
             class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent block w-full rounded-lg border px-2.5 py-1.5 text-[12.5px] outline-none"
-            :placeholder="inherited.options?.[f.key]?.toString() ?? (f.key === 'num_ctx' && info?.contextLength ? `max ${info.contextLength}` : 'default')"
-          >
+            :placeholder="
+              inherited.options?.[f.key]?.toString() ??
+              (f.key === 'num_ctx' && info?.contextLength
+                ? `max ${info.contextLength}`
+                : 'default')
+            "
+          />
         </label>
         <label class="block">
           <span class="text-text mb-1 block text-[12px] font-medium">Keep alive</span>
@@ -234,7 +300,7 @@ const scopeHint = computed(() => {
             v-model="form.keepAlive"
             class="border-border bg-list text-text placeholder:text-text-muted focus:border-accent block w-full rounded-lg border px-2.5 py-1.5 text-[12.5px] outline-none"
             :placeholder="inherited.keepAlive ?? '5m'"
-          >
+          />
         </label>
       </div>
     </div>
