@@ -6,15 +6,9 @@
 <p align="center">A modern web interface for chatting with your local LLMs through Ollama</p>
 
 <p align="center">
-  <a href="https://ollama.ai">
-    <img src="https://img.shields.io/badge/Powered%20by-Ollama-blue?style=flat-square" alt="Powered by Ollama">
-  </a>
-  <a href="https://github.com/HelgeSverre/ollama-gui/blob/main/LICENSE.md">
-    <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
-  </a>
-  <a href="https://ollama-gui.vercel.app">
-    <img src="https://img.shields.io/badge/Demo-Live-success?style=flat-square" alt="Live Demo">
-  </a>
+  <a href="https://ollama.com"><img src="https://img.shields.io/badge/Powered%20by-Ollama-blue?style=flat-square" alt="Powered by Ollama"></a>
+  <a href="https://github.com/HelgeSverre/ollama-gui/blob/main/LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License"></a>
+  <a href="https://ollama-gui.vercel.app"><img src="https://img.shields.io/badge/Demo-Live-success?style=flat-square" alt="Live Demo"></a>
 </p>
 
 ## ✨ Features
