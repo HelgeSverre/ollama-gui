@@ -73,14 +73,13 @@ The image serves the app with nginx and proxies `/api` to Ollama, so the browser
 docker compose up -d
 
 # Only the GUI, using Ollama on the host machine
-docker build -t ollama-gui .
-docker run -d -p 8080:80 --add-host=host.docker.internal:host-gateway ollama-gui
+docker run -d -p 8080:80 --add-host=host.docker.internal:host-gateway ghcr.io/helgesverre/ollama-gui
 
 # Only the GUI, using Ollama on another machine
-docker run -d -p 8080:80 -e OLLAMA_URL=http://gpu-box:11434 ollama-gui
+docker run -d -p 8080:80 -e OLLAMA_URL=http://gpu-box:11434 ghcr.io/helgesverre/ollama-gui
 ```
 
-`OLLAMA_URL` sets where nginx forwards API requests (default `http://host.docker.internal:11434`). In `compose.yml`, uncomment the `deploy` block to give Ollama GPU access. Models are stored in `./ollama_data`.
+`OLLAMA_URL` sets where nginx forwards API requests (default `http://host.docker.internal:11434`). Images are published for amd64 and arm64; tags follow releases (`latest`, `2.0.0`, `2.0`). To build your own, run `docker build -t ollama-gui .`. In `compose.yml`, uncomment the `deploy` block to give Ollama GPU access. Models are stored in `./ollama_data`.
 
 ## Deploying
 
