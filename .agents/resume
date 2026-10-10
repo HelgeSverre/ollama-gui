@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Dependencies and browsers are restored from the setup snapshot. This app has
+# no database daemon, authentication, or other state to repair when waking.
+# Keep installs in setup, not in this latency-sensitive hook.
+echo '==> Ollama GUI resumed; no repair needed'

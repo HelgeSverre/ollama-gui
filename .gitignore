@@ -46,3 +46,6 @@ coverage/
 
 # Personal Claude Code settings
 .claude/settings.local.json
+
+# Orb portal metadata is specific to each running orb.
+.amp/portals/*

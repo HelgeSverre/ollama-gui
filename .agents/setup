@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+export CI=1
+export DEBIAN_FRONTEND=noninteractive
+
+echo '==> Checking Node and Bun'
+time {
+  # Match CI's Node major without downloading it again on a warm snapshot.
+  node_major="$(tr -d '[:space:]' < .nvmrc)"
+  if [[ "$(node --version 2>/dev/null || true)" != "v${node_major}."* ]]; then
+    sudo npm install --global n
+    sudo n "$node_major"
+    hash -r
+  fi
+  # Bun is unpinned in CI too. Keep the orb's existing version when available.
+  if ! command -v bun >/dev/null 2>&1; then
+    sudo npm install --global bun
+    hash -r
+  fi
+  node --version
+  bun --version
+}
+
+echo '==> Installing locked dependencies'
+time bun install --frozen-lockfile
+
+echo '==> Preparing Playwright Chromium'
+time {
+  # Let the locked Playwright version check its own OS requirements. Avoid apt
+  # updates on warm snapshots; install-deps alone always runs apt-get update.
+  system_deps="$(bunx --no-install playwright install-deps --dry-run chromium)"
+  printf '%s\n' "$system_deps"
+  if [[ "$system_deps" != 'All system dependencies are installed.' ]]; then
+    bunx --no-install playwright install-deps chromium
+  fi
+  bunx --no-install playwright install chromium
+}
+
+echo '==> Ready: bun run dev, lint, test, test:e2e, and build'
+# Ollama and model downloads are optional: ordinary tests mock its API.
+# Do not start servers here; running processes are not preserved in snapshots.
