@@ -3,6 +3,7 @@ import { applyEvent, closeReasoning, textOf } from '../domain/parts'
 import { resolveSettings } from '../domain/settings'
 import { activePath } from '../domain/thread'
 import type { Chat, MessageNode, Part } from '../domain/types'
+import { uuid } from '../domain/uuid'
 import { requestJson } from '../ollama/client'
 import { buildChatRequest, startChat } from '../ollama/transport'
 import { useChats } from './useChats'
@@ -61,7 +62,7 @@ function newNode(
   parts: Part[],
 ): MessageNode {
   return {
-    id: crypto.randomUUID(),
+    id: uuid(),
     chatId: chat.id,
     parentId,
     role,

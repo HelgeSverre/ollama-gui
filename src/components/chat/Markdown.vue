@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from 'vue'
+import { copyText } from '../../composables/useClipboard'
 import { mathVersion, renderMarkdown } from '../../markdown'
 
 const props = defineProps<{ source: string; streaming?: boolean }>()
@@ -28,7 +29,7 @@ async function onClick(event: MouseEvent) {
   const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-copy]')
   if (!button) return
   const code = button.closest('.code-block')?.querySelector('code')?.textContent ?? ''
-  await navigator.clipboard.writeText(code)
+  if (!(await copyText(code))) return
   button.textContent = 'Copied'
   setTimeout(() => (button.textContent = 'Copy'), 1500)
 }

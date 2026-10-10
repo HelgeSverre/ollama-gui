@@ -14,6 +14,66 @@ test.describe('Ollama GUI', () => {
     expect(mock.chatRequests[0].messages).toEqual([{ role: 'user', content: 'Hi' }])
   })
 
+  test('sends and branches without randomUUID (HTTP LAN access)', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(crypto, 'randomUUID', { value: undefined })
+    })
+    const mock = await freshPage(page)
+    await send(page, 'Hello from the LAN')
+    await expect(page.getByTestId('ai-message')).toContainText('Hello there!')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    expect(mock.chatRequests[0].messages).toEqual([
+      { role: 'user', content: 'Hello from the LAN' },
+    ])
+    await page.getByRole('button', { name: 'Branch in new chat' }).click()
+    await expect(page.getByTestId('chat-item')).toHaveCount(2)
+    await page.reload()
+    await expect(page.getByTestId('chat-title')).toContainText('(branch)')
+    await expect(page.getByTestId('user-message')).toContainText('Hello from the LAN')
+    await expect(page.getByTestId('ai-message')).toContainText('Hello there!')
+  })
+
+  test('copies messages, code and commands without the Clipboard API', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', { value: undefined })
+    })
+    const mock = await freshPage(page)
+    mock.replies.push('```js\nconsole.log("LAN")\n```')
+    await send(page, 'Copy this message')
+    await expect(page.getByTestId('ai-message')).toHaveAttribute('data-status', 'done')
+    const input = page.getByTestId('chat-textarea')
+    const user = page.getByTestId('user-message')
+    await user.hover()
+    await user.getByRole('button', { name: 'Copy', exact: true }).click()
+    await expect(user.getByRole('button', { name: 'Copied', exact: true })).toBeVisible()
+    await input.press('ControlOrMeta+v')
+    await expect(input).toHaveValue('Copy this message')
+    await input.fill('')
+    await page.locator('[data-copy]').click()
+    await input.press('ControlOrMeta+v')
+    await expect(input).toHaveValue('console.log("LAN")\n')
+
+    // The fallback must work inside a native modal, where the rest of the page is inert.
+    await page.route('**/api/**', (route) => route.abort())
+    await page.evaluate(() =>
+      localStorage.setItem('ollama-gui:url', 'http://other-host:11434'),
+    )
+    await page.reload()
+    await page.getByTestId('settings-btn').click()
+    const dialog = page.getByRole('dialog', { name: 'Settings' })
+    await dialog.getByRole('button', { name: 'Copy command' }).click()
+    await expect(
+      dialog.getByRole('button', { name: 'Copied', exact: true }),
+    ).toBeVisible()
+    await dialog.getByRole('button', { name: 'Close', exact: true }).click()
+    await input.press('ControlOrMeta+v')
+    await expect(input).toHaveValue(
+      `OLLAMA_ORIGINS=${new URL(page.url()).origin} ollama serve`,
+    )
+  })
+
   test('history survives a reload', async ({ page }) => {
     await freshPage(page)
     await send(page, 'Remember me')

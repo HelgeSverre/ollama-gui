@@ -11,6 +11,7 @@ import {
   type ThreadIndex,
 } from '../domain/thread'
 import type { Chat, GenerationSettings, MessageNode } from '../domain/types'
+import { uuid } from '../domain/uuid'
 import { currentModel } from './useSettings'
 
 const chats = ref<Chat[]>([])
@@ -116,7 +117,7 @@ function newChat() {
 async function createChat(model: string, title = 'New chat'): Promise<Chat> {
   const now = new Date()
   const chat: Chat = {
-    id: crypto.randomUUID(),
+    id: uuid(),
     title,
     model,
     createdAt: now,
@@ -235,7 +236,7 @@ async function branchToNewChat(chatId: string, nodeId: string) {
   const nodes = path.map((n) => {
     const copy: MessageNode = {
       ...plain(n),
-      id: crypto.randomUUID(),
+      id: uuid(),
       chatId: chat.id,
       parentId,
     }

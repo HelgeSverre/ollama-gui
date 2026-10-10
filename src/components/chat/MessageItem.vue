@@ -15,6 +15,7 @@ import { filesOf, textOf } from '../../domain/parts'
 import { siblings, switchSibling, type ThreadIndex } from '../../domain/thread'
 import type { MessageNode } from '../../domain/types'
 import { useChats } from '../../composables/useChats'
+import { copyText } from '../../composables/useClipboard'
 import { confirmAction } from '../../composables/useConfirm'
 import { toast } from '../../composables/useToasts'
 import { useGeneration } from '../../composables/useGeneration'
@@ -58,7 +59,7 @@ const stats = computed(() => {
 
 const copied = ref(false)
 async function copy() {
-  await navigator.clipboard.writeText(text.value)
+  if (!(await copyText(text.value))) return
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
 }

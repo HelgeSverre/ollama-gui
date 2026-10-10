@@ -54,6 +54,8 @@ bun run dev               # http://localhost:5173
 
 The dev server forwards `/api` to `http://localhost:11434`, so Ollama needs no CORS configuration. With `bun run dev --host`, other devices on your network can use the app as well. To use an Ollama instance elsewhere, set its URL under Settings → Connection, or start the dev server with `VITE_NO_PROXY=true`.
 
+Plain HTTP LAN access supports chatting, history, imports, exports and copying text. Gravatar avatars, service-worker offline caching and requests for persistent storage require a secure context (HTTPS or localhost). Copying uses a legacy browser fallback on HTTP; if the browser blocks it, select and copy the text manually. HTTP does not encrypt your messages, so use HTTPS on untrusted networks.
+
 ### Where chats are stored
 
 IndexedDB is scoped to the exact origin the app is served from. `localhost:5173`, `127.0.0.1:5173`, another port, another browser and a private window each have their own, separate history. For this reason the dev server always uses port 5173 and fails to start if the port is taken, rather than silently moving to another one. Use Settings → Data to export and import chats, or to ask the browser to keep the data persistently.

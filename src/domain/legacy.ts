@@ -1,5 +1,6 @@
 import { partsFromLegacyContent } from './parts'
 import type { Chat, MessageNode } from './types'
+import { uuid } from './uuid'
 
 /** Chat and message shape from v1 / v2.0 (flat list, numeric ids, `content` strings). */
 export interface LegacyChat {
@@ -27,7 +28,7 @@ export function convertLegacyChat(
   old: LegacyChat,
   messages: LegacyMessage[],
 ): { chat: Chat; nodes: MessageNode[] } {
-  const chatId = crypto.randomUUID()
+  const chatId = uuid()
   const model = String(old.model ?? '')
   const sorted = [...messages].sort(
     (a, b) =>
@@ -46,7 +47,7 @@ export function convertLegacyChat(
     if (m.role !== 'user' && m.role !== 'assistant' && m.role !== 'system') continue
     const content = String(m.content ?? '')
     const node: MessageNode = {
-      id: crypto.randomUUID(),
+      id: uuid(),
       chatId,
       parentId,
       role: m.role,

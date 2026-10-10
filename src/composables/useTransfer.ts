@@ -8,6 +8,7 @@ import {
 import { textOf } from '../domain/parts'
 import { activePath, indexNodes } from '../domain/thread'
 import type { Chat, MessageNode, Part } from '../domain/types'
+import { uuid } from '../domain/uuid'
 import { useChats } from './useChats'
 
 const FORMAT = 'ollama-gui'
@@ -80,7 +81,7 @@ function reId(entry: Chat & { nodes?: MessageNode[] }): {
   chat: Chat
   nodes: MessageNode[]
 } {
-  const chatId = crypto.randomUUID()
+  const chatId = uuid()
   const ids = new Map<string, string>()
   const source = (Array.isArray(entry.nodes) ? entry.nodes : []).filter(
     (node): node is MessageNode =>
@@ -89,7 +90,7 @@ function reId(entry: Chat & { nodes?: MessageNode[] }): {
       typeof node.id === 'string' &&
       ROLES.includes(node.role),
   )
-  for (const node of source) ids.set(node.id, crypto.randomUUID())
+  for (const node of source) ids.set(node.id, uuid())
   const nodes = source.map((node): MessageNode => ({
     id: ids.get(node.id)!,
     chatId,

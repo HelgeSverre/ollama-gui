@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { IconCheck, IconCopy } from '@tabler/icons-vue'
 import { computed, ref } from 'vue'
+import { copyText } from '../../composables/useClipboard'
 import { useModels } from '../../composables/useModels'
 
 const models = useModels()
@@ -16,7 +17,7 @@ const crossOrigin = computed(() => {
 const command = `OLLAMA_ORIGINS=${origin} ollama serve`
 const copied = ref(false)
 async function copy() {
-  await navigator.clipboard.writeText(command)
+  if (!(await copyText(command))) return
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
 }
