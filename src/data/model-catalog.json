@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T07:06:21.047Z",
+  "generatedAt": "2026-10-13T16:41:16.302Z",
   "models": [
     {
       "name": "llama3.1",
@@ -12,7 +12,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 120200000,
+      "pulls": 120300000,
       "updated": "1 year ago"
     },
     {
@@ -31,7 +31,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 93600000,
+      "pulls": 93700000,
       "updated": "1 year ago"
     },
     {
@@ -41,7 +41,7 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 89200000,
+      "pulls": 89600000,
       "updated": "2 years ago"
     },
     {
@@ -54,7 +54,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 85300000,
+      "pulls": 85400000,
       "updated": "2 years ago"
     },
     {
@@ -72,7 +72,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 42200000,
+      "pulls": 42300000,
       "updated": "2 years ago"
     },
     {
@@ -89,7 +89,7 @@
         "vision"
       ],
       "pulls": 41100000,
-      "updated": "2 days ago"
+      "updated": "4 days ago"
     },
     {
       "name": "qwen3",
@@ -108,7 +108,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 39700000,
+      "pulls": 39900000,
       "updated": "1 year ago"
     },
     {
@@ -120,7 +120,7 @@
         "27b"
       ],
       "capabilities": [],
-      "pulls": 34600000,
+      "pulls": 34700000,
       "updated": "2 years ago"
     },
     {
@@ -148,8 +148,8 @@
         "vision",
         "thinking"
       ],
-      "pulls": 26800000,
-      "updated": "2 days ago"
+      "pulls": 26900000,
+      "updated": "18 hours ago"
     },
     {
       "name": "llama3",
@@ -176,7 +176,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 22300000,
+      "pulls": 22400000,
       "updated": "1 year ago"
     },
     {
@@ -196,8 +196,8 @@
         "vision",
         "thinking"
       ],
-      "pulls": 22100000,
-      "updated": "1 week ago"
+      "pulls": 22200000,
+      "updated": "12 hours ago"
     },
     {
       "name": "phi3",
@@ -248,8 +248,8 @@
         "tools",
         "thinking"
       ],
-      "pulls": 13700000,
-      "updated": "2 days ago"
+      "pulls": 13800000,
+      "updated": "4 days ago"
     },
     {
       "name": "qwen3-coder",
@@ -261,7 +261,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 9900000,
+      "pulls": 10000000,
       "updated": "1 year ago"
     },
     {
@@ -283,7 +283,7 @@
         "tools",
         "vision"
       ],
-      "pulls": 8200000,
+      "pulls": 8300000,
       "updated": "8 months ago"
     },
     {
@@ -350,7 +350,7 @@
         "thinking"
       ],
       "pulls": 7100000,
-      "updated": "1 week ago"
+      "updated": "14 hours ago"
     },
     {
       "name": "codellama",
@@ -362,7 +362,7 @@
         "70b"
       ],
       "capabilities": [],
-      "pulls": 6900000,
+      "pulls": 7000000,
       "updated": "2 years ago"
     },
     {
@@ -443,7 +443,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 5400000,
+      "pulls": 5500000,
       "updated": "1 year ago"
     },
     {
@@ -458,7 +458,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 5300000,
+      "pulls": 5400000,
       "updated": "1 year ago"
     },
     {
@@ -484,7 +484,7 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 4200000,
+      "pulls": 4300000,
       "updated": "1 year ago"
     },
     {
@@ -570,7 +570,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 3600000,
+      "pulls": 3700000,
       "updated": "2 weeks ago"
     },
     {
@@ -581,7 +581,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 3200000,
+      "pulls": 3300000,
       "updated": "2 years ago"
     },
     {
@@ -747,7 +747,7 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 2400000,
+      "pulls": 2500000,
       "updated": "1 year ago"
     },
     {
@@ -802,7 +802,7 @@
         "1.7b"
       ],
       "capabilities": [],
-      "pulls": 2200000,
+      "pulls": 2300000,
       "updated": "2 years ago"
     },
     {
@@ -908,6 +908,19 @@
       "updated": "to version 2.8."
     },
     {
+      "name": "devstral-small-2",
+      "description": "24B model that excels at using tools to explore codebases, editing multiple files and power software engineering agents.",
+      "sizes": [
+        "24b"
+      ],
+      "capabilities": [
+        "tools",
+        "vision"
+      ],
+      "pulls": 1800000,
+      "updated": "10 months ago"
+    },
+    {
       "name": "hermes3",
       "description": "Hermes 3 is the latest version of the flagship Hermes series of LLMs by Nous Research",
       "sizes": [
@@ -921,19 +934,6 @@
       ],
       "pulls": 1700000,
       "updated": "1 year ago"
-    },
-    {
-      "name": "devstral-small-2",
-      "description": "24B model that excels at using tools to explore codebases, editing multiple files and power software engineering agents.",
-      "sizes": [
-        "24b"
-      ],
-      "capabilities": [
-        "tools",
-        "vision"
-      ],
-      "pulls": 1700000,
-      "updated": "10 months ago"
     },
     {
       "name": "phi4-reasoning",
@@ -969,6 +969,19 @@
       "updated": "2 years ago"
     },
     {
+      "name": "starcoder",
+      "description": "StarCoder is a code generation model trained on 80+ programming languages.",
+      "sizes": [
+        "1b",
+        "3b",
+        "7b",
+        "15b"
+      ],
+      "capabilities": [],
+      "pulls": 1600000,
+      "updated": "2 years ago"
+    },
+    {
       "name": "phi",
       "description": "Phi-2: a 2.7B language model by Microsoft Research that demonstrates outstanding reasoning and language understanding capabilities.",
       "sizes": [
@@ -988,19 +1001,6 @@
         "tools"
       ],
       "pulls": 1600000,
-      "updated": "2 years ago"
-    },
-    {
-      "name": "starcoder",
-      "description": "StarCoder is a code generation model trained on 80+ programming languages.",
-      "sizes": [
-        "1b",
-        "3b",
-        "7b",
-        "15b"
-      ],
-      "capabilities": [],
-      "pulls": 1500000,
       "updated": "2 years ago"
     },
     {
@@ -1402,6 +1402,16 @@
       "updated": "2 years ago"
     },
     {
+      "name": "nomic-embed-text-v2-moe",
+      "description": "nomic-embed-text-v2-moe is a multilingual MoE text embedding model that excels at multilingual retrieval.",
+      "sizes": [],
+      "capabilities": [
+        "embedding"
+      ],
+      "pulls": 1100000,
+      "updated": "10 months ago"
+    },
+    {
       "name": "devstral",
       "description": "Devstral: the best open source model for coding agents",
       "sizes": [
@@ -1450,23 +1460,13 @@
       "updated": "2 years ago"
     },
     {
-      "name": "nomic-embed-text-v2-moe",
-      "description": "nomic-embed-text-v2-moe is a multilingual MoE text embedding model that excels at multilingual retrieval.",
-      "sizes": [],
-      "capabilities": [
-        "embedding"
-      ],
-      "pulls": 1100000,
-      "updated": "10 months ago"
-    },
-    {
       "name": "phi3.5",
       "description": "A lightweight AI model with 3.8 billion parameters with performance overtaking similarly and larger sized models.",
       "sizes": [
         "3.8b"
       ],
       "capabilities": [],
-      "pulls": 1000000,
+      "pulls": 1100000,
       "updated": "2 years ago"
     },
     {
@@ -1602,7 +1602,7 @@
         "10.7b"
       ],
       "capabilities": [],
-      "pulls": 988000,
+      "pulls": 988900,
       "updated": "2 years ago"
     },
     {
@@ -1615,7 +1615,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 977400,
+      "pulls": 978400,
       "updated": "1 year ago"
     },
     {
@@ -1627,7 +1627,7 @@
         "70b"
       ],
       "capabilities": [],
-      "pulls": 973600,
+      "pulls": 974800,
       "updated": "2 years ago"
     },
     {
@@ -1639,7 +1639,7 @@
         "27b"
       ],
       "capabilities": [],
-      "pulls": 964000,
+      "pulls": 965500,
       "updated": "2 years ago"
     },
     {
@@ -1650,7 +1650,7 @@
         "1.5b"
       ],
       "capabilities": [],
-      "pulls": 962200,
+      "pulls": 962800,
       "updated": "1 year ago"
     },
     {
@@ -1661,8 +1661,18 @@
         "13b"
       ],
       "capabilities": [],
-      "pulls": 960300,
+      "pulls": 961300,
       "updated": "2 years ago"
+    },
+    {
+      "name": "mistral-openorca",
+      "description": "Mistral OpenOrca is a 7 billion parameter model, fine-tuned on top of the Mistral 7B model using the OpenOrca dataset.",
+      "sizes": [
+        "7b"
+      ],
+      "capabilities": [],
+      "pulls": 958700,
+      "updated": "3 years ago"
     },
     {
       "name": "reader-lm",
@@ -1672,7 +1682,7 @@
         "1.5b"
       ],
       "capabilities": [],
-      "pulls": 951400,
+      "pulls": 952300,
       "updated": "2 years ago"
     },
     {
@@ -1680,7 +1690,7 @@
       "description": "General use model based on Llama 2.",
       "sizes": [],
       "capabilities": [],
-      "pulls": 950800,
+      "pulls": 952300,
       "updated": "2 years ago"
     },
     {
@@ -1692,25 +1702,15 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 947300,
+      "pulls": 947700,
       "updated": "2 years ago"
-    },
-    {
-      "name": "mistral-openorca",
-      "description": "Mistral OpenOrca is a 7 billion parameter model, fine-tuned on top of the Mistral 7B model using the OpenOrca dataset.",
-      "sizes": [
-        "7b"
-      ],
-      "capabilities": [],
-      "pulls": 943900,
-      "updated": "3 years ago"
     },
     {
       "name": "llama-pro",
       "description": "An expansion of Llama 2 that specializes in integrating both general language understanding and domain-specific knowledge, particularly in programming and mathematics.",
       "sizes": [],
       "capabilities": [],
-      "pulls": 933800,
+      "pulls": 934600,
       "updated": "2 years ago"
     },
     {
@@ -1720,7 +1720,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 923800,
+      "pulls": 924700,
       "updated": "2 years ago"
     },
     {
@@ -1730,7 +1730,7 @@
         "13b"
       ],
       "capabilities": [],
-      "pulls": 917500,
+      "pulls": 918300,
       "updated": "2 years ago"
     },
     {
@@ -1741,19 +1741,7 @@
         "70b"
       ],
       "capabilities": [],
-      "pulls": 912600,
-      "updated": "2 years ago"
-    },
-    {
-      "name": "bakllava",
-      "description": "BakLLaVA is a multimodal model consisting of the Mistral 7B base model augmented with the LLaVA  architecture.",
-      "sizes": [
-        "7b"
-      ],
-      "capabilities": [
-        "vision"
-      ],
-      "pulls": 901400,
+      "pulls": 913300,
       "updated": "2 years ago"
     },
     {
@@ -1767,8 +1755,20 @@
         "tools",
         "thinking"
       ],
-      "pulls": 899900,
+      "pulls": 904500,
       "updated": "with a 4B parameter count model."
+    },
+    {
+      "name": "bakllava",
+      "description": "BakLLaVA is a multimodal model consisting of the Mistral 7B base model augmented with the LLaVA  architecture.",
+      "sizes": [
+        "7b"
+      ],
+      "capabilities": [
+        "vision"
+      ],
+      "pulls": 902000,
+      "updated": "2 years ago"
     },
     {
       "name": "command-r-plus",
@@ -1779,7 +1779,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 817700,
+      "pulls": 818500,
       "updated": "2 years ago"
     },
     {
@@ -1792,7 +1792,7 @@
         "tools",
         "vision"
       ],
-      "pulls": 797800,
+      "pulls": 798300,
       "updated": "1 year ago"
     },
     {
@@ -1804,7 +1804,7 @@
         "7.8b"
       ],
       "capabilities": [],
-      "pulls": 777900,
+      "pulls": 778500,
       "updated": "1 year ago"
     },
     {
@@ -1814,7 +1814,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 741100,
+      "pulls": 741600,
       "updated": "2 years ago"
     },
     {
@@ -1824,7 +1824,7 @@
         "1.1b"
       ],
       "capabilities": [],
-      "pulls": 740300,
+      "pulls": 741000,
       "updated": "2 years ago"
     },
     {
@@ -1837,7 +1837,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 734200,
+      "pulls": 734900,
       "updated": "1 year ago"
     },
     {
@@ -1849,7 +1849,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 727100,
+      "pulls": 727700,
       "updated": "2 years ago"
     },
     {
@@ -1859,7 +1859,7 @@
         "9b"
       ],
       "capabilities": [],
-      "pulls": 704000,
+      "pulls": 704500,
       "updated": "2 years ago"
     },
     {
@@ -1873,7 +1873,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 678200,
+      "pulls": 679200,
       "updated": "5 months ago"
     },
     {
@@ -1884,7 +1884,7 @@
         "8b"
       ],
       "capabilities": [],
-      "pulls": 664900,
+      "pulls": 665800,
       "updated": "1 year ago"
     },
     {
@@ -1894,7 +1894,7 @@
         "13b"
       ],
       "capabilities": [],
-      "pulls": 659400,
+      "pulls": 660000,
       "updated": "2 years ago"
     },
     {
@@ -1906,18 +1906,8 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 637600,
+      "pulls": 638200,
       "updated": "1 year ago"
-    },
-    {
-      "name": "reflection",
-      "description": "A high-performing model trained with a new technique called Reflection-tuning that teaches a LLM to detect mistakes in its reasoning and correct course.",
-      "sizes": [
-        "70b"
-      ],
-      "capabilities": [],
-      "pulls": 628600,
-      "updated": "2 years ago"
     },
     {
       "name": "llava-phi3",
@@ -1928,17 +1918,17 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 613700,
+      "pulls": 630200,
       "updated": "2 years ago"
     },
     {
-      "name": "codeup",
-      "description": "Great code generation model based on Llama2.",
+      "name": "reflection",
+      "description": "A high-performing model trained with a new technique called Reflection-tuning that teaches a LLM to detect mistakes in its reasoning and correct course.",
       "sizes": [
-        "13b"
+        "70b"
       ],
       "capabilities": [],
-      "pulls": 608300,
+      "pulls": 629100,
       "updated": "2 years ago"
     },
     {
@@ -1952,15 +1942,25 @@
         "tools",
         "thinking"
       ],
-      "pulls": 605600,
+      "pulls": 615600,
       "updated": "3 months ago"
+    },
+    {
+      "name": "codeup",
+      "description": "Great code generation model based on Llama2.",
+      "sizes": [
+        "13b"
+      ],
+      "capabilities": [],
+      "pulls": 608900,
+      "updated": "2 years ago"
     },
     {
       "name": "nous-hermes2-mixtral",
       "description": "The Nous Hermes 2 model from Nous Research, now trained over Mixtral.",
       "sizes": [],
       "capabilities": [],
-      "pulls": 603400,
+      "pulls": 603900,
       "updated": "1 year ago"
     },
     {
@@ -1972,7 +1972,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 602200,
+      "pulls": 602800,
       "updated": "1 year ago"
     },
     {
@@ -1985,7 +1985,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 599400,
+      "pulls": 600300,
       "updated": "10 months ago"
     },
     {
@@ -1996,7 +1996,7 @@
         "70b"
       ],
       "capabilities": [],
-      "pulls": 581700,
+      "pulls": 582200,
       "updated": "2 years ago"
     },
     {
@@ -2006,7 +2006,7 @@
         "13b"
       ],
       "capabilities": [],
-      "pulls": 579200,
+      "pulls": 579700,
       "updated": "2 years ago"
     },
     {
@@ -2018,7 +2018,7 @@
         "7.8b"
       ],
       "capabilities": [],
-      "pulls": 574300,
+      "pulls": 575400,
       "updated": "1 year ago"
     },
     {
@@ -2028,7 +2028,7 @@
         "22b"
       ],
       "capabilities": [],
-      "pulls": 571700,
+      "pulls": 572300,
       "updated": "2 years ago"
     },
     {
@@ -2038,7 +2038,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 568500,
+      "pulls": 569100,
       "updated": "2 years ago"
     },
     {
@@ -2048,7 +2048,7 @@
         "3.8b"
       ],
       "capabilities": [],
-      "pulls": 565800,
+      "pulls": 566900,
       "updated": "2 years ago"
     },
     {
@@ -2058,7 +2058,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 562600,
+      "pulls": 563200,
       "updated": "2 years ago"
     },
     {
@@ -2068,7 +2068,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 552500,
+      "pulls": 553000,
       "updated": "2 years ago"
     },
     {
@@ -2078,7 +2078,7 @@
         "11b"
       ],
       "capabilities": [],
-      "pulls": 552500,
+      "pulls": 553000,
       "updated": "2 years ago"
     },
     {
@@ -2086,7 +2086,7 @@
       "description": "A top-performing mixture of experts model, fine-tuned with high-quality data.",
       "sizes": [],
       "capabilities": [],
-      "pulls": 551100,
+      "pulls": 551600,
       "updated": "2 years ago"
     },
     {
@@ -2098,7 +2098,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 550000,
+      "pulls": 551300,
       "updated": "10 months ago"
     },
     {
@@ -2108,7 +2108,7 @@
         "3b"
       ],
       "capabilities": [],
-      "pulls": 545000,
+      "pulls": 545500,
       "updated": "2 years ago"
     },
     {
@@ -2118,7 +2118,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 542400,
+      "pulls": 543000,
       "updated": "2 years ago"
     },
     {
@@ -2128,39 +2128,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 539800,
-      "updated": "2 years ago"
-    },
-    {
-      "name": "firefunction-v2",
-      "description": "An open weights function calling model based on Llama 3, competitive with GPT-4o function calling capabilities.",
-      "sizes": [
-        "70b"
-      ],
-      "capabilities": [
-        "tools"
-      ],
-      "pulls": 536100,
-      "updated": "2 years ago"
-    },
-    {
-      "name": "mistrallite",
-      "description": "MistralLite is a fine-tuned model based on Mistral with enhanced capabilities of processing long contexts.",
-      "sizes": [
-        "7b"
-      ],
-      "capabilities": [],
-      "pulls": 535800,
-      "updated": "2 years ago"
-    },
-    {
-      "name": "wizard-vicuna",
-      "description": "Wizard Vicuna is a 13B parameter model based on Llama 2 trained by MelodysDreamj.",
-      "sizes": [
-        "13b"
-      ],
-      "capabilities": [],
-      "pulls": 529700,
+      "pulls": 540300,
       "updated": "2 years ago"
     },
     {
@@ -2174,8 +2142,40 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 528800,
+      "pulls": 537200,
       "updated": "4 months ago"
+    },
+    {
+      "name": "firefunction-v2",
+      "description": "An open weights function calling model based on Llama 3, competitive with GPT-4o function calling capabilities.",
+      "sizes": [
+        "70b"
+      ],
+      "capabilities": [
+        "tools"
+      ],
+      "pulls": 536600,
+      "updated": "2 years ago"
+    },
+    {
+      "name": "mistrallite",
+      "description": "MistralLite is a fine-tuned model based on Mistral with enhanced capabilities of processing long contexts.",
+      "sizes": [
+        "7b"
+      ],
+      "capabilities": [],
+      "pulls": 536300,
+      "updated": "2 years ago"
+    },
+    {
+      "name": "wizard-vicuna",
+      "description": "Wizard Vicuna is a 13B parameter model based on Llama 2 trained by MelodysDreamj.",
+      "sizes": [
+        "13b"
+      ],
+      "capabilities": [],
+      "pulls": 530200,
+      "updated": "2 years ago"
     },
     {
       "name": "minimax-m3",
@@ -2188,7 +2188,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 522400,
+      "pulls": 523000,
       "updated": "4 months ago"
     },
     {
@@ -2198,7 +2198,7 @@
         "13b"
       ],
       "capabilities": [],
-      "pulls": 521700,
+      "pulls": 522200,
       "updated": "2 years ago"
     },
     {
@@ -2210,7 +2210,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 515100,
+      "pulls": 515500,
       "updated": "10 months ago"
     },
     {
@@ -2220,7 +2220,7 @@
         "34b"
       ],
       "capabilities": [],
-      "pulls": 511600,
+      "pulls": 512100,
       "updated": "2 years ago"
     },
     {
@@ -2230,7 +2230,7 @@
         "70b"
       ],
       "capabilities": [],
-      "pulls": 490700,
+      "pulls": 491200,
       "updated": "2 years ago"
     },
     {
@@ -2242,7 +2242,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 489800,
+      "pulls": 490500,
       "updated": "5 months ago"
     },
     {
@@ -2256,7 +2256,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 468400,
+      "pulls": 469200,
       "updated": "10 months ago"
     },
     {
@@ -2268,7 +2268,7 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 465700,
+      "pulls": 466800,
       "updated": "1 year ago"
     },
     {
@@ -2282,7 +2282,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 465000,
+      "pulls": 465400,
       "updated": "1 year ago"
     },
     {
@@ -2293,8 +2293,8 @@
         "tools",
         "thinking"
       ],
-      "pulls": 450900,
-      "updated": "1 month ago"
+      "pulls": 453000,
+      "updated": "2 months ago"
     },
     {
       "name": "medgemma",
@@ -2306,8 +2306,8 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 448500,
-      "updated": "5 months ago"
+      "pulls": 449800,
+      "updated": "6 months ago"
     },
     {
       "name": "r1-1776",
@@ -2317,7 +2317,7 @@
         "671b"
       ],
       "capabilities": [],
-      "pulls": 429400,
+      "pulls": 429800,
       "updated": "1 year ago"
     },
     {
@@ -2329,7 +2329,7 @@
         "20b"
       ],
       "capabilities": [],
-      "pulls": 424600,
+      "pulls": 425100,
       "updated": "1 year ago"
     },
     {
@@ -2343,7 +2343,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 423400,
+      "pulls": 424300,
       "updated": "5 months ago"
     },
     {
@@ -2354,7 +2354,7 @@
         "70b"
       ],
       "capabilities": [],
-      "pulls": 409400,
+      "pulls": 410100,
       "updated": "1 year ago"
     },
     {
@@ -2367,7 +2367,7 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 384600,
+      "pulls": 386400,
       "updated": "1 year ago"
     },
     {
@@ -2381,7 +2381,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 380700,
+      "pulls": 384500,
       "updated": "1 month ago"
     },
     {
@@ -2392,7 +2392,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 372800,
+      "pulls": 373100,
       "updated": "3 months ago"
     },
     {
@@ -2402,7 +2402,7 @@
         "132b"
       ],
       "capabilities": [],
-      "pulls": 372300,
+      "pulls": 372600,
       "updated": "2 years ago"
     },
     {
@@ -2414,7 +2414,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 361800,
+      "pulls": 362400,
       "updated": "10 months ago"
     },
     {
@@ -2425,7 +2425,7 @@
         "8b"
       ],
       "capabilities": [],
-      "pulls": 345300,
+      "pulls": 345900,
       "updated": "1 year ago"
     },
     {
@@ -2437,7 +2437,7 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 336500,
+      "pulls": 337200,
       "updated": "1 year ago"
     },
     {
@@ -2447,7 +2447,7 @@
         "3.8b"
       ],
       "capabilities": [],
-      "pulls": 318600,
+      "pulls": 319000,
       "updated": "1 year ago"
     },
     {
@@ -2460,7 +2460,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 297300,
+      "pulls": 298100,
       "updated": "10 months ago"
     },
     {
@@ -2470,7 +2470,7 @@
         "236b"
       ],
       "capabilities": [],
-      "pulls": 295300,
+      "pulls": 295600,
       "updated": "2 years ago"
     },
     {
@@ -2480,7 +2480,7 @@
         "40b"
       ],
       "capabilities": [],
-      "pulls": 290500,
+      "pulls": 292700,
       "updated": "2 years ago"
     },
     {
@@ -2492,7 +2492,7 @@
       "capabilities": [
         "embedding"
       ],
-      "pulls": 290400,
+      "pulls": 290700,
       "updated": "2 years ago"
     },
     {
@@ -2506,7 +2506,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 280800,
+      "pulls": 287300,
       "updated": "1 month ago"
     },
     {
@@ -2516,7 +2516,7 @@
         "3b"
       ],
       "capabilities": [],
-      "pulls": 265000,
+      "pulls": 265300,
       "updated": "1 year ago"
     },
     {
@@ -2528,7 +2528,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 249400,
+      "pulls": 250000,
       "updated": "4 months ago"
     },
     {
@@ -2540,18 +2540,8 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 233300,
+      "pulls": 233600,
       "updated": "1 year ago"
-    },
-    {
-      "name": "cogito-2.1",
-      "description": "The Cogito v2.1 LLMs are instruction tuned generative models. All models are released under MIT license for commercial use.",
-      "sizes": [
-        "671b"
-      ],
-      "capabilities": [],
-      "pulls": 226300,
-      "updated": "10 months ago"
     },
     {
       "name": "nemotron-3.5-lightning",
@@ -2564,8 +2554,18 @@
         "tools",
         "thinking"
       ],
-      "pulls": 224200,
+      "pulls": 228800,
       "updated": "1 month ago"
+    },
+    {
+      "name": "cogito-2.1",
+      "description": "The Cogito v2.1 LLMs are instruction tuned generative models. All models are released under MIT license for commercial use.",
+      "sizes": [
+        "671b"
+      ],
+      "capabilities": [],
+      "pulls": 226500,
+      "updated": "10 months ago"
     },
     {
       "name": "marco-o1",
@@ -2574,7 +2574,7 @@
         "7b"
       ],
       "capabilities": [],
-      "pulls": 217900,
+      "pulls": 218100,
       "updated": "1 year ago"
     },
     {
@@ -2586,7 +2586,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 211200,
+      "pulls": 211700,
       "updated": "version of the MedGemma 4B model."
     },
     {
@@ -2598,20 +2598,8 @@
       "capabilities": [
         "tools"
       ],
-      "pulls": 208800,
+      "pulls": 209000,
       "updated": "1 year ago"
-    },
-    {
-      "name": "functiongemma",
-      "description": "FunctionGemma is a specialized version of Google's Gemma 3 270M model fine-tuned explicitly for function calling.",
-      "sizes": [
-        "270m"
-      ],
-      "capabilities": [
-        "tools"
-      ],
-      "pulls": 199300,
-      "updated": "9 months ago"
     },
     {
       "name": "lfm2.5",
@@ -2623,8 +2611,20 @@
         "tools",
         "thinking"
       ],
-      "pulls": 197000,
+      "pulls": 202400,
       "updated": "4 months ago"
+    },
+    {
+      "name": "functiongemma",
+      "description": "FunctionGemma is a specialized version of Google's Gemma 3 270M model fine-tuned explicitly for function calling.",
+      "sizes": [
+        "270m"
+      ],
+      "capabilities": [
+        "tools"
+      ],
+      "pulls": 199900,
+      "updated": "9 months ago"
     },
     {
       "name": "qwen3.8-flash-next",
@@ -2635,7 +2635,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 184000,
+      "pulls": 186400,
       "updated": "1 month ago"
     },
     {
@@ -2649,7 +2649,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 181200,
+      "pulls": 183100,
       "updated": "1 month ago"
     },
     {
@@ -2662,7 +2662,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 172600,
+      "pulls": 173200,
       "updated": "1 month ago"
     },
     {
@@ -2676,7 +2676,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 161800,
+      "pulls": 162600,
       "updated": "11 months ago"
     },
     {
@@ -2690,19 +2690,8 @@
         "tools",
         "thinking"
       ],
-      "pulls": 153000,
+      "pulls": 153600,
       "updated": "6 months ago"
-    },
-    {
-      "name": "mistral-large-3",
-      "description": "A general-purpose multimodal mixture-of-experts model for production-grade tasks and enterprise workloads.",
-      "sizes": [],
-      "capabilities": [
-        "tools",
-        "vision"
-      ],
-      "pulls": 133700,
-      "updated": "10 months ago"
     },
     {
       "name": "granite4.2",
@@ -2715,8 +2704,19 @@
       "capabilities": [
         "thinking"
       ],
-      "pulls": 130300,
+      "pulls": 135500,
       "updated": "1 month ago"
+    },
+    {
+      "name": "mistral-large-3",
+      "description": "A general-purpose multimodal mixture-of-experts model for production-grade tasks and enterprise workloads.",
+      "sizes": [],
+      "capabilities": [
+        "tools",
+        "vision"
+      ],
+      "pulls": 134800,
+      "updated": "10 months ago"
     },
     {
       "name": "laguna-xs-2.1",
@@ -2729,7 +2729,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 128500,
+      "pulls": 130000,
       "updated": "1 month ago"
     },
     {
@@ -2740,7 +2740,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 122400,
+      "pulls": 123900,
       "updated": "4 months ago"
     },
     {
@@ -2752,7 +2752,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 102000,
+      "pulls": 102900,
       "updated": "2 months ago"
     },
     {
@@ -2763,7 +2763,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 90700,
+      "pulls": 92900,
       "updated": "1 month ago"
     },
     {
@@ -2777,7 +2777,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 84700,
+      "pulls": 89000,
       "updated": "1 week ago"
     },
     {
@@ -2789,7 +2789,7 @@
         "vision",
         "thinking"
       ],
-      "pulls": 80100,
+      "pulls": 82300,
       "updated": "1 month ago"
     },
     {
@@ -2803,7 +2803,7 @@
         "tools",
         "thinking"
       ],
-      "pulls": 68000,
+      "pulls": 69400,
       "updated": "3 months ago"
     },
     {
@@ -2815,7 +2815,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 65900,
+      "pulls": 67800,
       "updated": "4 months ago"
     },
     {
@@ -2827,7 +2827,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 52800,
+      "pulls": 53700,
       "updated": "4 months ago"
     },
     {
@@ -2840,35 +2840,8 @@
         "tools",
         "thinking"
       ],
-      "pulls": 38200,
+      "pulls": 41100,
       "updated": "1 week ago"
-    },
-    {
-      "name": "laguna-xs.2",
-      "description": "Laguna XS.2 is a 33B total parameter Mixture-of-Experts model with 3B activated parameters per token designed for agentic coding and long-horizon work on a local machine.",
-      "sizes": [
-        "33b",
-        "3b"
-      ],
-      "capabilities": [
-        "tools",
-        "thinking"
-      ],
-      "pulls": 34700,
-      "updated": "2 months ago"
-    },
-    {
-      "name": "granite4.1-guardian",
-      "description": "Granite Guardian 4.1 is a specialized safety and judging model from IBM Research that evaluates whether LLM prompts and responses meet specified harm criteria.",
-      "sizes": [
-        "8b"
-      ],
-      "capabilities": [
-        "tools",
-        "thinking"
-      ],
-      "pulls": 33300,
-      "updated": "4 months ago"
     },
     {
       "name": "embeddinggemma-2",
@@ -2883,8 +2856,35 @@
         "vision",
         "embedding"
       ],
-      "pulls": 31200,
-      "updated": "6 days ago"
+      "pulls": 37200,
+      "updated": "1 week ago"
+    },
+    {
+      "name": "laguna-xs.2",
+      "description": "Laguna XS.2 is a 33B total parameter Mixture-of-Experts model with 3B activated parameters per token designed for agentic coding and long-horizon work on a local machine.",
+      "sizes": [
+        "33b",
+        "3b"
+      ],
+      "capabilities": [
+        "tools",
+        "thinking"
+      ],
+      "pulls": 35100,
+      "updated": "2 months ago"
+    },
+    {
+      "name": "granite4.1-guardian",
+      "description": "Granite Guardian 4.1 is a specialized safety and judging model from IBM Research that evaluates whether LLM prompts and responses meet specified harm criteria.",
+      "sizes": [
+        "8b"
+      ],
+      "capabilities": [
+        "tools",
+        "thinking"
+      ],
+      "pulls": 34800,
+      "updated": "4 months ago"
     },
     {
       "name": "clef-flash",
@@ -2895,7 +2895,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 18100,
+      "pulls": 20200,
       "updated": "1 week ago"
     },
     {
@@ -2907,7 +2907,7 @@
       "capabilities": [
         "vision"
       ],
-      "pulls": 12100,
+      "pulls": 13900,
       "updated": "1 week ago"
     },
     {
@@ -2922,8 +2922,8 @@
         "vision",
         "thinking"
       ],
-      "pulls": 445,
-      "updated": "5 days ago"
+      "pulls": 493,
+      "updated": "1 week ago"
     },
     {
       "name": "laya",
@@ -2932,8 +2932,39 @@
         "421m"
       ],
       "capabilities": [],
-      "pulls": 151,
+      "pulls": 221,
       "updated": "1 week ago"
+    },
+    {
+      "name": "nimble-v3",
+      "description": "A 9B decision model from Bespoke Labs for fast classification, routing, and scoring.",
+      "sizes": [
+        "9b"
+      ],
+      "capabilities": [
+        "tools",
+        "thinking"
+      ],
+      "pulls": 667,
+      "updated": "16 hours ago"
+    },
+    {
+      "name": "strands-decider",
+      "description": "A 2B decision model from Strands Agents for fast classification, routing, and scoring.",
+      "sizes": [
+        "2b"
+      ],
+      "capabilities": [],
+      "pulls": 346,
+      "updated": "14 hours ago"
+    },
+    {
+      "name": "kev",
+      "description": "Kev scores answers to structured questions about a supplied text state in a single forward pass.",
+      "sizes": [],
+      "capabilities": [],
+      "pulls": 259,
+      "updated": "16 hours ago"
     }
   ]
 }
