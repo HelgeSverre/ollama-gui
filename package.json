@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "agent": "node local-agent/server.mjs",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "format": "prettier --write src e2e",
