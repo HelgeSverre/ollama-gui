@@ -66,7 +66,7 @@ src/
 ### CI
 
 - `ci.yml`: lint, format check, unit tests and build on every push and PR.
-- `catalog.yml`: weekly (Mondays) and on demand, re-scrapes the Ollama library and opens or updates a `chore/model-catalog` PR when the data changed. Under act it prints the diff and PR text instead of pushing.
+- `catalog.yml`: on demand only (no schedule; releases run `bun run catalog:update` locally), re-scrapes the Ollama library and opens or updates a `chore/model-catalog` PR when the data changed. Under act it prints the diff and PR text instead of pushing.
 - `docker.yml`: publishes the image to GHCR from `main` and `v*` tags.
 - `bun run ci:local` pulls the runner image with the Docker CLI and runs act with `--pull=false`; act's own registry login fails with some Docker keychain setups.
 
