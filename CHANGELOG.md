@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.7] - 2026-11-23
+
+### Changed
+
+- **Dependencies**: Updated 9 minor and patch dependencies (#95) and `jsdom` from 30.1.3 to 31.0.1 (#96).
+- **Model catalog**: Refreshed the Ollama library snapshot to 272 models.
+- **Model catalog**: Updated pull counts, sizes, and capabilities of existing models.
+- **CI**: The model catalog refresh workflow no longer runs on a schedule; the catalog is refreshed locally before each release.
+
+### Added
+
+- **Model catalog**: Added `ripple-preview`, `inkling-2-mini`, `inkling-2-small`, and `hy4`.
+
+### Removed
+
+- **Model catalog**: Removed `minimax-m2.7` and `mistral-large-3`, which are no longer listed on ollama.com.
+
 ## [2.0.6] - 2026-11-09
 
 ### Changed
